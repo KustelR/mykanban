@@ -2,7 +2,7 @@
 import ShowIf from "@/shared/ShowIf";
 import TextButton from "@/shared/TextButton";
 import TextInput from "@/shared/TextInput";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function AuthForm(props: {
   isNewUserDefault?: boolean;
@@ -13,6 +13,7 @@ export default function AuthForm(props: {
   const [isNewUser, setIsNewUser] = useState(
     isNewUserDefault !== undefined ? isNewUserDefault : true,
   );
+
   return (
     <div
       className={`border-[1px] p-2 rounded-xl dark:border-neutral-800 dark:bg-neutral-900${className}`}
@@ -64,7 +65,15 @@ export default function AuthForm(props: {
         </button>
       </ShowIf>
       <ShowIf isVisible={!isNewUser}>
-        <form action=""></form>
+        <form action="">
+          <TextInput
+            id="signin_email"
+            label="Email"
+            placeholder="example@example.com"
+          />{" "}
+          <TextInput id="signin_password" type="password" label="Password" />
+          <TextButton>Sign in</TextButton>
+        </form>
         <span>Don't have an account? </span>
         <button
           onClick={() => {
