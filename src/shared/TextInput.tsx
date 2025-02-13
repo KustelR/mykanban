@@ -1,3 +1,5 @@
+"use client";
+
 import { ReactNode, useState } from "react";
 import ShowIf from "./ShowIf";
 
@@ -5,11 +7,12 @@ type TextInputProps = {
   id: string;
   label: ReactNode;
   placeholder?: string;
+  type?: string;
   validators?: Array<validator>;
 };
 
 export default function TextInput(props: TextInputProps) {
-  const { id, label, placeholder, validators } = props;
+  const { id, label, placeholder, validators, type } = props;
   const [isFocused, setIsFocused] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const defaultValidationMessages: Array<string> = [];
@@ -29,7 +32,7 @@ export default function TextInput(props: TextInputProps) {
         </span>
         <input
           className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full px-2 rounded-md border-[1px] focus:outline-none dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
-          type="text"
+          type={type ? type : "text"}
           id={id}
           onChange={(e) => {
             setData(e.target.value);
@@ -40,8 +43,8 @@ export default function TextInput(props: TextInputProps) {
                 setIsValid(true);
               } else {
                 setIsValid(false);
-                setValidationMessages(newValidMsgs);
               }
+              setValidationMessages(newValidMsgs);
             }
           }}
           onFocus={() => {
@@ -56,8 +59,8 @@ export default function TextInput(props: TextInputProps) {
                 setIsValid(true);
               } else {
                 setIsValid(false);
-                setValidationMessages(newValidMsgs);
               }
+              setValidationMessages(newValidMsgs);
             }
           }}
           onInvalid={(e) => {
