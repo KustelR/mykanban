@@ -27,7 +27,7 @@ export default function TextInput(props: TextInputProps) {
 
       <div className="relative">
         <span
-          className={`${data.length > 0 ? "hidden" : ""} ${isFocused ? "text-xs" : ""} pointer-events-none absolute transition-all duration-200 left-2 dark:text-neutral-400`}
+          className={`${data.length > 0 ? "hidden" : ""} ${isFocused ? "text-xs" : ""} pointer-events-none absolute transition-all duration-200 left-2 text-neutral-400`}
         >
           {placeholder}
         </span>

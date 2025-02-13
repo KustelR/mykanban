@@ -16,73 +16,77 @@ export default function AuthForm(props: {
 
   return (
     <div
-      className={`border-[1px] p-2 rounded-xl dark:border-neutral-800 dark:bg-neutral-900${className}`}
+      className={`border-[1px] p-2 rounded-xl border-neutral-300 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900${className}`}
     >
-      <ShowIf isVisible={isNewUser}>
-        <form className="space-y-2" action="">
-          <TextInput
-            id="signup_email"
-            label="Email"
-            placeholder="example@example.com"
-            validators={emailValidators}
-          />
-          <TextInput
-            id="signup_username"
-            label="Username"
-            placeholder="someguy1993"
-          />
-          <TextInput
-            id="signup_password"
-            label="Password"
-            type="password"
-            validators={passwordValidators}
-            onChange={(e) => {
-              setPassword(e.target.value);
+      {isNewUser && (
+        <>
+          <form className="space-y-2" action="">
+            <TextInput
+              id="signup_email"
+              label="Email"
+              placeholder="example@example.com"
+              validators={emailValidators}
+            />
+            <TextInput
+              id="signup_username"
+              label="Username"
+              placeholder="someguy1993"
+            />
+            <TextInput
+              id="signup_password"
+              label="Password"
+              type="password"
+              validators={passwordValidators}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+            <TextInput
+              id="signup_confirm_password"
+              label="Confirm password"
+              type="password"
+              validators={[
+                (input) => {
+                  if (input !== password) {
+                    return [false, "Passwords not match"];
+                  }
+                  return [true, ""];
+                },
+              ]}
+            />
+            <TextButton>Sign Up</TextButton>
+          </form>
+          <span>Already have an account? </span>
+          <button
+            onClick={() => {
+              setIsNewUser(!isNewUser);
             }}
-          />
-          <TextInput
-            id="signup_confirm_password"
-            label="Confirm password"
-            type="password"
-            validators={[
-              (input) => {
-                if (input !== password) {
-                  return [false, "Passwords not match"];
-                }
-                return [true, ""];
-              },
-            ]}
-          />
-          <TextButton>Sign Up</TextButton>
-        </form>
-        <span>Already have an account? </span>
-        <button
-          onClick={() => {
-            setIsNewUser(!isNewUser);
-          }}
-        >
-          <strong>Sign in</strong>
-        </button>
-      </ShowIf>
-      <ShowIf isVisible={!isNewUser}>
-        <form action="">
-          <TextInput
-            id="signin_email"
-            label="Email"
-            placeholder="example@example.com"
-          />{" "}
-          <TextInput id="signin_password" type="password" label="Password" />
-          <TextButton>Sign in</TextButton>
-        </form>
-        <span>Don't have an account? </span>
-        <button
-          onClick={() => {
-            setIsNewUser(!isNewUser);
-          }}
-        >
-          <strong>Sign up</strong>
-        </button>
-      </ShowIf>
+          >
+            <strong>Sign in</strong>
+          </button>
+        </>
+      )}
+      {!isNewUser && (
+        <>
+          <form action="">
+            <TextInput
+              id="signin_email"
+              label="Email"
+              placeholder="example@example.com"
+            />{" "}
+            <TextInput id="signin_password" type="password" label="Password" />
+            <TextButton>Sign in</TextButton>
+          </form>
+          <span>Don't have an account? </span>
+          <button
+            onClick={() => {
+              setIsNewUser(!isNewUser);
+            }}
+          >
+            <strong>Sign up</strong>
+          </button>
+        </>
+      )}
     </div>
   );
 }
