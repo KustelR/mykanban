@@ -60,7 +60,7 @@ export default function Kanban(props: KanbanProps) {
         <>
           <h2 className="font-2xl font-bold">KANBAN: {label}</h2>
           <ol
-            className={`${className} grid space-x-3 overflow-scroll rounded-2xl border-[1px] p-3 border-neutral-700`}
+            className={`${className} grid space-x-3 overflow-scroll rounded-2xl border-[1px] p-3 border-neutral-300 dark:border-neutral-700`}
             style={{
               gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))`,
             }}
