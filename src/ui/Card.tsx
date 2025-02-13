@@ -6,7 +6,7 @@ export function Card(props: CardProps) {
   const { cardData } = props;
   const { title, description, tags } = cardData;
   return (
-    <div className="dark:bg-neutral-800 hover:dark:bg-neutral-700 rounded-xl p-2 w-full">
+    <div className="bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800  hover:dark:bg-neutral-700 rounded-xl p-2 w-full">
       <h4 className="font-bold">{title}</h4>
       <p>{description}</p>
       <div>
