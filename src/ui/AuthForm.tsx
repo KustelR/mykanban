@@ -9,6 +9,7 @@ export default function AuthForm(props: {
   className?: string;
 }) {
   const { isNewUserDefault, className } = props;
+  const [password, setPassword] = useState("");
   const [isNewUser, setIsNewUser] = useState(
     isNewUserDefault !== undefined ? isNewUserDefault : true,
   );
@@ -29,11 +30,27 @@ export default function AuthForm(props: {
             label="Username"
             placeholder="someguy1993"
           />
-          <TextInput id="signup_password" label="Password" type="password" />
+          <TextInput
+            id="signup_password"
+            label="Password"
+            type="password"
+            validators={passwordValidators}
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+          />
           <TextInput
             id="signup_confirm_password"
             label="Confirm password"
             type="password"
+            validators={[
+              (input) => {
+                if (input !== password) {
+                  return [false, "Passwords not match"];
+                }
+                return [true, ""];
+              },
+            ]}
           />
           <TextButton>Sign Up</TextButton>
         </form>
@@ -79,5 +96,20 @@ const emailValidators: Array<validator> = [
   (input: string) => {
     const matched = input.match(/.+@.+\..+/);
     return [matched !== null && matched.length > 0, "Provided incorrect email"];
+  },
+];
+
+const passwordValidators: Array<validator> = [
+  (input) => {
+    if (input.length < 8)
+      return [false, "Password should be at least 8 symbol long"];
+    else return [true, ""];
+  },
+  (input) => {
+    const matched = input.match(/[0-9]+/);
+    return [
+      matched !== null && matched.length > 0,
+      "Password should contain numbers",
+    ];
   },
 ];
