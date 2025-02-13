@@ -51,6 +51,15 @@ const initialColumns = [
 export default function Kanban(props: KanbanProps) {
   const { defaultColumns, className, label } = props;
   const [columns, setColumns] = useState(defaultColumns);
+  const store = useAppStore();
+  store.subscribe(() => {
+    setColumns(store.getState().kanban.columns);
+  });
+  const initialized = useRef(false);
+  const dispatch = useAppDispatch();
+  if (!initialized.current) {
+    initialized.current = true;
+  }
   if (!columns) {
     setColumns(initialColumns);
   }
