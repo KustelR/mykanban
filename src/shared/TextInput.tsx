@@ -8,11 +8,12 @@ type TextInputProps = {
   label: ReactNode;
   placeholder?: string;
   type?: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   validators?: Array<validator>;
 };
 
 export default function TextInput(props: TextInputProps) {
-  const { id, label, placeholder, validators, type } = props;
+  const { id, label, placeholder, validators, type, onChange } = props;
   const [isFocused, setIsFocused] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const defaultValidationMessages: Array<string> = [];
@@ -45,6 +46,9 @@ export default function TextInput(props: TextInputProps) {
                 setIsValid(false);
               }
               setValidationMessages(newValidMsgs);
+            }
+            if (onChange && isValid) {
+              onChange(e);
             }
           }}
           onFocus={() => {
