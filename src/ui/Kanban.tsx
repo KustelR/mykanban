@@ -11,7 +11,7 @@ type KanbanProps = {
 
 const initialColumns = [
   {
-    header: "test",
+    header: "Backlog",
     cards: [
       { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
       { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
@@ -23,7 +23,7 @@ const initialColumns = [
     ],
   },
   {
-    header: "test",
+    header: "Planned",
     cards: [
       { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
       { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
@@ -35,7 +35,7 @@ const initialColumns = [
     ],
   },
   {
-    header: "test",
+    header: "In work",
     cards: [
       { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
       { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
