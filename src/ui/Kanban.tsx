@@ -1,27 +1,31 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CardColumn from "./CardColumn";
 import { usePathname } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { addColumnAction } from "@/lib/features/kanban/kanbanSlice";
+import StoreProvider from "@/app/StoreProvider";
+import { useAppDispatch, useAppSelector, useAppStore } from "@/lib/hooks";
+import TextButton from "@/shared/TextButton";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
   className?: string;
   label: string;
 };
-
+const someCol = {
+  header: "Backlog",
+  cards: [
+    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+  ],
+};
 const initialColumns = [
-  {
-    header: "Backlog",
-    cards: [
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    ],
-  },
   {
     header: "Planned",
     cards: [
@@ -65,6 +69,15 @@ export default function Kanban(props: KanbanProps) {
   }
   return (
     <div>
+      {" "}
+      <TextButton
+        onClick={(e) => {
+          const action = addColumnAction(someCol);
+          dispatch(action);
+        }}
+      >
+        Add column
+      </TextButton>
       {columns ? (
         <>
           <h2 className="font-2xl font-bold">KANBAN: {label}</h2>
