@@ -5,7 +5,7 @@ import Kanban from "@/ui/Kanban";
 export default function Project() {
   return (
     <div className="">
-      <Kanban label="TEST" className="w-[1000px] h-[500px]"></Kanban>
+      <Kanban label="TEST" className="w-full md:max-w-fit"></Kanban>
     </div>
   );
 }
