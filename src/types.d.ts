@@ -4,6 +4,7 @@ declare global {
     title: string;
     description: string;
     tags: Array<string>;
+    colId?: string;
   }
   interface ColData {
     header: string;
