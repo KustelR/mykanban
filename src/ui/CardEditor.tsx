@@ -3,6 +3,9 @@
 import { useState } from "react";
 import TextInput from "@/shared/TextInput";
 import { Card } from "./Card";
+import TextButton from "@/shared/TextButton";
+import { useAppDispatch, useAppStore } from "@/lib/hooks";
+import { addCardByColIdAction } from "@/lib/features/kanban/kanbanSlice";
 
 export default function CardEditor(props: { defaultCard?: CardData }) {
   let { defaultCard } = props;
@@ -15,6 +18,8 @@ export default function CardEditor(props: { defaultCard?: CardData }) {
   }
   const [card, setCard] = useState(defaultCard);
   const [tag, setTag] = useState("");
+  useAppStore();
+  const dispatch = useAppDispatch();
   return (
     <div className="w-full h-full  place-items-center place-content-center">
       <div
@@ -71,6 +76,14 @@ export default function CardEditor(props: { defaultCard?: CardData }) {
           </div>
         </div>
       </div>
+      <TextButton
+        onClick={(e) => {
+          if (!card.colId) return;
+          dispatch(addCardByColIdAction([card.colId, card]));
+        }}
+      >
+        ADD
+      </TextButton>
     </div>
   );
 }
