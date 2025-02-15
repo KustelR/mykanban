@@ -65,8 +65,8 @@ export default function CardEditor(props: { defaultCard?: CardData }) {
               />
             </form>
           </div>
-          <div>
-            <header>Editing card: Preview</header>
+          <div className="max-w-96">
+            <header className="font-bold">Preview</header>
             <Card blocked cardData={card}></Card>
           </div>
         </div>
