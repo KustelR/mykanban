@@ -18,39 +18,8 @@ const someCol = {
   cards: [
     { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
     { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
   ],
 };
-const initialColumns = [
-  {
-    header: "Planned",
-    cards: [
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    ],
-  },
-  {
-    header: "In work",
-    cards: [
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-      { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    ],
-  },
-];
 
 export default function Kanban(props: KanbanProps) {
   const { defaultColumns, className, label } = props;
@@ -59,13 +28,10 @@ export default function Kanban(props: KanbanProps) {
   store.subscribe(() => {
     setColumns(store.getState().kanban.columns);
   });
-  const initialized = useRef(false);
   const dispatch = useAppDispatch();
-  if (!initialized.current) {
-    initialized.current = true;
-  }
+
   if (!columns) {
-    setColumns(initialColumns);
+    setColumns([]);
   }
   return (
     <div>
