@@ -4,10 +4,11 @@ import CardEditor from "./CardEditor";
 
 type CardProps = {
   cardData: CardData;
+  blocked?: boolean;
 };
 
 export function Card(props: CardProps) {
-  const { cardData } = props;
+  const { cardData, blocked } = props;
   const { title, description, tags } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
 
@@ -16,20 +17,20 @@ export function Card(props: CardProps) {
       <div
         onClick={(e) => {
           e.stopPropagation();
-          setIsRedacting(!isRedacting);
+          if (!blocked) setIsRedacting(!isRedacting);
         }}
         className="absolute left-0 top-0 w-full h-full"
       >
-        <CardEditor></CardEditor>
+        <CardEditor defaultCard={cardData}></CardEditor>
       </div>,
       document.body,
     );
 
   return (
     <div
-      className="bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800  hover:dark:bg-neutral-700 rounded-xl p-2 w-full"
+      className="cursor-pointer bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800  hover:dark:bg-neutral-700 rounded-xl p-2 w-full"
       onClick={() => {
-        setIsRedacting(true);
+        if (!blocked) setIsRedacting(true);
       }}
     >
       <h4 className="font-bold">{title}</h4>
