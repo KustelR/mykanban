@@ -69,7 +69,6 @@ export default function Kanban(props: KanbanProps) {
   }
   return (
     <div>
-      {" "}
       <TextButton
         onClick={(e) => {
           const action = addColumnAction(someCol);
