@@ -16,7 +16,7 @@ export default function AuthForm(props: {
 
   return (
     <div
-      className={`border-[1px] p-2 rounded-xl border-neutral-300 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900${className}`}
+      className={`border-[1px] p-2 rounded-xl border-neutral-300 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 ${className}`}
     >
       {isNewUser && (
         <>
