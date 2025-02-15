@@ -37,7 +37,7 @@ export function Card(props: CardProps) {
       <p>{description}</p>
       <div>
         <h4>tags</h4>
-        <ul className="p-1 inline-flex *:rounded-md *:bg-cyan-700/20 space-x-2 *:px-1 *:border-[1px] *:border-cyan-600/30">
+        <ul className="flex flex-wrap *:rounded-md *:bg-cyan-700/20 *:mr-1 *:mb-1 *:px-1 *:border-[1px] *:border-cyan-600/30">
           {tags?.map((tag, idx) => {
             return <li key={idx}>{tag}</li>;
           })}
