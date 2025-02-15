@@ -23,9 +23,9 @@ export default function CardEditor(props: { defaultCard?: CardData }) {
           e.stopPropagation();
         }}
       >
-        <div className="flex flex-row space-x-3">
-          <div>
-            <header>Editing card: {card ? card.title : "new"}</header>
+        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+          <div className="border-r-[1px] px-2 border-neutral-400 dark:border-neutral-700">
+            <header className="font-bold">Editor</header>
             <form action="">
               <TextInput
                 defaultValue={card.title}
