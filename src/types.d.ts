@@ -4,10 +4,12 @@ declare global {
     title: string;
     description: string;
     tags: Array<string>;
-    colId?: string;
+    column?: ColData;
+    id: string;
   }
   interface ColData {
     header: string;
+    id: string;
     cards: Array<CardData>;
   }
   interface Identified {
