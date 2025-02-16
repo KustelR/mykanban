@@ -49,7 +49,7 @@ export default function TextInput(props: TextInputProps) {
         </span>
         {!area && (
           <input
-            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full px-2 rounded-md border-[1px] focus:outline-none dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
+            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 focus:bg-neutral-200 w-full px-2 rounded-md border-[1px] focus:outline-none dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
             type={type ? type : "text"}
             id={id}
             placeholder={defaultValue}
@@ -86,7 +86,7 @@ export default function TextInput(props: TextInputProps) {
         )}
         {area && (
           <textarea
-            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full h-fit px-2 rounded-md border-[1px] focus:outline-none dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
+            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full h-fit px-2 rounded-md border-[1px] focus:outline-none focus:bg-neutral-200 dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
             id={id}
             placeholder={
               placeholder && placeholder.length < 20
