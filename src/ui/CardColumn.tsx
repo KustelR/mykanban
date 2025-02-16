@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { Card } from "./Card";
 import { CardEditorPortal } from "./CardEditor";
+import { nanoid } from "@reduxjs/toolkit";
+import PlusIcon from "../../public/plus.svg";
+import Image from "next/image";
 
 export default function CardColumn(props: {
   className?: string;
@@ -12,6 +15,12 @@ export default function CardColumn(props: {
 }) {
   const { colData, className, columns, setColumns } = props;
   const [isAdding, setIsAdding] = useState(false);
+  let creatingCard: CardData = {
+    title: "",
+    description: "",
+    tags: [],
+    id: "-1",
+  };
   return (
     <div className={` ${className} px-1 space-y-2`}>
       <h3 className="text-xl font-semibold bg-cyan-700/30 rounded-md px-2">
@@ -45,10 +54,33 @@ export default function CardColumn(props: {
             onClick={(e) => {
               setIsAdding(true);
             }}
-            className="bg-red-600 min-w-10 h-10"
-          ></button>
+            className=" place-content-center flex-wrap flex hover:bg-neutral-100 dark:hover:bg-neutral-800 w-full rounded-md h-14"
+          >
+            <PlusIcon className="*:fill-neutral-400" width={28} height={28} />
+          </button>
         </li>
       </ol>
+      {isAdding && (
+        <CardEditorPortal
+          isRedacting={isAdding}
+          setIsRedacting={setIsAdding}
+          cardData={{ title: "", description: "", tags: [], id: nanoid() }}
+          setCardData={(data) => {
+            const newColumns = [...columns];
+            const changingColumnIdx = columns.findIndex((col) => {
+              return col.id === colData.id;
+            });
+            if (changingColumnIdx === -1) return;
+            const newColumnCards = [...newColumns[changingColumnIdx].cards];
+            newColumnCards.push(data);
+            newColumns[changingColumnIdx] = {
+              ...newColumns[changingColumnIdx],
+              ...{ cards: newColumnCards },
+            };
+            setColumns(newColumns);
+          }}
+        />
+      )}
     </div>
   );
 }

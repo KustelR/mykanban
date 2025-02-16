@@ -4,11 +4,6 @@ import { useState } from "react";
 import TextInput from "@/shared/TextInput";
 import { Card } from "./Card";
 import TextButton from "@/shared/TextButton";
-import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import {
-  addCardByColIdAction,
-  replaceCardAction,
-} from "@/lib/features/kanban/kanbanSlice";
 import { createPortal } from "react-dom";
 
 export default function CardEditor(props: {
@@ -19,8 +14,6 @@ export default function CardEditor(props: {
 
   const [card, setCard] = useState(defaultCard);
   const [tag, setTag] = useState("");
-  useAppStore();
-  const dispatch = useAppDispatch();
   return (
     <>
       {card && (

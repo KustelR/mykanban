@@ -1,12 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import CardColumn from "./CardColumn";
-import { usePathname } from "next/navigation";
-import { useDispatch } from "react-redux";
-import {
-  addColumnAction,
-  setKanbanAction,
-} from "@/lib/features/kanban/kanbanSlice";
+import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
 import StoreProvider from "@/app/StoreProvider";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/lib/hooks";
 import TextButton from "@/shared/TextButton";
@@ -17,23 +12,25 @@ type KanbanProps = {
   className?: string;
   label: string;
 };
-const someCol = {
-  header: "Backlog",
-  id: nanoid(),
-  cards: [
-    {
-      title: "blah",
-      description: "blah",
-      tags: ["blah1", "blah2"],
-      id: "dsgsdfg",
-    },
-    {
-      title: "blah",
-      description: "blah",
-      tags: ["blah1", "blah2"],
-      id: "fdsgfdsg",
-    },
-  ],
+const someCol = () => {
+  return {
+    header: "Backlog",
+    id: nanoid(),
+    cards: [
+      {
+        title: "blah",
+        description: "blah",
+        tags: ["blah1", "blah2"],
+        id: "dsgsdfg",
+      },
+      {
+        title: "blah",
+        description: "blah",
+        tags: ["blah1", "blah2"],
+        id: "fdsgfdsg",
+      },
+    ],
+  };
 };
 
 export default function Kanban(props: KanbanProps) {
@@ -52,7 +49,7 @@ export default function Kanban(props: KanbanProps) {
         onClick={(e) => {
           const action = setKanbanAction({
             label: label,
-            columns: [...columns, someCol],
+            columns: [...columns, someCol()],
           });
           dispatch(action);
         }}
