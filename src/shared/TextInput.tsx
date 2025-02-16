@@ -45,7 +45,7 @@ export default function TextInput(props: TextInputProps) {
         <span
           className={`${data.length > 0 ? "hidden" : ""} ${isFocused ? "text-xs" : ""} pointer-events-none absolute transition-all duration-200 left-2 text-neutral-400`}
         >
-          {placeholder}
+          {!area && placeholder}
         </span>
         {!area && (
           <input
@@ -86,9 +86,13 @@ export default function TextInput(props: TextInputProps) {
         )}
         {area && (
           <textarea
-            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full px-2 rounded-md border-[1px] focus:outline-none dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
+            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full h-fit px-2 rounded-md border-[1px] focus:outline-none dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
             id={id}
-            placeholder={defaultValue}
+            placeholder={
+              placeholder && placeholder.length < 20
+                ? placeholder
+                : `${placeholder?.slice(0, 10)}...`
+            }
             onChange={(e) => {
               validateInput(
                 e.target,
