@@ -42,7 +42,6 @@ export default function Kanban(props: KanbanProps) {
   const store = useAppStore();
 
   store.subscribe(() => {
-    console.log("dispatch detected");
     setColumns(store.getState().kanban.columns);
   });
   const dispatch = useAppDispatch();
