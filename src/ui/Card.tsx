@@ -34,7 +34,7 @@ export function Card(props: CardProps) {
       }}
     >
       <h4 className="font-bold">{title}</h4>
-      <p>{description}</p>
+      <p className="text-wrap break-words">{description}</p>
       <div>
         <h4>tags</h4>
         <ul className="flex flex-wrap *:rounded-md *:bg-cyan-700/20 *:mr-1 *:mb-1 *:px-1 *:border-[1px] *:border-cyan-600/30">
