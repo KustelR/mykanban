@@ -1,30 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import CardEditor from "./CardEditor";
+import CardEditor, { CardEditorPortal } from "./CardEditor";
+import { useAppDispatch } from "@/lib/hooks";
+import { replaceCardAction } from "@/lib/features/kanban/kanbanSlice";
 
 type CardProps = {
   cardData: CardData;
   blocked?: boolean;
+  cards?: Array<CardData>;
+  setCards?: (arg: Array<CardData>) => void;
 };
 
 export function Card(props: CardProps) {
-  const { cardData, blocked } = props;
+  const { cardData, blocked, cards, setCards } = props;
   const { title, description, tags } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
-
-  const Portal = () =>
-    createPortal(
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!blocked) setIsRedacting(!isRedacting);
-        }}
-        className="absolute left-0 top-0 w-full h-full"
-      >
-        <CardEditor defaultCard={cardData}></CardEditor>
-      </div>,
-      document.body,
-    );
+  const dispatch = useAppDispatch();
 
   return (
     <div
@@ -43,7 +34,25 @@ export function Card(props: CardProps) {
           })}
         </ul>
       </div>
-      {isRedacting && <Portal />}
+      {isRedacting && (
+        <CardEditorPortal
+          cardData={cardData}
+          setCardData={(card) => {
+            console.log("runs");
+            if (cards && setCards) {
+              const cardIdx = cards.findIndex((card2) => {
+                return card2.id === card.id;
+              });
+              const newCards = [...cards];
+              newCards[cardIdx] = card;
+              setCards(newCards);
+            }
+          }}
+          blocked={blocked}
+          isRedacting={isRedacting}
+          setIsRedacting={setIsRedacting}
+        />
+      )}
     </div>
   );
 }
