@@ -3,10 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import CardColumn from "./CardColumn";
 import { usePathname } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { addColumnAction } from "@/lib/features/kanban/kanbanSlice";
+import {
+  addColumnAction,
+  setKanbanAction,
+} from "@/lib/features/kanban/kanbanSlice";
 import StoreProvider from "@/app/StoreProvider";
 import { useAppDispatch, useAppSelector, useAppStore } from "@/lib/hooks";
 import TextButton from "@/shared/TextButton";
+import { nanoid } from "@reduxjs/toolkit";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -15,29 +19,42 @@ type KanbanProps = {
 };
 const someCol = {
   header: "Backlog",
+  id: nanoid(),
   cards: [
-    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
-    { title: "blah", description: "blah", tags: ["blah1", "blah2"] },
+    {
+      title: "blah",
+      description: "blah",
+      tags: ["blah1", "blah2"],
+      id: "dsgsdfg",
+    },
+    {
+      title: "blah",
+      description: "blah",
+      tags: ["blah1", "blah2"],
+      id: "fdsgfdsg",
+    },
   ],
 };
 
 export default function Kanban(props: KanbanProps) {
   const { defaultColumns, className, label } = props;
-  const [columns, setColumns] = useState(defaultColumns);
+  const [columns, setColumns] = useState(defaultColumns ? defaultColumns : []);
   const store = useAppStore();
+
   store.subscribe(() => {
+    console.log("dispatch detected");
     setColumns(store.getState().kanban.columns);
   });
   const dispatch = useAppDispatch();
 
-  if (!columns) {
-    setColumns([]);
-  }
   return (
     <div>
       <TextButton
         onClick={(e) => {
-          const action = addColumnAction(someCol);
+          const action = setKanbanAction({
+            label: label,
+            columns: [...columns, someCol],
+          });
           dispatch(action);
         }}
       >
@@ -55,7 +72,15 @@ export default function Kanban(props: KanbanProps) {
             {columns.map((col, idx) => {
               return (
                 <li className="col-span-1" key={idx}>
-                  <CardColumn header={col.header} cards={col.cards} />
+                  <CardColumn
+                    columns={columns}
+                    setColumns={(cols) => {
+                      dispatch(
+                        setKanbanAction({ label: label, columns: cols }),
+                      );
+                    }}
+                    colData={col}
+                  />
                 </li>
               );
             })}
