@@ -25,9 +25,8 @@ export function Card(props: CardProps) {
       }}
     >
       <h4 className="font-bold">{title}</h4>
-      <p className="text-wrap break-words">{description}</p>
+      <p className="text-wrap break-words line-clamp-3">{description}</p>
       <div>
-        <h4>tags</h4>
         <ul className="flex flex-wrap *:rounded-md *:bg-cyan-700/20 *:mr-1 *:mb-1 *:px-1 *:border-[1px] *:border-cyan-600/30">
           {tags?.map((tag, idx) => {
             return <li key={idx}>{tag}</li>;
@@ -38,7 +37,6 @@ export function Card(props: CardProps) {
         <CardEditorPortal
           cardData={cardData}
           setCardData={(card) => {
-            console.log("runs");
             if (cards && setCards) {
               const cardIdx = cards.findIndex((card2) => {
                 return card2.id === card.id;
