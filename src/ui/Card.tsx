@@ -15,11 +15,24 @@ export function Card(props: CardProps) {
   const { cardData, blocked, cards, setCards } = props;
   const { title, description, tags } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
-  const dispatch = useAppDispatch();
+  const [isActive, setIsActive] = useState(false);
 
   return (
     <div
-      className="cursor-pointer hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 rounded-md p-2 "
+      className="size-fit relative w-full"
+      onMouseEnter={(e) => {
+        setIsActive(true);
+      }}
+      onMouseLeave={(e) => {
+        setIsActive(false);
+      }}
+    >
+      <ul
+        className={`${isActive ? "" : "hidden"} absolute flex flex-row right-0 top-0 h-fit [font-size:0]`}
+      >
+        <li>
+          <button
+            className="h-5 w-5 flex flex-wrap content-center justify-center bg-green-600/50 hover:bg-green-700/50"
       onClick={() => {
         if (!blocked) setIsRedacting(true);
       }}
