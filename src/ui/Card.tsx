@@ -24,15 +24,15 @@ export function Card(props: CardProps) {
         if (!blocked) setIsRedacting(true);
       }}
     >
-      <h4 className="font-bold">{title}</h4>
+      <section className="rounded-md cursor-pointer hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
+        <header className="font-bold">{title}</header>
       <p className="text-wrap break-words line-clamp-3">{description}</p>
-      <div>
         <ul className="flex flex-wrap *:rounded-md *:bg-cyan-700/20 *:mr-1 *:mb-1 *:px-1 *:border-[1px] *:border-cyan-600/30">
           {tags?.map((tag, idx) => {
             return <li key={idx}>{tag}</li>;
           })}
         </ul>
-      </div>
+      </section>
       {isRedacting && (
         <CardEditorPortal
           cardData={cardData}
