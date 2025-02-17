@@ -7,7 +7,8 @@ import { nanoid } from "@reduxjs/toolkit";
 import PlusIcon from "@public/plus.svg";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { addNewColumn } from "@/scripts/kanban";
+import { addColumn } from "@/scripts/kanban";
+import { ColumnEditorPortal } from "./ColumnEditor";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -19,6 +20,10 @@ export default function Kanban(props: KanbanProps) {
   const { defaultColumns, className, label } = props;
   const [columns, setColumns] = useState(defaultColumns ? defaultColumns : []);
   const store = useAppStore();
+  const [isAdding, setIsAdding] = useState(false);
+  const [addingDirection, setAddingDirection] = useState<"start" | "end">(
+    "start",
+  );
 
   store.subscribe(() => {
     setColumns(store.getState().kanban.columns);
@@ -37,11 +42,8 @@ export default function Kanban(props: KanbanProps) {
               <button
                 className="items-center justify-items-center"
                 onClick={(e) => {
-                  const action = setKanbanAction({
-                    label: label,
-                    columns: addNewColumn(columns, "new"),
-                  });
-                  dispatch(action);
+                  setAddingDirection("end");
+                  setIsAdding(true);
                 }}
               >
                 <PlusIcon
@@ -62,13 +64,8 @@ export default function Kanban(props: KanbanProps) {
                   <button
                     className="hover:bg-black/10 hover:dark:bg-white/10 w-fit h-full [writing-mode:vertical-lr]"
                     onClick={(e) => {
-                      const action = setKanbanAction({
-                        label: label,
-                        columns: addNewColumn(columns, "new", {
-                          place: "start",
-                        }),
-                      });
-                      dispatch(action);
+                      setAddingDirection("start");
+                      setIsAdding(true);
                     }}
                   >
                     NEW COLUMN
@@ -97,11 +94,8 @@ export default function Kanban(props: KanbanProps) {
                   <button
                     className="hover:bg-black/10 hover:dark:bg-white/10 w-fit h-full [writing-mode:vertical-lr]"
                     onClick={(e) => {
-                      const action = setKanbanAction({
-                        label: label,
-                        columns: addNewColumn(columns, "new"),
-                      });
-                      dispatch(action);
+                      setIsAdding(true);
+                      setAddingDirection("end");
                     }}
                   >
                     NEW COLUMN
@@ -112,6 +106,15 @@ export default function Kanban(props: KanbanProps) {
           </>
         ) : (
           ""
+        )}
+        {isAdding && (
+          <ColumnEditorPortal
+            setIsRedacting={setIsAdding}
+            setColData={(col) => {
+              console.log("runs");
+              setColumns(addColumn(columns, col, { place: addingDirection }));
+            }}
+          />
         )}
       </div>
     </DndProvider>
