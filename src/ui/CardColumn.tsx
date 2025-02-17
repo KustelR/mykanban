@@ -27,9 +27,9 @@ export default function CardColumn(props: {
         {colData.header}
       </h3>
       <ol className="w-full h-full space-y-2">
-        {colData.cards.map((card, idx) => {
+        {colData.cards.map((card) => {
           return (
-            <li key={idx}>
+            <li key={card.id}>
               <Card
                 cards={colData.cards}
                 setCards={(newCards) => {
