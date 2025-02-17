@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import CardEditor, { CardEditorPortal } from "./CardEditor";
-import { useAppDispatch } from "@/lib/hooks";
-import { replaceCardAction } from "@/lib/features/kanban/kanbanSlice";
+import ChangeIcon from "@public/change.svg";
+import DeleteIcon from "@public/delete.svg";
 
 type CardProps = {
   cardData: CardData;
