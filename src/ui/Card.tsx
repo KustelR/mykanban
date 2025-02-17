@@ -37,6 +37,13 @@ export function Card(props: CardProps) {
         if (!blocked) setIsRedacting(true);
       }}
     >
+            <ChangeIcon
+              width={16}
+              height={16}
+              className="*:stroke-white"
+            ></ChangeIcon>
+          </button>
+        </li>
       <section className="rounded-md cursor-pointer hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
         <header className="font-bold">{title}</header>
       <p className="text-wrap break-words line-clamp-3">{description}</p>
