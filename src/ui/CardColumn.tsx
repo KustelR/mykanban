@@ -56,7 +56,11 @@ export default function CardColumn(props: {
             }}
             className=" place-content-center flex-wrap flex hover:bg-neutral-100 dark:hover:bg-neutral-800 w-full rounded-md h-14"
           >
-            <PlusIcon className="*:fill-neutral-400" width={28} height={28} />
+            <PlusIcon
+              className="*:fill-neutral-600 *:dark:fill-neutral-400"
+              width={42}
+              height={42}
+            />
           </button>
         </li>
       </ol>
