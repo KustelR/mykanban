@@ -5,6 +5,7 @@ import ChangeIcon from "@public/change.svg";
 import DeleteIcon from "@public/delete.svg";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
+import { removeCard } from "@/scripts/kanban";
 
 type CardProps = {
   cardData: CardData;
@@ -12,17 +13,19 @@ type CardProps = {
   cards?: Array<CardData>;
   colId?: string;
   setCards?: (arg: Array<CardData>) => void;
+  setColumns: (arg: Array<ColData>) => void;
+  columns: Array<ColData>;
 };
 
 export function Card(props: CardProps) {
-  const { cardData, blocked, cards, setCards, colId } = props;
+  const { cardData, blocked, cards, setCards, columns, setColumns } = props;
   const { title, description, tags } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: ItemTypes.CARD,
-    item: { id: cardData.id, colId: colId },
+    item: cardData,
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
@@ -59,12 +62,9 @@ export function Card(props: CardProps) {
           <button
             className="h-5 w-5 flex flex-wrap content-center justify-center bg-red-600/50 hover:bg-red-700/50"
             onClick={(e) => {
-              if (cards && setCards)
-                setCards(
-                  cards.filter((c) => {
-                    c.id !== cardData.id;
-                  }),
-                );
+              if (cards && setCards) {
+                setColumns(removeCard(cardData.id, cardData.colId, columns));
+              }
             }}
           >
             <DeleteIcon
@@ -95,6 +95,8 @@ export function Card(props: CardProps) {
               const newCards = [...cards];
               newCards[cardIdx] = card;
               setCards(newCards);
+            } else {
+              throw new Error("trying to change unknown card");
             }
           }}
           blocked={blocked}

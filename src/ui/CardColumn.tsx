@@ -5,9 +5,9 @@ import { Card } from "./Card";
 import { CardEditorPortal } from "./CardEditor";
 import { nanoid } from "@reduxjs/toolkit";
 import PlusIcon from "@public/plus.svg";
-import Image from "next/image";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "@/Constants";
+import { pushNewCard, removeCard } from "@/scripts/kanban";
 
 export default function CardColumn(props: {
   className?: string;
@@ -36,33 +36,20 @@ export default function CardColumn(props: {
   );
 
   useEffect(() => {
-    //dconsole.log(droppedElement, columns, isDropped);
     if (!isDropped) return;
-    if (
-      !(droppedElement && "id" in droppedElement && "colId" in droppedElement)
-    )
-      return;
-    const newColumns = [...columns];
-    const oldColIdx = columns.findIndex((col) => {
-      //console.log(col, droppedElement.colId);
-      return col.id === droppedElement.colId;
-    });
-    if (oldColIdx === -1) throw new Error("No column was found");
-    const card: CardData | undefined = columns[oldColIdx].cards.find((card) => {
-      return card.id === droppedElement.id;
-    });
-    if (!card) throw new Error("No card was found");
-    const cards = columns[oldColIdx].cards.filter((card1) => {
-      return card1.id !== droppedElement.id;
-    });
-    newColumns[oldColIdx] = { ...columns[oldColIdx], cards: cards };
-    setColumns(newColumns);
-    pushNewCard(card, colData, newColumns, setColumns);
+    if (!droppedElement) return;
+    const dropped = droppedElement as CardData;
+    if (dropped.colId) {
+      const newCols = removeCard(dropped.id, dropped.colId, columns);
+      setColumns(pushNewCard(dropped, colData.id, newCols));
+    } else {
+      setColumns(pushNewCard(dropped, colData.id, columns));
+    }
     setIsDropped(false);
   }, [isDropped]);
 
   useEffect(() => {
-    if (el && "id" in (el as any) && "colId" in (el as any))
+    if (el && "title" in (el as any))
       setDroppedElement(el as { id: string; colId: string });
   }, [el]);
 
@@ -78,11 +65,12 @@ export default function CardColumn(props: {
               <Card
                 cards={colData.cards}
                 colId={colData.id}
+                columns={columns}
+                setColumns={setColumns}
                 setCards={(newCards) => {
                   const colIdx = columns.findIndex((col) => {
                     return col.id === colData.id;
                   });
-                  console.log();
                   const newColumns: Array<ColData> = [...columns];
                   newColumns.splice(colIdx, 1, {
                     ...colData,
@@ -114,32 +102,18 @@ export default function CardColumn(props: {
         <CardEditorPortal
           isRedacting={isAdding}
           setIsRedacting={setIsAdding}
-          cardData={{ title: "", description: "", tags: [], id: nanoid() }}
+          cardData={{
+            title: "",
+            description: "",
+            tags: [],
+            id: nanoid(),
+            colId: colData.id,
+          }}
           setCardData={(data) => {
-            pushNewCard(data, colData, columns, setColumns);
+            setColumns(pushNewCard(data, colData.id, columns));
           }}
         />
       )}
     </div>,
   );
-}
-
-function pushNewCard(
-  card: CardData,
-  colData: ColData,
-  columns: Array<ColData>,
-  setColumns: (cols: Array<ColData>) => void,
-) {
-  const newColumns = [...columns];
-  const changingColumnIdx = columns.findIndex((col) => {
-    return colData.id === col.id;
-  });
-  if (changingColumnIdx === -1) return;
-  const newColumnCards = [...newColumns[changingColumnIdx].cards];
-  newColumnCards.push(card);
-  newColumns[changingColumnIdx] = {
-    ...newColumns[changingColumnIdx],
-    ...{ cards: newColumnCards },
-  };
-  setColumns(newColumns);
 }

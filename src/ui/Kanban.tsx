@@ -7,25 +7,12 @@ import { nanoid } from "@reduxjs/toolkit";
 import PlusIcon from "@public/plus.svg";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { addNewColumn } from "@/scripts/kanban";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
   className?: string;
   label: string;
-};
-const someCol = () => {
-  return {
-    header: "Backlog",
-    id: nanoid(),
-    cards: [
-      {
-        title: "Something",
-        description: "Lorem ipsum sis dolar amet",
-        tags: ["test", "something"],
-        id: nanoid(),
-      },
-    ],
-  };
 };
 
 export default function Kanban(props: KanbanProps) {
@@ -41,7 +28,7 @@ export default function Kanban(props: KanbanProps) {
   return (
     <DndProvider backend={HTML5Backend}>
       <div
-        className={`${className} rounded-2xl border-[1px] p-1 md:p-3 border-neutral-300 dark:border-neutral-700`}
+        className={`${className} h-fit rounded-2xl border-[1px] p-1 md:p-3 border-neutral-300 dark:border-neutral-700`}
       >
         {columns ? (
           <>
@@ -52,7 +39,7 @@ export default function Kanban(props: KanbanProps) {
                 onClick={(e) => {
                   const action = setKanbanAction({
                     label: label,
-                    columns: [someCol()],
+                    columns: addNewColumn(columns, "new"),
                   });
                   dispatch(action);
                 }}
@@ -77,7 +64,9 @@ export default function Kanban(props: KanbanProps) {
                     onClick={(e) => {
                       const action = setKanbanAction({
                         label: label,
-                        columns: [someCol(), ...columns],
+                        columns: addNewColumn(columns, "new", {
+                          place: "start",
+                        }),
                       });
                       dispatch(action);
                     }}
@@ -110,7 +99,7 @@ export default function Kanban(props: KanbanProps) {
                     onClick={(e) => {
                       const action = setKanbanAction({
                         label: label,
-                        columns: [...columns, someCol()],
+                        columns: addNewColumn(columns, "new"),
                       });
                       dispatch(action);
                     }}
