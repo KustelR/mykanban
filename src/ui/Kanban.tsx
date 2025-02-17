@@ -4,7 +4,7 @@ import CardColumn from "./CardColumn";
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { nanoid } from "@reduxjs/toolkit";
-import PlusIcon from "../../public/plus.svg";
+import PlusIcon from "@public/plus.svg";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "./Card";
 import { CardEditorPortal } from "./CardEditor";
 import { nanoid } from "@reduxjs/toolkit";
-import PlusIcon from "../../public/plus.svg";
+import PlusIcon from "@public/plus.svg";
 import Image from "next/image";
 
 export default function CardColumn(props: {
