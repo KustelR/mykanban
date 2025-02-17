@@ -4,8 +4,8 @@ declare global {
     title: string;
     description: string;
     tags: Array<string>;
-    column?: ColData;
     id: string;
+    colId: string;
   }
   interface ColData {
     header: string;
