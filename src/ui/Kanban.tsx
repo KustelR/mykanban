@@ -44,7 +44,7 @@ export default function Kanban(props: KanbanProps) {
   const dispatch = useAppDispatch();
 
   return (
-    <div>
+    <div className={`${className}`}>
       <TextButton
         onClick={(e) => {
           const action = setKanbanAction({
@@ -60,15 +60,16 @@ export default function Kanban(props: KanbanProps) {
         <>
           <h2 className="font-2xl font-bold">KANBAN: {label}</h2>
           <ol
-            className={`${className} grid space-x-3 overflow-scroll rounded-2xl border-[1px] p-3 border-neutral-300 dark:border-neutral-700`}
+            className={`overflow-scroll flex flex-row space-x-1 md:space-x-3 rounded-2xl border-[1px] p-1 md:p-3 border-neutral-300 dark:border-neutral-700`}
             style={{
               gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))`,
             }}
           >
             {columns.map((col, idx) => {
               return (
-                <li className="col-span-1" key={idx}>
+                <li className="col-span-1 min-w-40 basis-0 grow" key={idx}>
                   <CardColumn
+                    className="w-full"
                     columns={columns}
                     setColumns={(cols) => {
                       dispatch(
