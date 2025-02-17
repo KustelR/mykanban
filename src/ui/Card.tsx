@@ -3,23 +3,34 @@ import { createPortal } from "react-dom";
 import CardEditor, { CardEditorPortal } from "./CardEditor";
 import ChangeIcon from "@public/change.svg";
 import DeleteIcon from "@public/delete.svg";
+import { useDrag } from "react-dnd";
+import { ItemTypes } from "@/Constants";
 
 type CardProps = {
   cardData: CardData;
   blocked?: boolean;
   cards?: Array<CardData>;
+  colId?: string;
   setCards?: (arg: Array<CardData>) => void;
 };
 
 export function Card(props: CardProps) {
-  const { cardData, blocked, cards, setCards } = props;
+  const { cardData, blocked, cards, setCards, colId } = props;
   const { title, description, tags } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
-  return (
+  const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
+    type: ItemTypes.CARD,
+    item: { id: cardData.id, colId: colId },
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
+  return drag(
     <div
-      className="size-fit relative w-full"
+      className={`${isDragging ? "cursor-move" : "cursor-pointer"} size-fit relative w-full`}
       onMouseEnter={(e) => {
         setIsActive(true);
       }}
@@ -64,7 +75,7 @@ export function Card(props: CardProps) {
           </button>
         </li>
       </ul>
-      <section className="rounded-md cursor-pointer hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
+      <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
         <header className="font-bold">{title}</header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
         <ul className="flex flex-wrap *:rounded-md *:bg-cyan-700/20 *:mr-1 *:mb-1 *:px-1 *:border-[1px] *:border-cyan-600/30">
@@ -91,6 +102,6 @@ export function Card(props: CardProps) {
           setIsRedacting={setIsRedacting}
         />
       )}
-    </div>
+    </div>,
   );
 }
