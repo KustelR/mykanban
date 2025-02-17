@@ -54,24 +54,19 @@ export function removeCard(
 /**
  * Creates new empty column. Returns changed array
  */
-export function addNewColumn(
+export function addColumn(
   columns: Array<ColData>,
-  header: string,
+  column: ColData,
   options?: { place?: "start" | "end" },
 ): Array<ColData> {
   const newColumns = [...columns];
-  const newCol = {
-    header: header,
-    id: nanoid(),
-    cards: [],
-  };
   if (!options) {
-    return [...columns, newCol];
+    return [...columns, column];
   } else {
     if (options.place === "start") {
-      return [newCol, ...columns];
+      return [column, ...columns];
     } else if (options.place === "end") {
-      return [...columns, newCol];
+      return [...columns, column];
     } else {
       return [...columns];
     }
