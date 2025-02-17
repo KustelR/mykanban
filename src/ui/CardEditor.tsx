@@ -68,7 +68,12 @@ export default function CardEditor(props: {
               </div>
               <div className="max-w-96">
                 <header className="font-bold">Preview</header>
-                <Card blocked cardData={card}></Card>
+                <Card
+                  columns={[]}
+                  setColumns={() => {}}
+                  blocked
+                  cardData={card}
+                ></Card>
               </div>
             </div>
             <TextButton
