@@ -33,10 +33,10 @@ export function Card(props: CardProps) {
         <li>
           <button
             className="h-5 w-5 flex flex-wrap content-center justify-center bg-green-600/50 hover:bg-green-700/50"
-      onClick={() => {
-        if (!blocked) setIsRedacting(true);
-      }}
-    >
+            onClick={() => {
+              if (!blocked) setIsRedacting(true);
+            }}
+          >
             <ChangeIcon
               width={16}
               height={16}
@@ -44,9 +44,29 @@ export function Card(props: CardProps) {
             ></ChangeIcon>
           </button>
         </li>
+        <li>
+          <button
+            className="h-5 w-5 flex flex-wrap content-center justify-center bg-red-600/50 hover:bg-red-700/50"
+            onClick={(e) => {
+              if (cards && setCards)
+                setCards(
+                  cards.filter((c) => {
+                    c.id !== cardData.id;
+                  }),
+                );
+            }}
+          >
+            <DeleteIcon
+              width={16}
+              height={16}
+              className=" *:stroke-white"
+            ></DeleteIcon>
+          </button>
+        </li>
+      </ul>
       <section className="rounded-md cursor-pointer hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
         <header className="font-bold">{title}</header>
-      <p className="text-wrap break-words line-clamp-3">{description}</p>
+        <p className="text-wrap break-words line-clamp-3">{description}</p>
         <ul className="flex flex-wrap *:rounded-md *:bg-cyan-700/20 *:mr-1 *:mb-1 *:px-1 *:border-[1px] *:border-cyan-600/30">
           {tags?.map((tag, idx) => {
             return <li key={idx}>{tag}</li>;
