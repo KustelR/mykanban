@@ -19,7 +19,7 @@ export function Card(props: CardProps) {
 
   return (
     <div
-      className="cursor-pointer bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-800  hover:dark:bg-neutral-700 rounded-md p-2 w-full"
+      className="cursor-pointer hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 rounded-md p-2 "
       onClick={() => {
         if (!blocked) setIsRedacting(true);
       }}
