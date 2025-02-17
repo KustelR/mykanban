@@ -27,7 +27,7 @@ export default function CardEditor(props: {
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
               <div className="border-r-[1px] px-2 border-neutral-400 dark:border-neutral-700">
                 <header className="font-bold">Editor</header>
-                <form action="">
+                <form action="" onSubmit={(e) => e.preventDefault()}>
                   <TextInput
                     defaultValue={card.title}
                     onChange={(e) => {
