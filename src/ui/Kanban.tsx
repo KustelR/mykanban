@@ -18,16 +18,10 @@ const someCol = () => {
     id: nanoid(),
     cards: [
       {
-        title: "blah",
-        description: "blah",
-        tags: ["blah1", "blah2"],
-        id: "dsgsdfg",
-      },
-      {
-        title: "blah",
-        description: "blah",
-        tags: ["blah1", "blah2"],
-        id: "fdsgfdsg",
+        title: "Something",
+        description: "Lorem ipsum sis dolar amet",
+        tags: ["test", "something"],
+        id: nanoid(),
       },
     ],
   };
