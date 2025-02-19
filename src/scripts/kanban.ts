@@ -118,3 +118,33 @@ export function swapCards(
   newCols.splice(colIdx, 1, newCol);
   return newCols;
 }
+
+export function swapColumns(
+  columns: Array<ColData>,
+  colId: string,
+  col2Id: string,
+): Array<ColData> {
+  const colIdx = columns.findIndex((col) => col.id === colId);
+  const col2Idx = columns.findIndex((col) => col.id === col2Id);
+  const newCols = [...columns];
+  newCols.splice(colIdx, 1, columns[col2Idx]);
+  newCols.splice(col2Idx, 1, columns[colIdx]);
+  return newCols;
+}
+/**
+ * Gets an array of columns and removes card with provided id in column with specified id
+ * @throws If column or card was not found
+ * @returns {Array<ColData>} - changed array
+ */
+export function removeColumn(
+  colId: string,
+  columns: Array<ColData>,
+): Array<ColData> {
+  const colIdx = columns.findIndex((col) => {
+    return col.id === colId;
+  });
+  if (colIdx === -1) throw new Error("No column was found");
+  const newColumns = [...columns];
+  newColumns.splice(colIdx, 1);
+  return newColumns;
+}
