@@ -7,6 +7,8 @@ import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
 import Tag from "./Tag";
 import TagList from "./TagList";
+import { nanoid } from "@reduxjs/toolkit";
+import { hexToRgb } from "@/shared/colors";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -15,13 +17,13 @@ export default function CardEditor(props: {
   let { defaultCard, setCardData } = props;
 
   const [card, setCard] = useState(defaultCard);
-  const [tag, setTag] = useState("");
-  const [tagsPreview, setTagsPreview] = useState<Array<string>>(
+  const [tag, setTag] = useState<TagData>(emptyTag);
+  const [tagsPreview, setTagsPreview] = useState<Array<TagData>>(
     card ? card.tags : [],
   );
   useEffect(() => {
     if (!card) return;
-    setTagsPreview([...card.tags, tag].filter(Boolean));
+    setTagsPreview([...card.tags, tag].filter((t) => t.label !== ""));
   }, [card, tag]);
   return (
     <>
@@ -59,9 +61,17 @@ export default function CardEditor(props: {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (tag === "") return;
-                      setCard({ ...card, tags: card.tags.concat(tag) });
-                      setTag("");
+                      if (tag.label === "") return;
+                      setCard({
+                        ...card,
+                        tags: card.tags.concat({
+                          ...tag,
+                          id: nanoid(),
+                          cardId: card.id,
+                          colId: card.colId,
+                        }),
+                      });
+                      setTag(emptyTag);
                       if (e.nativeEvent.target) {
                         (e.nativeEvent.target as HTMLFormElement).reset();
                       }
@@ -69,14 +79,30 @@ export default function CardEditor(props: {
                   >
                     <TextInput
                       onChange={(e) => {
-                        setTag(e.target.value);
+                        setTag({ ...tag, label: e.target.value });
                       }}
                       id="cardCreator_addTag"
                       label="Add tag"
                     />
+                    <div className="flex flex-col">
+                      <label htmlFor="cardCreator_tagColor">Tag color</label>
+                      <input
+                        onChange={(e) => {
+                          setTag({ ...tag, color: hexToRgb(e.target.value) });
+                        }}
+                        id="cardCreator_tagColor"
+                        type="color"
+                      />
+                    </div>
                   </form>
                 </div>
-                <TagList className="mt-2" tags={tagsPreview} />
+                <TagList
+                  editable
+                  setCard={setCard}
+                  className="mt-2"
+                  card={card}
+                  tags={card.tags}
+                />
               </div>
               <div className="max-w-96">
                 <header className="font-bold">Preview</header>
@@ -124,3 +150,11 @@ export function CardEditorPortal(props: {
     document.body,
   );
 }
+
+const emptyTag = {
+  label: "",
+  color: { r: 150, g: 150, b: 150 },
+  id: "fake239832423498732",
+  colId: "fake",
+  cardId: "fake",
+};
