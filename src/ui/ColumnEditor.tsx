@@ -55,7 +55,6 @@ export default function ColumnEditor(props: {
 }
 export function ColumnEditorPortal(props: {
   colData?: ColData;
-
   setColData: (arg: ColData) => void;
   setIsRedacting: (arg: boolean) => void;
 }) {
