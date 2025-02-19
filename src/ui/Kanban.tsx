@@ -24,9 +24,10 @@ export default function Kanban(props: KanbanProps) {
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
     "start",
   );
-
+  useEffect(() => {
   store.subscribe(() => {
     setColumns(store.getState().kanban.columns);
+    });
   });
   const dispatch = useAppDispatch();
 
