@@ -49,7 +49,9 @@ export function Card(props: CardProps) {
         isActive &&
         renderActionMenu(columns, cardData, setColumns, setIsRedacting)}
       <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
-        <header className="font-bold">{title}</header>
+        <header className="font-bold overflow-hidden line-clamp-3 break-words max-w-[200px]">
+          {title}
+        </header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
         <TagList tags={tags} />
       </section>
