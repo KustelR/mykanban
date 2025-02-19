@@ -132,8 +132,8 @@ export function swapColumns(
   return newCols;
 }
 /**
- * Gets an array of columns and removes card with provided id in column with specified id
- * @throws If column or card was not found
+ * Gets an array of columns and removes column with provided id
+ * @throws If column was not found
  * @returns {Array<ColData>} - changed array
  */
 export function removeColumn(
@@ -146,5 +146,43 @@ export function removeColumn(
   if (colIdx === -1) throw new Error("No column was found");
   const newColumns = [...columns];
   newColumns.splice(colIdx, 1);
+  return newColumns;
+}
+
+/**
+ * Gets an array of columns and replaces header in it
+ * @throws If column was not found
+ * @returns {Array<ColData>} - changed array
+ */
+export function renameColumn(
+  colId: string,
+  header: string,
+  columns: Array<ColData>,
+): Array<ColData> {
+  const colIdx = columns.findIndex((col) => {
+    return col.id === colId;
+  });
+  if (colIdx === -1) throw new Error("No column was found");
+  const newColumns = [...columns];
+  const newColumn = { ...columns[colIdx], header: header };
+  newColumns.splice(colIdx, 1, newColumn);
+  return newColumns;
+}
+/**
+ * Gets an array of columns and removes column with provided id
+ * @throws If column was not found
+ * @returns {Array<ColData>} - changed array
+ */
+export function replaceColumn(
+  colId: string,
+  colData: ColData,
+  columns: Array<ColData>,
+): Array<ColData> {
+  const colIdx = columns.findIndex((col) => {
+    return col.id === colId;
+  });
+  if (colIdx === -1) throw new Error("No column was found");
+  const newColumns = [...columns];
+  newColumns.splice(colIdx, 1, { ...colData, id: columns[colIdx].id });
   return newColumns;
 }
