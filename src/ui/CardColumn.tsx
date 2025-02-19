@@ -19,6 +19,7 @@ import ArrowRightIcon from "@public/arrow-right.svg";
 import DeleteIcon from "@public/delete.svg";
 import ChangeIcon from "@public/change.svg";
 import { ColumnEditorPortal } from "./ColumnEditor";
+import ActionMenu from "./ActionMenu";
 
 export default function CardColumn(props: {
   className?: string;
@@ -80,76 +81,8 @@ export default function CardColumn(props: {
         <h3 className="text-xl font-semibold bg-cyan-700/30 rounded-md px-2">
           {colData.header}
         </h3>
-        <ul
-          className={`${isActive ? "flex" : "hidden"} absolute top-0 right-0 flex-row"`}
-        >
-          <li>
-            <button
-              className="h-5 w-5 flex flex-wrap content-center justify-center bg-blue-800 hover:bg-blue-900"
-              onClick={() => {
-                const colIdx = columns.findIndex(
-                  (col) => colData.id === col.id,
-                );
-                if (colIdx === -1 || colIdx === 0) return;
-                const col2Id = columns[colIdx - 1].id;
-                setColumns(swapColumns(columns, colData.id, col2Id));
-              }}
-            >
-              <ArrowLeftIcon
-                width={16}
-                height={16}
-                className="*:stroke-white *:fill-transparent"
-              ></ArrowLeftIcon>
-            </button>
-          </li>
-          <li>
-            <button
-              className="h-5 w-5 flex flex-wrap content-center justify-center bg-blue-800 hover:bg-blue-900"
-              onClick={() => {
-                const colIdx = columns.findIndex(
-                  (col) => colData.id === col.id,
-                );
-                if (colIdx === -1 || colIdx === columns.length - 1) return;
-                const col2Id = columns[colIdx + 1].id;
-                setColumns(swapColumns(columns, colData.id, col2Id));
-              }}
-            >
-              <ArrowRightIcon
-                width={16}
-                height={16}
-                className="*:stroke-white *:fill-transparent"
-              ></ArrowRightIcon>
-            </button>
-          </li>{" "}
-          <li>
-            <button
-              className="h-5 w-5 flex flex-wrap content-center justify-center bg-green-800 hover:bg-green-900"
-              onClick={() => {
-                setIsEditing(true);
-              }}
-            >
-              <ChangeIcon
-                width={16}
-                height={16}
-                className="*:stroke-white"
-              ></ChangeIcon>
-            </button>
-          </li>
-          <li>
-            <button
-              className="h-5 w-5 flex flex-wrap content-center justify-center bg-red-600/50 hover:bg-red-700/50"
-              onClick={(e) => {
-                setColumns(removeColumn(colData.id, columns));
-              }}
-            >
-              <DeleteIcon
-                width={16}
-                height={16}
-                className=" *:stroke-white"
-              ></DeleteIcon>
-            </button>
-          </li>
-        </ul>
+        {isActive &&
+          renderActionMenu(columns, setColumns, setIsEditing, colData)}
       </div>
       <ol className="w-full h-full space-y-2">
         {colData.cards.map((card) => {
@@ -217,4 +150,50 @@ export default function CardColumn(props: {
       )}
     </div>,
   );
+}
+
+function renderActionMenu(
+  columns: Array<ColData>,
+  setColumns: (arg: Array<ColData>) => void,
+  setIsEditing: (arg: boolean) => void,
+  colData: ColData,
+) {
+  const options = [
+    {
+      icon: ArrowLeftIcon,
+      className: "bg-blue-800 hover:bg-blue-900",
+      callback: () => {
+        const colIdx = columns.findIndex((col) => colData.id === col.id);
+        if (colIdx === -1 || colIdx === 0) return;
+        const col2Id = columns[colIdx - 1].id;
+        setColumns(swapColumns(columns, colData.id, col2Id));
+      },
+    },
+    {
+      icon: ArrowRightIcon,
+      className: "bg-blue-800 hover:bg-blue-900",
+      callback: () => {
+        const colIdx = columns.findIndex((col) => colData.id === col.id);
+        if (colIdx === -1 || colIdx === columns.length - 1) return;
+        const col2Id = columns[colIdx + 1].id;
+        setColumns(swapColumns(columns, colData.id, col2Id));
+      },
+    },
+    {
+      icon: ChangeIcon,
+      className: "bg-green-800 hover:bg-green-900",
+      callback: () => {
+        setIsEditing(true);
+      },
+    },
+    {
+      icon: DeleteIcon,
+      className: "bg-red-800 hover:bg-red-900",
+      callback: () => {
+        setColumns(removeColumn(colData.id, columns));
+      },
+    },
+  ];
+
+  return <ActionMenu options={options} />;
 }
