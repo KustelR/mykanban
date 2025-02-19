@@ -11,11 +11,14 @@ import {
   pushNewCard,
   removeCard,
   removeColumn,
+  replaceColumn,
   swapColumns,
 } from "@/scripts/kanban";
 import ArrowLeftIcon from "@public/arrow-left.svg";
 import ArrowRightIcon from "@public/arrow-right.svg";
 import DeleteIcon from "@public/delete.svg";
+import ChangeIcon from "@public/change.svg";
+import { ColumnEditorPortal } from "./ColumnEditor";
 
 export default function CardColumn(props: {
   className?: string;
@@ -27,6 +30,7 @@ export default function CardColumn(props: {
   const [isAdding, setIsAdding] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [droppedElement, setDroppedElement] = useState<{
     id: string;
     colId: string;
@@ -116,6 +120,20 @@ export default function CardColumn(props: {
                 className="*:stroke-white *:fill-transparent"
               ></ArrowRightIcon>
             </button>
+          </li>{" "}
+          <li>
+            <button
+              className="h-5 w-5 flex flex-wrap content-center justify-center bg-green-800 hover:bg-green-900"
+              onClick={() => {
+                setIsEditing(true);
+              }}
+            >
+              <ChangeIcon
+                width={16}
+                height={16}
+                className="*:stroke-white"
+              ></ChangeIcon>
+            </button>
           </li>
           <li>
             <button
@@ -185,6 +203,15 @@ export default function CardColumn(props: {
           }}
           setCardData={(data) => {
             setColumns(pushNewCard(data, colData.id, columns));
+          }}
+        />
+      )}
+      {isEditing && (
+        <ColumnEditorPortal
+          setIsRedacting={setIsEditing}
+          colData={colData}
+          setColData={(data) => {
+            setColumns(replaceColumn(colData.id, data, columns));
           }}
         />
       )}
