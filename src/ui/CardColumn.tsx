@@ -64,7 +64,6 @@ export default function CardColumn(props: {
             <li key={card.id}>
               <Card
                 cards={colData.cards}
-                colId={colData.id}
                 columns={columns}
                 setColumns={setColumns}
                 setCards={(newCards) => {
