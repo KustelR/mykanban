@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextInput from "@/shared/TextInput";
 import { Card } from "./Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
+import Tag from "./Tag";
+import TagList from "./TagList";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -14,6 +16,13 @@ export default function CardEditor(props: {
 
   const [card, setCard] = useState(defaultCard);
   const [tag, setTag] = useState("");
+  const [tagsPreview, setTagsPreview] = useState<Array<string>>(
+    card ? card.tags : [],
+  );
+  useEffect(() => {
+    if (!card) return;
+    setTagsPreview([...card.tags, tag].filter(Boolean));
+  }, [card, tag]);
   return (
     <>
       {card && (
@@ -25,7 +34,7 @@ export default function CardEditor(props: {
             }}
           >
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-              <div className="border-r-[1px] px-2 border-neutral-400 dark:border-neutral-700">
+              <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
                 <header className="font-bold">Editor</header>
                 <form action="" onSubmit={(e) => e.preventDefault()}>
                   <TextInput
@@ -46,25 +55,28 @@ export default function CardEditor(props: {
                     label="Description"
                   />
                 </form>
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (tag === "") return;
-                    setCard({ ...card, tags: card.tags.concat(tag) });
-                    setTag("");
-                    if (e.nativeEvent.target) {
-                      (e.nativeEvent.target as HTMLFormElement).reset();
-                    }
-                  }}
-                >
-                  <TextInput
-                    onChange={(e) => {
-                      setTag(e.target.value);
+                <div>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (tag === "") return;
+                      setCard({ ...card, tags: card.tags.concat(tag) });
+                      setTag("");
+                      if (e.nativeEvent.target) {
+                        (e.nativeEvent.target as HTMLFormElement).reset();
+                      }
                     }}
-                    id="cardCreator_addTag"
-                    label="Add tag"
-                  />
-                </form>
+                  >
+                    <TextInput
+                      onChange={(e) => {
+                        setTag(e.target.value);
+                      }}
+                      id="cardCreator_addTag"
+                      label="Add tag"
+                    />
+                  </form>
+                </div>
+                <TagList className="mt-2" tags={tagsPreview} />
               </div>
               <div className="max-w-96">
                 <header className="font-bold">Preview</header>
@@ -72,7 +84,7 @@ export default function CardEditor(props: {
                   columns={[]}
                   setColumns={() => {}}
                   blocked
-                  cardData={card}
+                  cardData={{ ...card, tags: tagsPreview }}
                 ></Card>
               </div>
             </div>
