@@ -59,7 +59,6 @@ export function addColumn(
   column: ColData,
   options?: { place?: "start" | "end" },
 ): Array<ColData> {
-  const newColumns = [...columns];
   if (!options) {
     return [...columns, column];
   } else {
@@ -71,4 +70,51 @@ export function addColumn(
       return [...columns];
     }
   }
+}
+
+export function moveCard(
+  columns: Array<ColData>,
+  colId: string,
+  cardId: string,
+  amount: number,
+): Array<ColData> {
+  const colIdx = columns.findIndex((col) => col.id === colId);
+  if (colIdx === -1) throw new Error("Column with moving card was not found");
+  const cardIdx = columns[colIdx].cards.findIndex((card) => card.id === cardId);
+  if (cardIdx === -1) throw new Error("Moving card was not found");
+  const newCards = [...columns[colIdx].cards];
+
+  const newIdx = Math.max(0, Math.min(cardIdx - amount, newCards.length - 1));
+  if (newIdx === cardIdx) return columns;
+  newCards.splice(newIdx, 1, columns[colIdx].cards[cardIdx]);
+  newCards.splice(cardIdx, 1, columns[colIdx].cards[newIdx]);
+  const newCol = { ...columns[colIdx], cards: newCards };
+
+  const newCols = [...columns];
+  newCols.splice(colIdx, 1, newCol);
+  return newCols;
+}
+export function swapCards(
+  columns: Array<ColData>,
+  colId: string,
+  cardId: string,
+  card2Id: string,
+): Array<ColData> {
+  const colIdx = columns.findIndex((col) => col.id === colId);
+  if (colIdx === -1) throw new Error("Column with moving card was not found");
+  const cardIdx = columns[colIdx].cards.findIndex((card) => card.id === cardId);
+  const card2Idx = columns[colIdx].cards.findIndex(
+    (card) => card.id === card2Id,
+  );
+  if (cardIdx === -1 || card2Idx === -1)
+    throw new Error("Moving card was not found");
+  const newCards = [...columns[colIdx].cards];
+
+  newCards.splice(cardIdx, 1, columns[colIdx].cards[card2Idx]);
+  newCards.splice(card2Idx, 1, columns[colIdx].cards[cardIdx]);
+  const newCol = { ...columns[colIdx], cards: newCards };
+
+  const newCols = [...columns];
+  newCols.splice(colIdx, 1, newCol);
+  return newCols;
 }
