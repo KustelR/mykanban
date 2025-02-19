@@ -25,8 +25,8 @@ export default function Kanban(props: KanbanProps) {
     "start",
   );
   useEffect(() => {
-  store.subscribe(() => {
-    setColumns(store.getState().kanban.columns);
+    store.subscribe(() => {
+      setColumns(store.getState().kanban.columns);
     });
   });
   const dispatch = useAppDispatch();
@@ -63,7 +63,7 @@ export default function Kanban(props: KanbanProps) {
               >
                 <li>
                   <button
-                    className="hover:bg-black/10 hover:dark:bg-white/10 w-fit h-full [writing-mode:vertical-lr]"
+                    className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
                     onClick={(e) => {
                       setAddingDirection("start");
                       setIsAdding(true);
@@ -93,7 +93,7 @@ export default function Kanban(props: KanbanProps) {
                 })}
                 <li>
                   <button
-                    className="hover:bg-black/10 hover:dark:bg-white/10 w-fit h-full [writing-mode:vertical-lr]"
+                    className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
                     onClick={(e) => {
                       setIsAdding(true);
                       setAddingDirection("end");
@@ -112,7 +112,6 @@ export default function Kanban(props: KanbanProps) {
           <ColumnEditorPortal
             setIsRedacting={setIsAdding}
             setColData={(col) => {
-              console.log("runs");
               setColumns(addColumn(columns, col, { place: addingDirection }));
             }}
           />
