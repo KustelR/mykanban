@@ -23,7 +23,7 @@ type CardProps = {
 
 export function Card(props: CardProps) {
   const { cardData, blocked, cards, setCards, columns, setColumns } = props;
-  const { title, description, tags } = cardData;
+  const { name, description, tags } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
@@ -50,7 +50,7 @@ export function Card(props: CardProps) {
         renderActionMenu(columns, cardData, setColumns, setIsRedacting)}
       <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
         <header className="font-bold overflow-hidden line-clamp-3 break-words max-w-[200px]">
-          {title}
+          {name}
         </header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
         <TagList tags={tags} />

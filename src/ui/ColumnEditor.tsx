@@ -14,7 +14,7 @@ export default function ColumnEditor(props: {
   let { defaultCol, setColData } = props;
 
   const [col, setCol] = useState(
-    defaultCol ? defaultCol : { header: "", id: "fake", cards: [] },
+    defaultCol ? defaultCol : { name: "", id: "fake", cards: [] },
   );
   const [title, setTitle] = useState("");
   return (
@@ -40,7 +40,7 @@ export default function ColumnEditor(props: {
               >
                 <TextInput
                   onChange={(e) => {
-                    setCol({ ...col, header: e.target.value });
+                    setCol({ ...col, name: e.target.value });
                   }}
                   id="colCreator_setTitle"
                   label="Title"

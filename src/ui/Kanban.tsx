@@ -13,12 +13,13 @@ import { ColumnEditorPortal } from "./ColumnEditor";
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
   className?: string;
-  label: string;
+  defaultLabel: string;
 };
 
 export default function Kanban(props: KanbanProps) {
-  const { defaultColumns, className, label } = props;
+  const { defaultColumns, className, defaultLabel } = props;
   const [columns, setColumns] = useState(defaultColumns ? defaultColumns : []);
+  const [label, setLabel] = useState(defaultLabel);
   const store = useAppStore();
   const [isAdding, setIsAdding] = useState(false);
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
@@ -27,9 +28,13 @@ export default function Kanban(props: KanbanProps) {
   useEffect(() => {
     store.subscribe(() => {
       setColumns(store.getState().kanban.columns);
+      setLabel(store.getState().kanban.name);
     });
-  });
+  }, []);
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(setKanbanAction({ name: label, columns: columns }));
+  }, [columns, label]);
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -81,11 +86,7 @@ export default function Kanban(props: KanbanProps) {
                       <CardColumn
                         className="w-full"
                         columns={columns}
-                        setColumns={(cols) => {
-                          dispatch(
-                            setKanbanAction({ label: label, columns: cols }),
-                          );
-                        }}
+                        setColumns={setColumns}
                         colData={col}
                       />
                     </li>

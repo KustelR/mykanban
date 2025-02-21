@@ -51,6 +51,7 @@ export default function CardColumn(props: {
 
   useEffect(() => {
     if (!isDropped) return;
+    console.log("sfsdf");
     if (!droppedElement) return;
     const dropped = droppedElement as CardData;
     if (dropped.colId) {
@@ -63,7 +64,7 @@ export default function CardColumn(props: {
   }, [isDropped]);
 
   useEffect(() => {
-    if (el && "title" in (el as any))
+    if (el && "name" in (el as any))
       setDroppedElement(el as { id: string; colId: string });
   }, [el]);
 
@@ -79,7 +80,7 @@ export default function CardColumn(props: {
         }}
       >
         <h3 className="text-xl font-semibold bg-cyan-700/30 rounded-md px-2">
-          {colData.header}
+          {colData.name}
         </h3>
         {isActive &&
           renderActionMenu(columns, setColumns, setIsEditing, colData)}
@@ -128,7 +129,7 @@ export default function CardColumn(props: {
           isRedacting={isAdding}
           setIsRedacting={setIsAdding}
           cardData={{
-            title: "",
+            name: "",
             description: "",
             tags: [],
             id: nanoid(),

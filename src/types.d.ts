@@ -1,14 +1,14 @@
 declare global {
   type validator = (input: string) => [boolean, string];
   interface CardData {
-    title: string;
+    name: string;
     description: string;
     tags: Array<TagData>;
     id: string;
     colId: string;
   }
   interface ColData {
-    header: string;
+    name: string;
     id: string;
     cards: Array<CardData>;
   }
@@ -17,14 +17,13 @@ declare global {
   }
   type KanbanState = {
     columns: Array<ColData & Identified>;
-    label: string;
+    name: string;
   };
   type TagData = {
-    label: string;
-    color: { r: number; g: number; b: number };
+    name: string;
+    color: string;
     id: string;
     cardId: string;
-    colId: string;
   };
 }
 export {};

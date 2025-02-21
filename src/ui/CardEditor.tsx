@@ -23,7 +23,7 @@ export default function CardEditor(props: {
   );
   useEffect(() => {
     if (!card) return;
-    setTagsPreview([...card.tags, tag].filter((t) => t.label !== ""));
+    setTagsPreview([...card.tags, tag].filter((t) => t.name !== ""));
   }, [card, tag]);
   return (
     <>
@@ -40,9 +40,9 @@ export default function CardEditor(props: {
                 <header className="font-bold">Editor</header>
                 <form action="" onSubmit={(e) => e.preventDefault()}>
                   <TextInput
-                    defaultValue={card.title}
+                    defaultValue={card.name}
                     onChange={(e) => {
-                      setCard({ ...card, title: e.target.value });
+                      setCard({ ...card, name: e.target.value });
                     }}
                     id="cardCreator_name"
                     label="Name"
@@ -61,14 +61,13 @@ export default function CardEditor(props: {
                   <form
                     onSubmit={(e) => {
                       e.preventDefault();
-                      if (tag.label === "") return;
+                      if (tag.name === "") return;
                       setCard({
                         ...card,
                         tags: card.tags.concat({
                           ...tag,
                           id: nanoid(),
                           cardId: card.id,
-                          colId: card.colId,
                         }),
                       });
                       setTag(emptyTag);
@@ -79,7 +78,7 @@ export default function CardEditor(props: {
                   >
                     <TextInput
                       onChange={(e) => {
-                        setTag({ ...tag, label: e.target.value });
+                        setTag({ ...tag, name: e.target.value });
                       }}
                       id="cardCreator_addTag"
                       label="Add tag"
@@ -88,7 +87,7 @@ export default function CardEditor(props: {
                       <label htmlFor="cardCreator_tagColor">Tag color</label>
                       <input
                         onChange={(e) => {
-                          setTag({ ...tag, color: hexToRgb(e.target.value) });
+                          setTag({ ...tag, color: e.target.value });
                         }}
                         id="cardCreator_tagColor"
                         type="color"
@@ -152,8 +151,8 @@ export function CardEditorPortal(props: {
 }
 
 const emptyTag = {
-  label: "",
-  color: { r: 150, g: 150, b: 150 },
+  name: "",
+  color: "#aaaaaa",
   id: "fake239832423498732",
   colId: "fake",
   cardId: "fake",

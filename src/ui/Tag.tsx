@@ -30,7 +30,7 @@ export default function Tag(props: {
     >
       {isActive && card && setCard && renderActionMenu(data, card, setCard)}
       <div className="truncate overflow-hidden text-nowrap text-ellipsis">
-        {data.label}
+        {data.name}
       </div>
     </div>
   );
