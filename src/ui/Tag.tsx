@@ -6,6 +6,7 @@ import ChangeIcon from "@public/arrow-right.svg";
 import DeleteIcon from "@public/delete.svg";
 import { removeTag, swapTags } from "@/scripts/kanban";
 import ActionMenu from "./ActionMenu";
+import { hexToRgb } from "@/shared/colors";
 
 export default function Tag(props: {
   data: TagData;
@@ -14,6 +15,7 @@ export default function Tag(props: {
 }) {
   const { data, card, setCard } = props;
   const [isActive, setIsActive] = useState(false);
+  const parsedColor = hexToRgb(data.color);
   return (
     <div
       onMouseEnter={() => {
@@ -23,10 +25,10 @@ export default function Tag(props: {
         setIsActive(false);
       }}
       style={{
-        backgroundColor: `rgba(${data.color.r} ${data.color.g} ${data.color.b} / 40%)`,
-        borderColor: `rgb(${data.color.r + 40} ${data.color.g + 40} ${data.color.b + 40})`,
+        backgroundColor: `rgba(${parsedColor.r}, ${parsedColor.g}, ${parsedColor.b}, .4)`,
+        borderColor: data.color,
       }}
-      className="relative max-w-[200px] rounded-md mr-1 mb-1 px-1 border-[1px]"
+      className={`relative max-w-[200px] rounded-md mr-1 mb-1 px-1 border-[1px]`}
     >
       {isActive && card && setCard && renderActionMenu(data, card, setCard)}
       <div className="truncate overflow-hidden text-nowrap text-ellipsis">
