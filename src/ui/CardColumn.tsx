@@ -51,7 +51,6 @@ export default function CardColumn(props: {
 
   useEffect(() => {
     if (!isDropped) return;
-    console.log("sfsdf");
     if (!droppedElement) return;
     const dropped = droppedElement as CardData;
     if (dropped.colId) {
