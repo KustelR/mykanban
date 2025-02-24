@@ -3,6 +3,7 @@ import { createAction, createSlice, nanoid } from "@reduxjs/toolkit";
 const initialState: KanbanState = {
   columns: [],
   name: "Unknown",
+  tags: [],
 };
 
 const addColumnAction = createAction<ColData>("kanban/addColumn");
@@ -21,6 +22,7 @@ export const kanbanSlice = createSlice({
       const payload = action.payload as KanbanState;
       state.columns = payload.columns;
       state.name = payload.name;
+      state.tags = payload.tags;
     },
     addColumn: (state, action) => {
       const payload = action.payload as ColData;

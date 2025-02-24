@@ -3,7 +3,14 @@ declare global {
   interface CardData {
     name: string;
     description: string;
-    tags: Array<TagData>;
+    tagIds: Array<string>;
+    id: string;
+    colId: string;
+  }
+  interface CardDataFromBackend {
+    name: string;
+    description: string;
+    tagIds: Array<string> | undefined;
     id: string;
     colId: string;
   }
@@ -12,12 +19,18 @@ declare global {
     id: string;
     cards: Array<CardData>;
   }
+  interface ColDataFromBackend {
+    name: string;
+    id: string;
+    cards: Array<CardData> | null;
+  }
   interface Identified {
     id: string;
   }
   type KanbanState = {
     columns: Array<ColData & Identified>;
     name: string;
+    tags: Array<TagData>;
   };
   type TagData = {
     name: string;

@@ -1,30 +1,31 @@
 import { nanoid } from "@reduxjs/toolkit";
+import axios from "axios";
 
 /**
  * Gets an array of columns and pushes card to column with specified id
  * @throws If column was not found
- * @returns {Array<ColData>} - changed array
  */
-export function pushNewCard(
+export function pushCard(
   card: CardData,
   colId: string,
   columns: Array<ColData>,
-): Array<ColData> {
-  const newColumns = [...columns];
-  const changingColumnIdx = columns.findIndex((col) => {
-    return colId === col.id;
-  });
-  if (changingColumnIdx === -1) throw new Error("No column was found");
-  const newColumnCards = [...newColumns[changingColumnIdx].cards];
-  const newCard = { ...card, ...{ colId: colId } };
-  newColumnCards.push(newCard);
-  newColumns[changingColumnIdx] = {
-    ...newColumns[changingColumnIdx],
-    ...{ cards: newColumnCards },
-  };
-  return newColumns;
+) {
+  const host = process.env.NEXT_PUBLIC_PROJECT_HOST;
+  if (!host) {
+    console.log("post failed");
+    return;
+  }
+  axios.post(`${host}/${colId}`, { type: "post_card", card: card });
 }
 
+export function updateCard(id: string, card: CardData) {
+  const host = process.env.NEXT_PUBLIC_PROJECT_HOST;
+  if (!host) {
+    console.log("post failed");
+    return;
+  }
+  axios.put(`${host}/${id}`, { type: "update_card", card: card });
+}
 /**
  * Gets an array of columns and removes card with provided id in column with specified id
  * @throws If column or card was not found
@@ -54,22 +55,21 @@ export function removeCard(
 /**
  * Creates new empty column. Returns changed array
  */
-export function addColumn(
-  columns: Array<ColData>,
+export async function addColumn(
+  projectId: string,
   column: ColData,
   options?: { place?: "start" | "end" },
-): Array<ColData> {
-  if (!options) {
-    return [...columns, column];
-  } else {
-    if (options.place === "start") {
-      return [column, ...columns];
-    } else if (options.place === "end") {
-      return [...columns, column];
-    } else {
-      return [...columns];
-    }
+) {
+  const host = process.env.NEXT_PUBLIC_PROJECT_HOST;
+  if (!host) {
+    console.log("post failed");
+    return;
   }
+
+  await axios.post(`${host}/${projectId}`, {
+    type: "post_column",
+    column: column,
+  });
 }
 
 export function moveCard(
@@ -194,7 +194,7 @@ export function replaceColumn(
 export function removeTag(cardData: CardData, tagId: string): CardData {
   return {
     ...cardData,
-    tags: cardData.tags.filter((tag) => tag.id !== tagId),
+    tagIds: cardData.tagIds.filter((tag) => tag !== tagId),
   };
 }
 
@@ -208,10 +208,10 @@ export function swapTags(
   tagId: string,
   tag2Id: string,
 ): CardData {
-  const newTags = [...cardData.tags];
-  const tagIdx = cardData.tags.findIndex((tag) => tagId === tag.id);
-  const tag2Idx = cardData.tags.findIndex((tag) => tag2Id === tag.id);
-  newTags.splice(tagIdx, 1, cardData.tags[tag2Idx]);
-  newTags.splice(tag2Idx, 1, cardData.tags[tagIdx]);
-  return { ...cardData, tags: newTags };
+  const newTags = [...cardData.tagIds];
+  const tagIdx = cardData.tagIds.findIndex((tag) => tag === tagId);
+  const tag2Idx = cardData.tagIds.findIndex((tag) => tag2Id === tag);
+  newTags.splice(tagIdx, 1, cardData.tagIds[tag2Idx]);
+  newTags.splice(tag2Idx, 1, cardData.tagIds[tagIdx]);
+  return { ...cardData, tagIds: newTags };
 }

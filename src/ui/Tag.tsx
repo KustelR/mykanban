@@ -43,7 +43,8 @@ function renderActionMenu(
   cardData: CardData,
   setCard: (arg: CardData) => void,
 ) {
-  const options = [
+  const options: any = [
+    /*
     {
       icon: ArrowLeftIcon,
       className: "bg-blue-800 hover:bg-blue-900",
@@ -71,6 +72,7 @@ function renderActionMenu(
         setCard(removeTag(cardData, tagData.id));
       },
     },
+    */
   ];
 
   return <ActionMenu options={options} />;

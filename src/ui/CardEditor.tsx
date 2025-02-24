@@ -18,12 +18,12 @@ export default function CardEditor(props: {
 
   const [card, setCard] = useState(defaultCard);
   const [tag, setTag] = useState<TagData>(emptyTag);
-  const [tagsPreview, setTagsPreview] = useState<Array<TagData>>(
-    card ? card.tags : [],
+  const [tagsPreview, setTagsPreview] = useState<Array<string>>(
+    card ? card.tagIds : [],
   );
   useEffect(() => {
     if (!card) return;
-    setTagsPreview([...card.tags, tag].filter((t) => t.name !== ""));
+    setTagsPreview([...card.tagIds, tag.id]);
   }, [card, tag]);
   return (
     <>
@@ -64,11 +64,7 @@ export default function CardEditor(props: {
                       if (tag.name === "") return;
                       setCard({
                         ...card,
-                        tags: card.tags.concat({
-                          ...tag,
-                          id: nanoid(),
-                          cardId: card.id,
-                        }),
+                        tagIds: card.tagIds.concat(nanoid()),
                       });
                       setTag(emptyTag);
                       if (e.nativeEvent.target) {
@@ -100,7 +96,7 @@ export default function CardEditor(props: {
                   setCard={setCard}
                   className="mt-2"
                   card={card}
-                  tags={card.tags}
+                  tagIds={card.tagIds}
                 />
               </div>
               <div className="max-w-96">
@@ -109,7 +105,7 @@ export default function CardEditor(props: {
                   columns={[]}
                   setColumns={() => {}}
                   blocked
-                  cardData={{ ...card, tags: tagsPreview }}
+                  cardData={{ ...card, tagIds: tagsPreview }}
                 ></Card>
               </div>
             </div>

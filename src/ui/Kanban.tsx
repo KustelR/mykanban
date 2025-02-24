@@ -33,7 +33,7 @@ export default function Kanban(props: KanbanProps) {
   }, []);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(setKanbanAction({ name: label, columns: columns }));
+    dispatch(setKanbanAction({ name: label, columns: columns, tags: [] }));
   }, [columns, label]);
 
   return (
@@ -113,7 +113,7 @@ export default function Kanban(props: KanbanProps) {
           <ColumnEditorPortal
             setIsRedacting={setIsAdding}
             setColData={(col) => {
-              setColumns(addColumn(columns, col, { place: addingDirection }));
+              addColumn("12adf2823a", col, { place: addingDirection });
             }}
           />
         )}
