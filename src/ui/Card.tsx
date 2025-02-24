@@ -23,7 +23,7 @@ type CardProps = {
 
 export function Card(props: CardProps) {
   const { cardData, blocked, cards, setCards, columns, setColumns } = props;
-  const { name, description, tags } = cardData;
+  const { name, description, tagIds } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
@@ -53,7 +53,7 @@ export function Card(props: CardProps) {
           {name}
         </header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
-        <TagList tags={tags} />
+        <TagList tagIds={tagIds} />
       </section>
       {isRedacting && (
         <CardEditorPortal
@@ -85,7 +85,8 @@ function renderActionMenu(
   setColumns: (arg: Array<ColData>) => void,
   setIsEditing: (arg: boolean) => void,
 ) {
-  const options = [
+  const options: Array<any> = [
+    /*
     {
       icon: ArrowUpIcon,
       className: "bg-blue-800 hover:bg-blue-900",
@@ -114,6 +115,7 @@ function renderActionMenu(
         setColumns(removeCard(cardData.id, cardData.colId, columns));
       },
     },
+    */
   ];
 
   return <ActionMenu options={options} />;

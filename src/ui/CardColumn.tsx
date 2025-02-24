@@ -8,11 +8,12 @@ import PlusIcon from "@public/plus.svg";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "@/Constants";
 import {
-  pushNewCard,
+  pushCard,
   removeCard,
   removeColumn,
   replaceColumn,
   swapColumns,
+  updateCard,
 } from "@/scripts/kanban";
 import ArrowLeftIcon from "@public/arrow-left.svg";
 import ArrowRightIcon from "@public/arrow-right.svg";
@@ -53,12 +54,7 @@ export default function CardColumn(props: {
     if (!isDropped) return;
     if (!droppedElement) return;
     const dropped = droppedElement as CardData;
-    if (dropped.colId) {
-      const newCols = removeCard(dropped.id, dropped.colId, columns);
-      setColumns(pushNewCard(dropped, colData.id, newCols));
-    } else {
-      setColumns(pushNewCard(dropped, colData.id, columns));
-    }
+    updateCard(dropped.id, { ...dropped, colId: colData.id });
     setIsDropped(false);
   }, [isDropped]);
 
@@ -130,12 +126,12 @@ export default function CardColumn(props: {
           cardData={{
             name: "",
             description: "",
-            tags: [],
+            tagIds: [],
             id: nanoid(),
             colId: colData.id,
           }}
           setCardData={(data) => {
-            setColumns(pushNewCard(data, colData.id, columns));
+            pushCard(data, colData.id, columns);
           }}
         />
       )}
