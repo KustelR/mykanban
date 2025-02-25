@@ -58,7 +58,7 @@ export function removeCard(
 export async function addColumn(
   projectId: string,
   column: ColData,
-  options?: { place?: "start" | "end" },
+  position: number = -1,
 ) {
   const host = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!host) {
@@ -69,6 +69,7 @@ export async function addColumn(
   await axios.post(`${host}/${projectId}`, {
     type: "post_column",
     column: column,
+    position: position,
   });
 }
 

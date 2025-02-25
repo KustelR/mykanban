@@ -91,13 +91,6 @@ export default function CardEditor(props: {
                     </div>
                   </form>
                 </div>
-                <TagList
-                  editable
-                  setCard={setCard}
-                  className="mt-2"
-                  card={card}
-                  tagIds={card.tagIds}
-                />
               </div>
               <div className="max-w-96">
                 <header className="font-bold">Preview</header>

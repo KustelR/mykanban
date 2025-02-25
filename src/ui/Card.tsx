@@ -11,6 +11,7 @@ import { moveCard, removeCard } from "@/scripts/kanban";
 import Tag from "@/ui/Tag";
 import TagList from "./TagList";
 import ActionMenu from "./ActionMenu";
+import { useAppStore } from "@/lib/hooks";
 
 type CardProps = {
   cardData: CardData;
@@ -26,6 +27,15 @@ export function Card(props: CardProps) {
   const { name, description, tagIds } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [tags, setTags] = useState<Array<TagData>>([]);
+
+  const store = useAppStore();
+  useEffect(() => {
+    const myTags = store.getState().kanban.tags.filter((tag) => {
+      return cardData.tagIds.includes(tag.id);
+    });
+    setTags(myTags);
+  }, []);
 
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: ItemTypes.CARD,
@@ -86,7 +96,6 @@ function renderActionMenu(
   setIsEditing: (arg: boolean) => void,
 ) {
   const options: Array<any> = [
-    /*
     {
       icon: ArrowUpIcon,
       className: "bg-blue-800 hover:bg-blue-900",
@@ -115,7 +124,6 @@ function renderActionMenu(
         setColumns(removeCard(cardData.id, cardData.colId, columns));
       },
     },
-    */
   ];
 
   return <ActionMenu options={options} />;

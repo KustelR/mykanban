@@ -44,7 +44,12 @@ export default function Project() {
                 }
                 return card as CardData;
               });
-              columns.push({ name: col.name, id: col.id, cards: cards });
+              columns.push({
+                name: col.name,
+                id: col.id,
+                cards: cards,
+                order: col.order,
+              });
             });
             dispatch(setKanbanAction({ name, columns, tags }));
           }}
