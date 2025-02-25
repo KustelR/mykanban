@@ -53,7 +53,7 @@ export function Card(props: CardProps) {
           {name}
         </header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
-        <TagList tagIds={tagIds} />
+        <TagList tags={tags} />
       </section>
       {isRedacting && (
         <CardEditorPortal

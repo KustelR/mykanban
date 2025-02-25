@@ -16,12 +16,14 @@ declare global {
   }
   interface ColData {
     name: string;
+    order: number;
     id: string;
     cards: Array<CardData>;
   }
   interface ColDataFromBackend {
     name: string;
     id: string;
+    order: number;
     cards: Array<CardData> | null;
   }
   interface Identified {

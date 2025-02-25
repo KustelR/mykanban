@@ -20,20 +20,20 @@ export default function Kanban(props: KanbanProps) {
   const { defaultColumns, className, defaultLabel } = props;
   const [columns, setColumns] = useState(defaultColumns ? defaultColumns : []);
   const [label, setLabel] = useState(defaultLabel);
+  const [tags, setTags] = useState<Array<TagData>>([]);
   const store = useAppStore();
   const [isAdding, setIsAdding] = useState(false);
-  const [addingDirection, setAddingDirection] = useState<"start" | "end">(
-    "start",
-  );
+  const [addingPosition, setAddingPosition] = useState<number>(0);
   useEffect(() => {
     store.subscribe(() => {
       setColumns(store.getState().kanban.columns);
       setLabel(store.getState().kanban.name);
+      setTags(store.getState().kanban.tags);
     });
   }, []);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(setKanbanAction({ name: label, columns: columns, tags: [] }));
+    dispatch(setKanbanAction({ name: label, columns: columns, tags: tags }));
   }, [columns, label]);
 
   return (
@@ -48,7 +48,7 @@ export default function Kanban(props: KanbanProps) {
               <button
                 className="items-center justify-items-center"
                 onClick={(e) => {
-                  setAddingDirection("end");
+                  setAddingPosition(-1);
                   setIsAdding(true);
                 }}
               >
@@ -70,34 +70,36 @@ export default function Kanban(props: KanbanProps) {
                   <button
                     className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
                     onClick={(e) => {
-                      setAddingDirection("start");
+                      setAddingPosition(1);
                       setIsAdding(true);
                     }}
                   >
                     NEW COLUMN
                   </button>
                 </li>
-                {columns.map((col) => {
-                  return (
-                    <li
-                      className="col-span-1 min-w-40 basis-0 grow"
-                      key={col.id}
-                    >
-                      <CardColumn
-                        className="w-full"
-                        columns={columns}
-                        setColumns={setColumns}
-                        colData={col}
-                      />
-                    </li>
-                  );
-                })}
+                {[...columns]
+                  .sort((col1, col2) => col1.order - col2.order)
+                  .map((col) => {
+                    return (
+                      <li
+                        className="col-span-1 min-w-40 basis-0 grow"
+                        key={col.id}
+                      >
+                        <CardColumn
+                          className="w-full"
+                          columns={columns}
+                          setColumns={setColumns}
+                          colData={col}
+                        />
+                      </li>
+                    );
+                  })}
                 <li>
                   <button
                     className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
                     onClick={(e) => {
                       setIsAdding(true);
-                      setAddingDirection("end");
+                      setAddingPosition(-1);
                     }}
                   >
                     NEW COLUMN
@@ -113,7 +115,7 @@ export default function Kanban(props: KanbanProps) {
           <ColumnEditorPortal
             setIsRedacting={setIsAdding}
             setColData={(col) => {
-              addColumn("12adf2823a", col, { place: addingDirection });
+              addColumn("12adf2823a", col, addingPosition);
             }}
           />
         )}

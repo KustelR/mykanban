@@ -3,18 +3,16 @@ import Tag from "./Tag";
 import { useAppStore } from "@/lib/hooks";
 
 export default function TagList(props: {
-  tagIds: Array<string>;
+  tags: Array<TagData>;
   card?: CardData;
   setCard?: (card: CardData) => void;
   className?: string;
   editable?: boolean;
 }) {
-  const store = useAppStore();
-  const { tagIds, className, card, setCard } = props;
+  const { tags, className, card, setCard } = props;
   return (
     <ul className={`${className} flex flex-wrap`}>
-      {tagIds.map((tagId, idx) => {
-        const tag = store.getState().kanban.tags.find((t) => t.id === tagId);
+      {tags.map((tag, idx) => {
         if (!tag) return;
         if (idx > 9) return;
         return (
