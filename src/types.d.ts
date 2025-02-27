@@ -5,11 +5,13 @@ declare global {
     description: string;
     tagIds: Array<string>;
     id: string;
+    order: number;
     colId: string;
   }
   interface ColData {
     name: string;
     id: string;
+    order: number;
     cards: Array<CardData>;
   }
   interface Identified {

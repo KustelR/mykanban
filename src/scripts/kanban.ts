@@ -169,7 +169,7 @@ export function renameColumn(
   return newColumns;
 }
 /**
- * Gets an array of columns and removes column with provided id
+ * Gets an array of columns and replaces column with provided id
  * @throws If column was not found
  * @returns {Array<ColData>} - changed array
  */
@@ -191,27 +191,16 @@ export function replaceColumn(
  * @throws If column was not found
  * @returns  changed card
  */
-export function removeTag(cardData: CardData, tagId: string): CardData {
-  return {
-    ...cardData,
-    tags: cardData.tags.filter((tag) => tag.id !== tagId),
-  };
-}
-
-/**
- * Gets an id of tag and returns copy of card without it
- * @throws If column was not found
- * @returns  changed card
- */
-export function swapTags(
+export function removeTag(
+  kanban: KanbanState,
   cardData: CardData,
   tagId: string,
-  tag2Id: string,
 ): CardData {
-  const newTags = [...cardData.tags];
-  const tagIdx = cardData.tags.findIndex((tag) => tagId === tag.id);
-  const tag2Idx = cardData.tags.findIndex((tag) => tag2Id === tag.id);
-  newTags.splice(tagIdx, 1, cardData.tags[tag2Idx]);
-  newTags.splice(tag2Idx, 1, cardData.tags[tagIdx]);
-  return { ...cardData, tags: newTags };
+  kanban.tags = kanban.tags.filter((tag) => {
+    tag.id !== tagId;
+  });
+  return {
+    ...cardData,
+    tagIds: cardData.tagIds.filter((tag) => tag !== tagId),
+  };
 }

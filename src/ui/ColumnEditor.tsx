@@ -9,9 +9,9 @@ import { nanoid } from "@reduxjs/toolkit";
 
 export default function ColumnEditor(props: {
   defaultCol?: ColData;
-  setColData: (arg: ColData) => void;
+  addColumn: (name: string, id: string, cards: Array<CardData>) => void;
 }) {
-  let { defaultCol, setColData } = props;
+  let { defaultCol, addColumn } = props;
 
   const [col, setCol] = useState(
     defaultCol ? defaultCol : { name: "", id: "fake", cards: [] },
@@ -32,7 +32,7 @@ export default function ColumnEditor(props: {
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
-                  setColData({ ...col, id: nanoid() });
+                  addColumn(col.name, nanoid(), []);
                   if (e.nativeEvent.target) {
                     (e.nativeEvent.target as HTMLFormElement).reset();
                   }
@@ -55,10 +55,10 @@ export default function ColumnEditor(props: {
 }
 export function ColumnEditorPortal(props: {
   colData?: ColData;
-  setColData: (arg: ColData) => void;
+  addColumn: (name: string, id: string, cards: Array<CardData>) => void;
   setIsRedacting: (arg: boolean) => void;
 }) {
-  const { colData, setColData, setIsRedacting } = props;
+  const { colData, addColumn, setIsRedacting } = props;
   return createPortal(
     <div
       onClick={(e) => {
@@ -67,7 +67,7 @@ export function ColumnEditorPortal(props: {
       }}
       className="absolute left-0 top-0 w-full h-full"
     >
-      <ColumnEditor defaultCol={colData} setColData={setColData}></ColumnEditor>
+      <ColumnEditor defaultCol={colData} addColumn={addColumn}></ColumnEditor>
     </div>,
     document.body,
   );

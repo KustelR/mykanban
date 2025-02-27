@@ -20,6 +20,7 @@ export default function Kanban(props: KanbanProps) {
   const { defaultColumns, className, defaultLabel } = props;
   const [columns, setColumns] = useState(defaultColumns ? defaultColumns : []);
   const [label, setLabel] = useState(defaultLabel);
+  const [tags, setTags] = useState<Array<TagData>>([]);
   const store = useAppStore();
   const [isAdding, setIsAdding] = useState(false);
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
@@ -29,11 +30,12 @@ export default function Kanban(props: KanbanProps) {
     store.subscribe(() => {
       setColumns(store.getState().kanban.columns);
       setLabel(store.getState().kanban.name);
+      setTags(store.getState().kanban.tags);
     });
   }, []);
   const dispatch = useAppDispatch();
   useEffect(() => {
-    dispatch(setKanbanAction({ name: label, columns: columns }));
+    dispatch(setKanbanAction({ name: label, columns: columns, tags }));
   }, [columns, label]);
 
   return (
@@ -112,8 +114,14 @@ export default function Kanban(props: KanbanProps) {
         {isAdding && (
           <ColumnEditorPortal
             setIsRedacting={setIsAdding}
-            setColData={(col) => {
-              setColumns(addColumn(columns, col, { place: addingDirection }));
+            addColumn={(name, id, cards) => {
+              setColumns(
+                addColumn(
+                  columns,
+                  { name: name, id: id, cards: [], order: columns.length },
+                  { place: addingDirection },
+                ),
+              );
             }}
           />
         )}

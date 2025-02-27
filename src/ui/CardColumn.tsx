@@ -85,29 +85,34 @@ export default function CardColumn(props: {
           renderActionMenu(columns, setColumns, setIsEditing, colData)}
       </div>
       <ol className="w-full h-full space-y-2">
-        {colData.cards.map((card) => {
-          return (
-            <li key={card.id}>
-              <Card
-                cards={colData.cards}
-                columns={columns}
-                setColumns={setColumns}
-                setCards={(newCards) => {
-                  const colIdx = columns.findIndex((col) => {
-                    return col.id === colData.id;
-                  });
-                  const newColumns: Array<ColData> = [...columns];
-                  newColumns.splice(colIdx, 1, {
-                    ...colData,
-                    ...{ cards: newCards },
-                  });
-                  setColumns(newColumns);
-                }}
-                cardData={card}
-              />
-            </li>
-          );
-        })}
+        {[...colData.cards]
+          .sort((card1, card2) => {
+            console.log(colData.cards);
+            return card1.order - card2.order;
+          })
+          .map((card) => {
+            return (
+              <li key={card.id}>
+                <Card
+                  cards={colData.cards}
+                  columns={columns}
+                  setColumns={setColumns}
+                  setCards={(newCards) => {
+                    const colIdx = columns.findIndex((col) => {
+                      return col.id === colData.id;
+                    });
+                    const newColumns: Array<ColData> = [...columns];
+                    newColumns.splice(colIdx, 1, {
+                      ...colData,
+                      ...{ cards: newCards },
+                    });
+                    setColumns(newColumns);
+                  }}
+                  cardData={card}
+                />
+              </li>
+            );
+          })}
         <li>
           <button
             onClick={(e) => {
@@ -130,11 +135,13 @@ export default function CardColumn(props: {
           cardData={{
             name: "",
             description: "",
-            tags: [],
+            tagIds: [],
+            order: colData.cards.length,
             id: nanoid(),
             colId: colData.id,
           }}
           setCardData={(data) => {
+            console.log(data);
             setColumns(pushNewCard(data, colData.id, columns));
           }}
         />
