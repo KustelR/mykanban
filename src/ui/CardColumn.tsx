@@ -143,8 +143,19 @@ export default function CardColumn(props: {
         <ColumnEditorPortal
           setIsRedacting={setIsEditing}
           colData={colData}
-          setColData={(data) => {
-            setColumns(replaceColumn(colData.id, data, columns));
+          addColumn={(name, id, cards) => {
+            setColumns(
+              replaceColumn(
+                colData.id,
+                {
+                  name: name,
+                  id: id,
+                  cards: colData.cards,
+                  order: colData.order,
+                },
+                columns,
+              ),
+            );
           }}
         />
       )}

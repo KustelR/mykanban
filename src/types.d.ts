@@ -3,7 +3,7 @@ declare global {
   interface CardData {
     name: string;
     description: string;
-    tags: Array<TagData>;
+    tagIds: Array<string>;
     id: string;
     colId: string;
   }
@@ -18,6 +18,7 @@ declare global {
   type KanbanState = {
     columns: Array<ColData & Identified>;
     name: string;
+    tags: Array<TagData>;
   };
   type TagData = {
     name: string;

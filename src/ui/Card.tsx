@@ -11,6 +11,7 @@ import { moveCard, removeCard } from "@/scripts/kanban";
 import Tag from "@/ui/Tag";
 import TagList from "./TagList";
 import ActionMenu from "./ActionMenu";
+import { useAppStore } from "@/lib/hooks";
 
 type CardProps = {
   cardData: CardData;
@@ -23,9 +24,15 @@ type CardProps = {
 
 export function Card(props: CardProps) {
   const { cardData, blocked, cards, setCards, columns, setColumns } = props;
-  const { name, description, tags } = cardData;
+  const { name, description, tagIds } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [tags, setTags] = useState<Array<TagData>>([]);
+  const store = useAppStore();
+  useEffect(() => {
+    const locTags = store.getState().kanban.tags;
+    setTags(locTags);
+  }, []);
 
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: ItemTypes.CARD,
@@ -53,7 +60,7 @@ export function Card(props: CardProps) {
           {name}
         </header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
-        <TagList tags={tags} />
+        <TagList tags={tags.filter((tag) => tagIds.includes(tag.id))} />
       </section>
       {isRedacting && (
         <CardEditorPortal
