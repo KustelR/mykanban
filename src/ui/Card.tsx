@@ -16,6 +16,7 @@ import { useAppStore } from "@/lib/hooks";
 type CardProps = {
   cardData: CardData;
   blocked?: boolean;
+  debug?: boolean;
   cards?: Array<CardData>;
   setCards?: (arg: Array<CardData>) => void;
   setColumns: (arg: Array<ColData>) => void;
@@ -23,7 +24,8 @@ type CardProps = {
 };
 
 export function Card(props: CardProps) {
-  const { cardData, blocked, cards, setCards, columns, setColumns } = props;
+  const { cardData, blocked, cards, setCards, columns, setColumns, debug } =
+    props;
   const { name, description, tagIds } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -31,6 +33,7 @@ export function Card(props: CardProps) {
   const store = useAppStore();
   useEffect(() => {
     const locTags = store.getState().kanban.tags;
+    if (!locTags) return;
     setTags(locTags);
   }, []);
 
@@ -60,7 +63,20 @@ export function Card(props: CardProps) {
           {name}
         </header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
-        <TagList tags={tags.filter((tag) => tagIds.includes(tag.id))} />
+        <TagList
+          tags={tags.filter((tag) => {
+            if (!tagIds) return;
+            return tagIds.includes(tag.id);
+          })}
+        />
+        {debug && (
+          <div className="bg-red-600/30 rounded-md p-1">
+            <strong>debug data</strong>
+            <ul>
+              <li>order: {cardData.order}</li>
+            </ul>
+          </div>
+        )}
       </section>
       {isRedacting && (
         <CardEditorPortal
@@ -97,14 +113,14 @@ function renderActionMenu(
       icon: ArrowUpIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        setColumns(moveCard(columns, cardData.colId, cardData.id, 1));
+        setColumns(moveCard(columns, cardData.columnId, cardData.id, -1));
       },
     },
     {
       icon: ArrowDownIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        setColumns(moveCard(columns, cardData.colId, cardData.id, -1));
+        setColumns(moveCard(columns, cardData.columnId, cardData.id, 1));
       },
     },
     {
@@ -118,7 +134,7 @@ function renderActionMenu(
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
-        setColumns(removeCard(cardData.id, cardData.colId, columns));
+        setColumns(removeCard(cardData.id, cardData.columnId, columns));
       },
     },
   ];

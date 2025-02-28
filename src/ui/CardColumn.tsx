@@ -8,6 +8,7 @@ import PlusIcon from "@public/plus.svg";
 import { useDrop } from "react-dnd";
 import { ItemTypes } from "@/Constants";
 import {
+  moveColumn,
   pushNewCard,
   removeCard,
   removeColumn,
@@ -26,16 +27,14 @@ export default function CardColumn(props: {
   colData: ColData;
   setColumns: (arg: Array<ColData>) => void;
   columns: Array<ColData>;
+  debug?: boolean;
 }) {
-  const { colData, className, columns, setColumns } = props;
+  const { colData, className, columns, setColumns, debug } = props;
   const [isAdding, setIsAdding] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [droppedElement, setDroppedElement] = useState<{
-    id: string;
-    colId: string;
-  } | null>(null);
+  const [droppedElement, setDroppedElement] = useState<CardData | null>(null);
   const [{ el }, drop] = useDrop(
     () => ({
       accept: ItemTypes.CARD,
@@ -53,8 +52,8 @@ export default function CardColumn(props: {
     if (!isDropped) return;
     if (!droppedElement) return;
     const dropped = droppedElement as CardData;
-    if (dropped.colId) {
-      const newCols = removeCard(dropped.id, dropped.colId, columns);
+    if (dropped.columnId) {
+      const newCols = removeCard(dropped.id, dropped.columnId, columns);
       setColumns(pushNewCard(dropped, colData.id, newCols));
     } else {
       setColumns(pushNewCard(dropped, colData.id, columns));
@@ -63,8 +62,7 @@ export default function CardColumn(props: {
   }, [isDropped]);
 
   useEffect(() => {
-    if (el && "name" in (el as any))
-      setDroppedElement(el as { id: string; colId: string });
+    if (el && "name" in (el as any)) setDroppedElement(el as CardData);
   }, [el]);
 
   return drop(
@@ -85,34 +83,35 @@ export default function CardColumn(props: {
           renderActionMenu(columns, setColumns, setIsEditing, colData)}
       </div>
       <ol className="w-full h-full space-y-2">
-        {[...colData.cards]
-          .sort((card1, card2) => {
-            console.log(colData.cards);
-            return card1.order - card2.order;
-          })
-          .map((card) => {
-            return (
-              <li key={card.id}>
-                <Card
-                  cards={colData.cards}
-                  columns={columns}
-                  setColumns={setColumns}
-                  setCards={(newCards) => {
-                    const colIdx = columns.findIndex((col) => {
-                      return col.id === colData.id;
-                    });
-                    const newColumns: Array<ColData> = [...columns];
-                    newColumns.splice(colIdx, 1, {
-                      ...colData,
-                      ...{ cards: newCards },
-                    });
-                    setColumns(newColumns);
-                  }}
-                  cardData={card}
-                />
-              </li>
-            );
-          })}
+        {colData.cards &&
+          [...colData.cards]
+            .sort((card1, card2) => {
+              return card1.order - card2.order;
+            })
+            .map((card) => {
+              return (
+                <li key={card.id}>
+                  <Card
+                    cards={colData.cards ? colData.cards : []}
+                    debug={debug}
+                    columns={columns}
+                    setColumns={setColumns}
+                    setCards={(newCards) => {
+                      const colIdx = columns.findIndex((col) => {
+                        return col.id === colData.id;
+                      });
+                      const newColumns: Array<ColData> = [...columns];
+                      newColumns.splice(colIdx, 1, {
+                        ...colData,
+                        ...{ cards: newCards },
+                      });
+                      setColumns(newColumns);
+                    }}
+                    cardData={card}
+                  />
+                </li>
+              );
+            })}
         <li>
           <button
             onClick={(e) => {
@@ -128,6 +127,14 @@ export default function CardColumn(props: {
           </button>
         </li>
       </ol>
+      {debug && (
+        <div className="rounded-md bg-red-600/30 p-1">
+          <strong>debug data</strong>
+          <ul>
+            <li>order: {colData.order}</li>
+          </ul>
+        </div>
+      )}
       {isAdding && (
         <CardEditorPortal
           isRedacting={isAdding}
@@ -136,12 +143,11 @@ export default function CardColumn(props: {
             name: "",
             description: "",
             tagIds: [],
-            order: colData.cards.length,
+            order: colData.cards ? colData.cards.length : 0,
             id: nanoid(),
-            colId: colData.id,
+            columnId: colData.id,
           }}
           setCardData={(data) => {
-            console.log(data);
             setColumns(pushNewCard(data, colData.id, columns));
           }}
         />
@@ -181,20 +187,14 @@ function renderActionMenu(
       icon: ArrowLeftIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        const colIdx = columns.findIndex((col) => colData.id === col.id);
-        if (colIdx === -1 || colIdx === 0) return;
-        const col2Id = columns[colIdx - 1].id;
-        setColumns(swapColumns(columns, colData.id, col2Id));
+        setColumns(moveColumn(columns, colData.id, -1));
       },
     },
     {
       icon: ArrowRightIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        const colIdx = columns.findIndex((col) => colData.id === col.id);
-        if (colIdx === -1 || colIdx === columns.length - 1) return;
-        const col2Id = columns[colIdx + 1].id;
-        setColumns(swapColumns(columns, colData.id, col2Id));
+        setColumns(moveColumn(columns, colData.id, 1));
       },
     },
     {
