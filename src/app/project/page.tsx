@@ -15,8 +15,6 @@ export default function Project() {
   const searchParams = useSearchParams();
   useEffect(() => {
     const upload = setInterval(() => {
-      const lastChanged = store.getState().lastChanged;
-      if (Date.now() - lastChanged < 10000) return;
       const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
       if (!projectHost) return;
       const data: KanbanState = store.getState().kanban;
