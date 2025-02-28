@@ -12,6 +12,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
     "@svgr/webpack": "^8.1.0",
+    "axios": "^1.8.1",
     "next": "15.1.7",
     "next-plugin-svgr": "^1.1.12",
     "node": "^22.14.0",
