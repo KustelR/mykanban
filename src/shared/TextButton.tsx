@@ -1,3 +1,5 @@
+"use client";
+
 import { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 
 type ButtonProps = {
