@@ -44,7 +44,12 @@ export function removeCard(
     return card.id === cardId;
   });
   if (!card) throw new Error("No card was found");
-  const cards = columns[colIdx].cards.filter((card) => {
+  let cards = [...columns[colIdx].cards];
+  cards = cards.map((c) => {
+    if (c.order < card.order) return c;
+    return { ...c, order: c.order - 1 };
+  });
+  cards = cards.filter((card) => {
     return card.id !== cardId;
   });
   newColumns[colIdx] = { ...columns[colIdx], cards: cards };
@@ -84,41 +89,26 @@ export function moveCard(
   if (cardIdx === -1) throw new Error("Moving card was not found");
   const newCards = [...columns[colIdx].cards];
 
-  const newIdx = Math.max(0, Math.min(cardIdx - amount, newCards.length - 1));
-  if (newIdx === cardIdx) return columns;
-  newCards.splice(newIdx, 1, columns[colIdx].cards[cardIdx]);
-  newCards.splice(cardIdx, 1, columns[colIdx].cards[newIdx]);
+  const card = { ...newCards[cardIdx] };
+
+  const newOrder = Math.max(0, Math.min(card.order - amount, newCards.length));
+  if (newOrder === card.order) return columns;
+  const replacedCardIdx = newCards.findIndex((c) => {
+    return c.order == newOrder;
+  });
+  if (replacedCardIdx !== -1) {
+    newCards.splice(replacedCardIdx, 1, {
+      ...newCards[replacedCardIdx],
+      order: card.order,
+    });
+  }
+  newCards.splice(cardIdx, 1, { ...card, order: newOrder });
   const newCol = { ...columns[colIdx], cards: newCards };
 
   const newCols = [...columns];
   newCols.splice(colIdx, 1, newCol);
   return newCols;
 }
-export function swapCards(
-  columns: Array<ColData>,
-  colId: string,
-  cardId: string,
-  card2Id: string,
-): Array<ColData> {
-  const colIdx = columns.findIndex((col) => col.id === colId);
-  if (colIdx === -1) throw new Error("Column with moving card was not found");
-  const cardIdx = columns[colIdx].cards.findIndex((card) => card.id === cardId);
-  const card2Idx = columns[colIdx].cards.findIndex(
-    (card) => card.id === card2Id,
-  );
-  if (cardIdx === -1 || card2Idx === -1)
-    throw new Error("Moving card was not found");
-  const newCards = [...columns[colIdx].cards];
-
-  newCards.splice(cardIdx, 1, columns[colIdx].cards[card2Idx]);
-  newCards.splice(card2Idx, 1, columns[colIdx].cards[cardIdx]);
-  const newCol = { ...columns[colIdx], cards: newCards };
-
-  const newCols = [...columns];
-  newCols.splice(colIdx, 1, newCol);
-  return newCols;
-}
-
 export function swapColumns(
   columns: Array<ColData>,
   colId: string,
@@ -127,8 +117,14 @@ export function swapColumns(
   const colIdx = columns.findIndex((col) => col.id === colId);
   const col2Idx = columns.findIndex((col) => col.id === col2Id);
   const newCols = [...columns];
-  newCols.splice(colIdx, 1, columns[col2Idx]);
-  newCols.splice(col2Idx, 1, columns[colIdx]);
+  newCols.splice(colIdx, 1, {
+    ...columns[col2Idx],
+    order: columns[colIdx].order,
+  });
+  newCols.splice(col2Idx, 1, {
+    ...columns[colIdx],
+    order: columns[col2Idx].order,
+  });
   return newCols;
 }
 /**
@@ -144,7 +140,11 @@ export function removeColumn(
     return col.id === colId;
   });
   if (colIdx === -1) throw new Error("No column was found");
-  const newColumns = [...columns];
+  let newColumns = [...columns];
+  newColumns = newColumns.map((col) => {
+    if (col.order < columns[colIdx].order) return col;
+    return { ...col, order: col.order - 1 };
+  });
   newColumns.splice(colIdx, 1);
   return newColumns;
 }

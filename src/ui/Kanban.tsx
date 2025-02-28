@@ -79,21 +79,23 @@ export default function Kanban(props: KanbanProps) {
                     NEW COLUMN
                   </button>
                 </li>
-                {columns.map((col) => {
-                  return (
-                    <li
-                      className="col-span-1 min-w-40 basis-0 grow"
-                      key={col.id}
-                    >
-                      <CardColumn
-                        className="w-full"
-                        columns={columns}
-                        setColumns={setColumns}
-                        colData={col}
-                      />
-                    </li>
-                  );
-                })}
+                {[...columns]
+                  .sort((col1, col2) => col1.order - col2.order)
+                  .map((col) => {
+                    return (
+                      <li
+                        className="col-span-1 min-w-40 basis-0 grow"
+                        key={col.id}
+                      >
+                        <CardColumn
+                          className="w-full"
+                          columns={columns}
+                          setColumns={setColumns}
+                          colData={col}
+                        />
+                      </li>
+                    );
+                  })}
                 <li>
                   <button
                     className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
