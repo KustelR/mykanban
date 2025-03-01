@@ -45,6 +45,7 @@ async function getId(data: KanbanState) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
   const r = await axios.post(`${projectHost}/create`, data);
+  addProjectToStorage(r.data);
   redirect(`/project?id=${r.data}`);
 }
 
@@ -52,5 +53,30 @@ async function loadState(id: string, dispatch: any) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
   const r = await axios.get(`${projectHost}/read?id=${id}`);
+  addProjectToStorage(id);
   dispatch(setKanbanAction(r.data));
+}
+
+function addProjectToStorage(projectId: string) {
+  const projectsStorageJson = localStorage.getItem("projects");
+  if (!projectsStorageJson) {
+    localStorage.setItem("projects", JSON.stringify([projectId]));
+    return;
+  }
+  const projectStorage: Array<{ id: string; lastOpened: number }> =
+    JSON.parse(projectsStorageJson);
+  if (
+    projectStorage.filter((p) => {
+      return p.id === projectId;
+    }).length > 0
+  ) {
+    const prEntry = projectStorage.find((p) => p.id === projectId);
+    if (prEntry) {
+      prEntry.lastOpened = Date.now();
+      localStorage.setItem("projects", JSON.stringify(projectStorage));
+    }
+    return;
+  }
+  projectStorage.push({ id: projectId, lastOpened: Date.now() });
+  localStorage.setItem("projects", JSON.stringify(projectStorage));
 }
