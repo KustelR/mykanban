@@ -28,5 +28,10 @@ declare global {
     id: string;
     cardId: string;
   };
+  type ProjectStamp = {
+    id: string;
+    name?: string;
+    lastOpened: number;
+  };
 }
 export {};

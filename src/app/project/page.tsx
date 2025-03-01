@@ -5,8 +5,10 @@ import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Kanban from "@/ui/Kanban";
 import ManualControl from "@/ui/ManualControl";
+import { EnhancedStore } from "@reduxjs/toolkit";
 import axios from "axios";
 import { redirect, useSearchParams } from "next/navigation";
+import { read } from "node:fs";
 import { useEffect } from "react";
 
 export default function Project() {
@@ -14,24 +16,19 @@ export default function Project() {
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   useEffect(() => {
-    const upload = setInterval(() => {
-      const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
-      if (!projectHost) return;
-      const data: KanbanState = store.getState().kanban;
-      let id = searchParams.get("id");
-      axios.put(`${projectHost}/update?id=${id}`, data);
-      dispatch(updateLastChanged());
-    }, 10000);
+    let id = searchParams.get("id");
+    if (!id) return;
+    const uploadTimer = updateProject(id, store, dispatch);
     return () => {
-      clearInterval(upload);
+      clearInterval(uploadTimer);
     };
   }, []);
   const data: KanbanState = store.getState().kanban;
   let id = searchParams.get("id");
   if (!id) {
-    getId(data);
+    createProject(data);
   } else {
-    loadState(id, dispatch);
+    readProject(id, dispatch);
   }
   return (
     <div className="">
@@ -41,7 +38,17 @@ export default function Project() {
   );
 }
 
-async function getId(data: KanbanState) {
+function updateProject(id: string, store: EnhancedStore, dispatch: any) {
+  return setInterval(() => {
+    const data: KanbanState = store.getState().kanban;
+    const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
+    if (!projectHost) return;
+    axios.put(`${projectHost}/update?id=${id}`, data);
+    dispatch(updateLastChanged());
+  }, 10000);
+}
+
+async function createProject(data: KanbanState) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
   const r = await axios.post(`${projectHost}/create`, data);
@@ -49,22 +56,21 @@ async function getId(data: KanbanState) {
   redirect(`/project?id=${r.data}`);
 }
 
-async function loadState(id: string, dispatch: any) {
+async function readProject(id: string, dispatch: any) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
   const r = await axios.get(`${projectHost}/read?id=${id}`);
-  addProjectToStorage(id);
+  addProjectToStorage(id, r.data.name);
   dispatch(setKanbanAction(r.data));
 }
 
-function addProjectToStorage(projectId: string) {
+function addProjectToStorage(projectId: string, name?: string) {
   const projectsStorageJson = localStorage.getItem("projects");
   if (!projectsStorageJson) {
     localStorage.setItem("projects", JSON.stringify([projectId]));
     return;
   }
-  const projectStorage: Array<{ id: string; lastOpened: number }> =
-    JSON.parse(projectsStorageJson);
+  const projectStorage: Array<ProjectStamp> = JSON.parse(projectsStorageJson);
   if (
     projectStorage.filter((p) => {
       return p.id === projectId;
@@ -73,6 +79,7 @@ function addProjectToStorage(projectId: string) {
     const prEntry = projectStorage.find((p) => p.id === projectId);
     if (prEntry) {
       prEntry.lastOpened = Date.now();
+      prEntry.name = name;
       localStorage.setItem("projects", JSON.stringify(projectStorage));
     }
     return;
