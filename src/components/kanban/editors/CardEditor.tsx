@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import TextInput from "@/shared/TextInput";
-import { Card } from "./Card";
+import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
-import Tag from "./Tag";
-import TagList from "./TagList";
+import Tag from "../Tag";
+import TagList from "../TagList";
 import { nanoid } from "@reduxjs/toolkit";
 import { hexToRgb } from "@/shared/colors";
 
@@ -62,7 +62,7 @@ export default function CardEditor(props: {
                       if (tag.name === "") return;
                       setCard({
                         ...card,
-                        tagIds: card.tagIds.concat(tag.id),
+                        tagIds: card.tagIds ? card.tagIds.concat(tag.id) : [],
                       });
                       setTag(emptyTag);
                       if (e.nativeEvent.target) {

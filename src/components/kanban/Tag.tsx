@@ -5,7 +5,7 @@ import ArrowRightIcon from "@public/arrow-right.svg";
 import ChangeIcon from "@public/arrow-right.svg";
 import DeleteIcon from "@public/delete.svg";
 import { removeTag } from "@/scripts/kanban";
-import ActionMenu from "./ActionMenu";
+import ActionMenu from "../ui/ActionMenu";
 import { hexToRgb } from "@/shared/colors";
 import { useAppStore } from "@/lib/hooks";
 import { EnhancedStore } from "@reduxjs/toolkit";

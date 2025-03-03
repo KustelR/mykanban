@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import TextInput from "@/shared/TextInput";
-import { Card } from "./Card";
+import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
 import { nanoid } from "@reduxjs/toolkit";
@@ -16,7 +16,6 @@ export default function ColumnEditor(props: {
   const [col, setCol] = useState(
     defaultCol ? defaultCol : { name: "", id: "fake", cards: [] },
   );
-  const [title, setTitle] = useState("");
   return (
     <>
       <div className="w-full h-full  place-items-center place-content-center">

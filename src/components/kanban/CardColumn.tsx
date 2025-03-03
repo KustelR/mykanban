@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "./Card";
-import { CardEditorPortal } from "./CardEditor";
+import { CardEditorPortal } from "./editors/CardEditor";
 import { nanoid } from "@reduxjs/toolkit";
 import PlusIcon from "@public/plus.svg";
 import { useDrop } from "react-dnd";
@@ -19,8 +19,8 @@ import ArrowLeftIcon from "@public/arrow-left.svg";
 import ArrowRightIcon from "@public/arrow-right.svg";
 import DeleteIcon from "@public/delete.svg";
 import ChangeIcon from "@public/change.svg";
-import { ColumnEditorPortal } from "./ColumnEditor";
-import ActionMenu from "./ActionMenu";
+import { ColumnEditorPortal } from "./editors/ColumnEditor";
+import ActionMenu from "../ui/ActionMenu";
 
 export default function CardColumn(props: {
   className?: string;

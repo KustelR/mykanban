@@ -8,7 +8,7 @@ import PlusIcon from "@public/plus.svg";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { addColumn } from "@/scripts/kanban";
-import { ColumnEditorPortal } from "./ColumnEditor";
+import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import { redirect, useSearchParams } from "next/navigation";
 import axios from "axios";
 

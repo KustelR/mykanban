@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import CardEditor, { CardEditorPortal } from "./CardEditor";
+import CardEditor, { CardEditorPortal } from "./editors/CardEditor";
 import ChangeIcon from "@public/change.svg";
 import ArrowUpIcon from "@public/arrow-up.svg";
 import ArrowDownIcon from "@public/arrow-down.svg";
@@ -8,9 +8,9 @@ import DeleteIcon from "@public/delete.svg";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
 import { moveCard, removeCard } from "@/scripts/kanban";
-import Tag from "@/ui/Tag";
+import Tag from "@/components/kanban/Tag";
 import TagList from "./TagList";
-import ActionMenu from "./ActionMenu";
+import ActionMenu from "../ui/ActionMenu";
 import { useAppStore } from "@/lib/hooks";
 
 type CardProps = {
