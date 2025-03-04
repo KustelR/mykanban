@@ -16,6 +16,7 @@
     "next": "15.1.7",
     "next-plugin-svgr": "^1.1.12",
     "node": "^22.14.0",
+    "object-hash": "^3.0.0",
     "react": "^19.0.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/object-hash": "^3.0.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "concurrently": "^9.1.2",
