@@ -60,6 +60,7 @@ async function readProject(id: string, dispatch: any) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
   const r = await axios.get(`${projectHost}/read?id=${id}`);
+  console.log(r.data);
   addProjectToStorage(id, r.data.name);
   dispatch(setKanbanAction(r.data));
 }

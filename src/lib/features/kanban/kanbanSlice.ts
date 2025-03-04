@@ -7,6 +7,7 @@ const initialState: KanbanState = {
 };
 
 const setKanbanAction = createAction<KanbanState>("kanban/setKanban");
+const setTagsAction = createAction<TagData[]>("kanban/setTags");
 export const kanbanSlice = createSlice({
   name: "kanban",
   initialState,
@@ -15,9 +16,14 @@ export const kanbanSlice = createSlice({
       const payload = action.payload as KanbanState;
       state.columns = payload.columns;
       state.name = payload.name;
+      state.tags = payload.tags;
+    },
+    setTags: (state, action) => {
+      const payload = action.payload as TagData[];
+      state.tags = payload;
     },
   },
 });
 
-export { setKanbanAction };
+export { setKanbanAction, setTagsAction };
 export default kanbanSlice.reducer;

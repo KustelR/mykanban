@@ -32,9 +32,15 @@ export function Card(props: CardProps) {
   const [tags, setTags] = useState<Array<TagData>>([]);
   const store = useAppStore();
   useEffect(() => {
-    const locTags = store.getState().kanban.tags;
-    if (!locTags) return;
-    setTags(locTags);
+    store.subscribe(() => {
+      const locTags = store.getState().kanban.tags;
+      if (!locTags) return;
+      setTags(
+        locTags.filter((tag) => {
+          return cardData.tagIds?.includes(tag.id);
+        }),
+      );
+    });
   }, []);
 
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
@@ -63,12 +69,7 @@ export function Card(props: CardProps) {
           {name}
         </header>
         <p className="text-wrap break-words line-clamp-3">{description}</p>
-        <TagList
-          tags={tags.filter((tag) => {
-            if (!tagIds) return;
-            return tagIds.includes(tag.id);
-          })}
-        />
+        <TagList tags={tags} />
         {debug && (
           <div className="bg-red-600/30 rounded-md p-1">
             <strong>debug data</strong>

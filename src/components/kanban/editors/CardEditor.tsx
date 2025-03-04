@@ -5,10 +5,12 @@ import TextInput from "@/shared/TextInput";
 import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
-import Tag from "../Tag";
-import TagList from "../TagList";
-import { nanoid } from "@reduxjs/toolkit";
-import { hexToRgb } from "@/shared/colors";
+import TagEditor from "./TagEditor";
+import { useAppDispatch, useAppStore } from "@/lib/hooks";
+import {
+  setKanbanAction,
+  setTagsAction,
+} from "@/lib/features/kanban/kanbanSlice";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -17,12 +19,6 @@ export default function CardEditor(props: {
   let { defaultCard, setCardData } = props;
 
   const [card, setCard] = useState(defaultCard);
-  const [tags, setTags] = useState<Array<TagData>>([]);
-  const [tag, setTag] = useState<TagData>(emptyTag);
-  useEffect(() => {
-    if (!card) return;
-    setTags([...tags, tag].filter((t) => t.name !== ""));
-  }, [card, tag]);
   return (
     <>
       {card && (
@@ -34,78 +30,8 @@ export default function CardEditor(props: {
             }}
           >
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-              <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
-                <header className="font-bold">Editor</header>
-                <form action="" onSubmit={(e) => e.preventDefault()}>
-                  <TextInput
-                    defaultValue={card.name}
-                    onChange={(e) => {
-                      setCard({ ...card, name: e.target.value });
-                    }}
-                    id="cardCreator_name"
-                    label="Name"
-                  />
-                  <TextInput
-                    area
-                    placeholder={card.description}
-                    onChange={(e) => {
-                      setCard({ ...card, description: e.target.value });
-                    }}
-                    id="cardCreator_addDescription"
-                    label="Description"
-                  />
-                </form>
-                <div>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      if (tag.name === "") return;
-                      setCard({
-                        ...card,
-                        tagIds: card.tagIds ? card.tagIds.concat(tag.id) : [],
-                      });
-                      setTag(emptyTag);
-                      if (e.nativeEvent.target) {
-                        (e.nativeEvent.target as HTMLFormElement).reset();
-                      }
-                    }}
-                  >
-                    <TextInput
-                      onChange={(e) => {
-                        setTag({ ...tag, name: e.target.value });
-                      }}
-                      id="cardCreator_addTag"
-                      label="Add tag"
-                    />
-                    <div className="flex flex-col">
-                      <label htmlFor="cardCreator_tagColor">Tag color</label>
-                      <input
-                        onChange={(e) => {
-                          setTag({ ...tag, color: e.target.value });
-                        }}
-                        id="cardCreator_tagColor"
-                        type="color"
-                      />
-                    </div>
-                  </form>
-                </div>
-                <TagList
-                  editable
-                  setCard={setCard}
-                  className="mt-2"
-                  card={card}
-                  tags={tags}
-                />
-              </div>
-              <div className="max-w-96">
-                <header className="font-bold">Preview</header>
-                <Card
-                  columns={[]}
-                  setColumns={() => {}}
-                  blocked
-                  cardData={{ ...card }}
-                ></Card>
-              </div>
+              {cardDataEditor(card, setCard)}
+              {preview(card)}
             </div>
             <TextButton
               className="w-full mt-2"
@@ -144,10 +70,60 @@ export function CardEditorPortal(props: {
   );
 }
 
-const emptyTag = {
-  name: "",
-  color: "#aaaaaa",
-  id: "fake239832423498732",
-  colId: "fake",
-  cardId: "fake",
-};
+function preview(card: CardData) {
+  return (
+    <div className="max-w-96">
+      <header className="font-bold">Preview</header>
+      <Card
+        columns={[]}
+        setColumns={() => {}}
+        blocked
+        cardData={{ ...card }}
+      ></Card>
+    </div>
+  );
+}
+
+function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
+  const store = useAppStore();
+  const dispatch = useAppDispatch();
+  const tags = store.getState().kanban.tags;
+  return (
+    <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
+      <header className="font-bold">Editor</header>
+      <form action="" onSubmit={(e) => e.preventDefault()}>
+        <TextInput
+          defaultValue={card.name}
+          onChange={(e) => {
+            setCard({ ...card, name: e.target.value });
+          }}
+          id="cardCreator_name"
+          label="Name"
+        />
+        <TextInput
+          area
+          placeholder={card.description}
+          onChange={(e) => {
+            setCard({ ...card, description: e.target.value });
+          }}
+          id="cardCreator_addDescription"
+          label="Description"
+        />
+      </form>
+
+      <TagEditor
+        tags={tags ? tags : []}
+        setTags={(t) => {
+          dispatch(setTagsAction(t));
+        }}
+        cardId={card.id}
+        addTagIdToCard={(id) => {
+          setCard({
+            ...card,
+            tagIds: [...(card.tagIds ? card.tagIds : []), id],
+          });
+        }}
+      />
+    </div>
+  );
+}
