@@ -7,10 +7,7 @@ import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import {
-  setKanbanAction,
-  setTagsAction,
-} from "@/lib/features/kanban/kanbanSlice";
+import { setTagsAction, updateTags } from "@/lib/features/kanban/kanbanSlice";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -114,7 +111,7 @@ function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
       <TagEditor
         tags={tags ? tags : []}
         setTags={(t) => {
-          dispatch(setTagsAction(t));
+          updateTags(dispatch, store, t);
         }}
         cardId={card.id}
         addTagIdToCard={(id) => {

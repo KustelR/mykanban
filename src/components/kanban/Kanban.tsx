@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import CardColumn from "./CardColumn";
-import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
+import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { nanoid, ThunkDispatch } from "@reduxjs/toolkit";
 import PlusIcon from "@public/plus.svg";
@@ -11,12 +11,13 @@ import { addColumn } from "@/scripts/kanban";
 import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import { redirect, useSearchParams } from "next/navigation";
 import axios from "axios";
+import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
   className?: string;
   debug?: boolean;
-  defaultLabel: string;
+  defaultLabel?: string;
 };
 
 export default function Kanban(props: KanbanProps) {
@@ -33,17 +34,24 @@ export default function Kanban(props: KanbanProps) {
   );
   const dispatch = useAppDispatch();
   useEffect(() => {
+    let lastHash: string = "";
     store.subscribe(() => {
-      const data = store.getState().kanban;
+      const storeStamp = store.getState();
+      const lastChanged = storeStamp.lastChanged;
+      if (lastChanged.hash == lastHash) return;
+      lastHash = lastChanged.hash;
+      const data = storeStamp.kanban;
       setLabel(data.name);
       setColumns(data.columns);
       setTags(data.tags);
     });
   }, []);
   useEffect(() => {
-    dispatch(
-      setKanbanAction({ name: label, columns: columns ? columns : [], tags }),
-    );
+    updateKanban(dispatch, {
+      name: label ? label : "fake name fake name",
+      columns: columns ? columns : [],
+      tags,
+    });
   }, [columns, label, tags]);
   return (
     <DndProvider backend={HTML5Backend}>

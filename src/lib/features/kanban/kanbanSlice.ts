@@ -1,4 +1,10 @@
-import { createAction, createSlice, nanoid } from "@reduxjs/toolkit";
+import {
+  createAction,
+  createSlice,
+  EnhancedStore,
+  nanoid,
+} from "@reduxjs/toolkit";
+import { updateLastChanged } from "../lastChanged/lastChangedSlice";
 
 const initialState: KanbanState = {
   columns: [],
@@ -25,5 +31,19 @@ export const kanbanSlice = createSlice({
   },
 });
 
-export { setKanbanAction, setTagsAction };
+function updateKanban(dispatch: any, data: KanbanState) {
+  dispatch(setKanbanAction(data));
+  dispatch(updateLastChanged([data, "kanban/setKanban"]));
+}
+function updateTags(dispatch: any, store: EnhancedStore, data: TagData[]) {
+  dispatch(setTagsAction(data));
+  dispatch(
+    updateLastChanged([
+      { ...store.getState().kanban, tags: data },
+      "kanban/setTags",
+    ]),
+  );
+}
+
+export { setTagsAction, updateKanban, updateTags };
 export default kanbanSlice.reducer;

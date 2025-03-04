@@ -1,15 +1,26 @@
 import { createAction, createSlice, nanoid } from "@reduxjs/toolkit";
+import objectHash from "object-hash";
 
-const initialState: number = Date.now();
+const initialState: LastChangedState = {
+  timestamp: Date.now(),
+  hash: "",
+  lastAction: "",
+};
 
-const updateLastChanged = createAction("lastChanged/updateLastChanged");
+const updateLastChanged = createAction<[KanbanState, string]>(
+  "lastChanged/updateLastChanged",
+);
 export const kanbanSlice = createSlice({
   name: "lastChanged",
   initialState,
   reducers: {
     updateLastChanged: (state, action) => {
-      state = Date.now();
-      return Date.now();
+      const [project, lastAction] = action.payload as [KanbanState, string];
+      return {
+        timestamp: Date.now(),
+        hash: objectHash(project),
+        lastAction: lastAction,
+      };
     },
   },
 });

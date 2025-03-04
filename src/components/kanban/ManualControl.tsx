@@ -1,6 +1,6 @@
 "use client";
 
-import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
+import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import TextButton from "@/shared/TextButton";
 import TextInput from "@/shared/TextInput";
@@ -49,7 +49,7 @@ export default function ManualControl() {
           if (!projectHost) return;
           const r = await axios.get(`${projectHost}/read?id=${id}`);
           const data: KanbanState = r.data;
-          dispatch(setKanbanAction(data));
+          updateKanban(dispatch, data);
         }}
       >
         GET
