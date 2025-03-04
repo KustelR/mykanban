@@ -27,7 +27,8 @@ export default function TagEditor(props: TagEditorProps) {
         },
         cardId,
       )}
-      <TagList tags={tags}></TagList>
+      <strong>Current tags</strong>
+      <TagList tags={[...tags, ...(tag ? [tag] : [])]}></TagList>
     </section>
   );
 }
@@ -45,7 +46,6 @@ function tagForm(
       className="block *:block space-y-1"
       onSubmit={(e) => {
         e.preventDefault();
-        console.log(localTag);
         setTag(localTag);
         setLocalTag(createTag(undefined, undefined, cardId));
         (e.target as HTMLFormElement).reset();
