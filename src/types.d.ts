@@ -33,5 +33,10 @@ declare global {
     name?: string;
     lastOpened: number;
   };
+  type LastChangedState = {
+    timestamp: number;
+    hash: string;
+    lastAction: string;
+  };
 }
 export {};
