@@ -1,14 +1,12 @@
 "use client";
 
 import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
-import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Kanban from "@/components/kanban/Kanban";
 import ManualControl from "@/components/kanban/ManualControl";
 import { EnhancedStore } from "@reduxjs/toolkit";
 import axios from "axios";
 import { redirect, useSearchParams } from "next/navigation";
-import { read } from "node:fs";
 import { useEffect } from "react";
 
 export default function Project() {
