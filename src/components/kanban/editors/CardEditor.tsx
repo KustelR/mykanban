@@ -114,10 +114,11 @@ function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
           updateTags(dispatch, store, t);
         }}
         cardId={card.id}
-        addTagIdToCard={(id) => {
+        tagIds={card.tagIds ? card.tagIds : []}
+        setTagIds={(ids) => {
           setCard({
             ...card,
-            tagIds: [...(card.tagIds ? card.tagIds : []), id],
+            tagIds: ids,
           });
         }}
       />

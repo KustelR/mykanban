@@ -33,11 +33,15 @@ export function Card(props: CardProps) {
   const store = useAppStore();
   useEffect(() => {
     store.subscribe(() => {
-      const locTags = store.getState().kanban.tags;
-      if (!locTags) return;
+      const data = store.getState();
+      const locTags = data.kanban.tags;
+      const tagIds = data.kanban.columns
+        .find((col) => col.id === cardData.columnId)
+        ?.cards?.find((c) => c.id === cardData.id)?.tagIds;
+      if (!locTags || !tagIds) return;
       setTags(
         locTags.filter((tag) => {
-          return cardData.tagIds?.includes(tag.id);
+          return tagIds.includes(tag.id);
         }),
       );
     });

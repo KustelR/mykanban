@@ -11,7 +11,7 @@ export default function TagList(props: {
       {tags.map((tag, idx) => {
         if (idx > 9) return;
         return (
-          <li key={tag.id} className="relative w-fit h-fit">
+          <li key={tag.id} className="relative w-fit mr-1 mb-1 h-fit">
             <Tag data={tag} />
           </li>
         );

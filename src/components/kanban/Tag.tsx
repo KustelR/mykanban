@@ -13,7 +13,7 @@ export default function Tag(props: { data: TagData }) {
         backgroundColor: `rgba(${parsedColor.r}, ${parsedColor.g}, ${parsedColor.b}, .4)`,
         borderColor: data.color,
       }}
-      className={`relative max-w-[200px] rounded-md mr-1 mb-1 px-1 border-[1px]`}
+      className={`relative max-w-[200px] rounded-md  px-1 border-[1px]`}
     >
       <div className="truncate overflow-hidden text-nowrap text-ellipsis">
         {data.name}

@@ -7,23 +7,25 @@ import React, { useState } from "react";
 import TagList from "../TagList";
 import Tag from "../Tag";
 import DeleteIcon from "@public/delete.svg";
+import PlusIcon from "@public/plus.svg";
 import ActionMenu from "@/components/ui/ActionMenu";
 
 type TagEditorProps = {
   tags: Array<TagData>;
   cardId?: string;
-  addTagIdToCard?: (arg: string) => void;
+  tagIds: string[];
+  setTagIds: (arg: string[]) => void;
   setTags: (arg: Array<TagData>) => void;
 };
 
 export default function TagEditor(props: TagEditorProps) {
-  const { tags, setTags, cardId, addTagIdToCard } = props;
+  const { tags, setTags, cardId, tagIds, setTagIds } = props;
   const [tag, setTag] = useState<TagData>(createTag());
   return (
     <section>
       <header className="font-semibold">Tag Editor</header>
       {tagForm(tag, setTag)}
-      {renderTagSuggestions(tags, tag)}
+      {renderTagSuggestions(tags, tag, setTags, tagIds, setTagIds)}
     </section>
   );
 }
@@ -43,7 +45,7 @@ function tagForm(tag: TagData, setTag: (arg: TagData) => void) {
         }}
         placeholder={tag?.name}
         id="tag_name"
-        label="Name"
+        label="tag name"
       />
       <label htmlFor="tag_color">Color</label>
       <input
@@ -51,9 +53,8 @@ function tagForm(tag: TagData, setTag: (arg: TagData) => void) {
           setTag({ ...tag, color: e.target.value });
         }}
         id="tag_color"
-        type="color"
+        type="tag color"
       />
-      <TextButton>ADD TAG</TextButton>
     </form>
   );
 }
@@ -67,12 +68,18 @@ function createTag(name?: string, color?: string, cardId?: string): TagData {
   };
 }
 
-function SuggestedTag(props: { data: TagData; tags: TagData[] }) {
-  const { data, tags } = props;
+function SuggestedTag(props: {
+  data: TagData;
+  tags: TagData[];
+  setTags: (tags: TagData[]) => void;
+  tagIds: string[];
+  setTagIds: (ids: string[]) => void;
+}) {
+  const { data, tags, setTags, tagIds, setTagIds } = props;
   const [isHovered, setIsHovered] = useState(false);
   return (
     <div
-      className="relative"
+      className="relative w-full h-fit"
       onMouseEnter={() => {
         setIsHovered(true);
       }}
@@ -80,25 +87,37 @@ function SuggestedTag(props: { data: TagData; tags: TagData[] }) {
         setIsHovered(false);
       }}
     >
-      {isHovered && renderActionMenu(data, tags, () => {})}
       <Tag data={data}></Tag>
+      {isHovered && renderActionMenu(data, tags, setTags, tagIds, setTagIds)}
     </div>
   );
 }
 
-function renderTagSuggestions(tags: TagData[], tag: TagData | null) {
+function renderTagSuggestions(
+  tags: TagData[],
+  tag: TagData,
+  setTags: (tags: TagData[]) => void,
+  tagIds: string[],
+  setTagIds: (ids: string[]) => void,
+) {
   return (
     <section>
       {" "}
       <strong>Suggested tags</strong>
-      <ul>
+      <ul className="space-y-1">
         {[...tags, ...(tag ? [tag] : [])]
           .filter((t) => t.name.startsWith(tag?.name ? tag.name : ""))
           .slice(0, 5)
           .map((item, idx) => {
             return (
               <li key={idx}>
-                <SuggestedTag data={item} tags={tags} />
+                <SuggestedTag
+                  data={item}
+                  tags={tags}
+                  setTags={setTags}
+                  tagIds={tagIds}
+                  setTagIds={setTagIds}
+                />
               </li>
             );
           })}
@@ -111,17 +130,25 @@ function renderActionMenu(
   tag: TagData,
   tags: Array<TagData>,
   setTags: (arg: Array<TagData>) => void,
+  tagIds: string[],
+  setTagIds: (ids: string[]) => void,
 ) {
   const options = [
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
-        setTags(
-          tags.filter((t) => {
-            t.id != tag.id;
-          }),
-        );
+        setTagIds(tagIds.filter((t) => t != tag.id));
+      },
+    },
+    {
+      icon: PlusIcon,
+      className: "bg-green-800 hover:bg-green-900",
+      callback: () => {
+        if (tags.filter((t) => t.id == tag.id).length == 0) {
+          setTags(tags.concat(tag));
+        }
+        setTagIds(tagIds.concat(tag.id));
       },
     },
   ];
