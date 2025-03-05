@@ -14,6 +14,7 @@ import {
   removeColumn,
   replaceColumn,
   swapColumns,
+  updateCard,
 } from "@/scripts/kanban";
 import ArrowLeftIcon from "@public/arrow-left.svg";
 import ArrowRightIcon from "@public/arrow-right.svg";
@@ -52,12 +53,7 @@ export default function CardColumn(props: {
     if (!isDropped) return;
     if (!droppedElement) return;
     const dropped = droppedElement as CardData;
-    if (dropped.columnId) {
-      const newCols = removeCard(dropped.id, dropped.columnId, columns);
-      setColumns(pushNewCard(dropped, colData.id, newCols));
-    } else {
-      setColumns(pushNewCard(dropped, colData.id, columns));
-    }
+    updateCard(dropped.id, { ...dropped, colId: colData.id });
     setIsDropped(false);
   }, [isDropped]);
 
@@ -148,7 +144,7 @@ export default function CardColumn(props: {
             columnId: colData.id,
           }}
           setCardData={(data) => {
-            setColumns(pushNewCard(data, colData.id, columns));
+            pushCard(data, colData.id, columns);
           }}
         />
       )}

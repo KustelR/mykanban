@@ -10,6 +10,7 @@ declare global {
   }
   interface ColData {
     name: string;
+    order: number;
     id: string;
     order: number;
     cards: Array<CardData> | null;

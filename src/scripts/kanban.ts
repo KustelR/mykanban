@@ -1,11 +1,11 @@
 import { nanoid } from "@reduxjs/toolkit";
+import axios from "axios";
 
 /**
  * Gets an array of columns and pushes card to column with specified id
  * @throws If column was not found
- * @returns {Array<ColData>} - changed array
  */
-export function pushNewCard(
+export function pushCard(
   card: CardData,
   colId: string,
   columns: Array<ColData>,
@@ -30,7 +30,6 @@ export function pushNewCard(
   };
   return newColumns;
 }
-
 /**
  * Gets an array of columns and removes card with provided id in column with specified id
  * @throws If column or card was not found
@@ -67,8 +66,8 @@ export function removeCard(
 /**
  * Creates new empty column. Returns changed array
  */
-export function addColumn(
-  columns: Array<ColData>,
+export async function addColumn(
+  projectId: string,
   column: ColData,
   options?: { place?: "start" | "end" },
 ): Array<ColData> {

@@ -113,7 +113,7 @@ function renderActionMenu(
   setColumns: (arg: Array<ColData>) => void,
   setIsEditing: (arg: boolean) => void,
 ) {
-  const options = [
+  const options: Array<any> = [
     {
       icon: ArrowUpIcon,
       className: "bg-blue-800 hover:bg-blue-900",

@@ -2,8 +2,6 @@ import type { NextConfig } from "next";
 // @ts-expect-error
 import withSvgr from "next-plugin-svgr";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+const nextConfig: NextConfig = {};
 
 export default withSvgr(nextConfig);
