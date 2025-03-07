@@ -1,14 +1,6 @@
 "use client";
-import useProjectId from "@/hooks/useProjectId";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { createProject, readProject, updateProject } from "@/scripts/project";
-import {
-  EnhancedStore,
-  UnknownAction,
-  Tuple,
-  StoreEnhancer,
-  ThunkDispatch,
-} from "@reduxjs/toolkit";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 
