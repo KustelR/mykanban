@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function ProjectList() {
-  let projectsStorageJson: string | null | undefined;
+  const [projectStorage, setProjectStorage] = useState<ProjectStamp[]>([]);
   useEffect(() => {
-    projectsStorageJson = localStorage.getItem("projects");
-  });
-  const projectStorage: Array<ProjectStamp> = projectsStorageJson
-    ? JSON.parse(projectsStorageJson)
-    : [];
+    const projectsStorageJson = localStorage.getItem("projects");
+    setProjectStorage(
+      projectsStorageJson ? JSON.parse(projectsStorageJson) : [],
+    );
+  }, []);
+
   return (
     <div className="border-neutral-300 dark:border-neutral-700 border-[1px] p-2 rounded-md w-fit">
       <strong>Last opened projects:</strong>
