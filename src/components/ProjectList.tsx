@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function ProjectList() {
-  const projectsStorageJson = localStorage.getItem("projects");
+  let projectsStorageJson: string | null | undefined;
+  useEffect(() => {
+    projectsStorageJson = localStorage.getItem("projects");
+  });
   const projectStorage: Array<ProjectStamp> = projectsStorageJson
     ? JSON.parse(projectsStorageJson)
     : [];
