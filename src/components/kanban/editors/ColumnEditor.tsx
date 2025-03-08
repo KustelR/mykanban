@@ -6,6 +6,7 @@ import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
 import { nanoid } from "@reduxjs/toolkit";
+import Popup from "@/shared/Popup";
 
 export default function ColumnEditor(props: {
   defaultCol?: ColData;
@@ -59,15 +60,9 @@ export function ColumnEditorPortal(props: {
 }) {
   const { colData, addColumn, setIsRedacting } = props;
   return createPortal(
-    <div
-      onClick={(e) => {
-        e.stopPropagation();
-        setIsRedacting(false);
-      }}
-      className="absolute left-0 top-0 w-full h-full"
-    >
+    <Popup setIsActive={setIsRedacting}>
       <ColumnEditor defaultCol={colData} addColumn={addColumn}></ColumnEditor>
-    </div>,
+    </Popup>,
     document.body,
   );
 }

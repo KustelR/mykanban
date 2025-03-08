@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { setTagsAction, updateTags } from "@/lib/features/kanban/kanbanSlice";
+import Popup from "@/shared/Popup";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -52,17 +53,11 @@ export function CardEditorPortal(props: {
   setCardData: (arg: CardData) => void;
   setIsRedacting: (arg: boolean) => void;
 }) {
-  const { blocked, setIsRedacting, isRedacting, cardData, setCardData } = props;
+  const { setIsRedacting, cardData, setCardData } = props;
   return createPortal(
-    <div
-      onClick={(e) => {
-        e.stopPropagation();
-        if (!blocked) setIsRedacting(!isRedacting);
-      }}
-      className="absolute left-0 top-0 w-full h-full"
-    >
+    <Popup setIsActive={setIsRedacting}>
       <CardEditor defaultCard={cardData} setCardData={setCardData}></CardEditor>
-    </div>,
+    </Popup>,
     document.body,
   );
 }
