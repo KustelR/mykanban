@@ -53,7 +53,7 @@ function tagForm(tag: TagData, setTag: (arg: TagData) => void) {
           setTag({ ...tag, color: e.target.value });
         }}
         id="tag_color"
-        type="tag color"
+        type="color"
       />
     </form>
   );
