@@ -55,55 +55,48 @@ export function Card(props: CardProps) {
     }),
   }));
 
-  return drag(
-    <div
-      className={`${isDragging ? "cursor-move" : "cursor-pointer"} size-fit relative w-full`}
-      onMouseEnter={(e) => {
-        setIsActive(true);
-      }}
-      onMouseLeave={(e) => {
-        setIsActive(false);
-      }}
-    >
-      {!blocked &&
-        isActive &&
-        renderActionMenu(columns, cardData, setColumns, setIsRedacting)}
-      <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
-        <header className="font-bold overflow-hidden line-clamp-3 break-words max-w-[200px]">
-          {name}
-        </header>
-        <p className="text-wrap break-words line-clamp-3">{description}</p>
-        <TagList tags={tags} />
-        {debug && (
-          <div className="bg-red-600/30 rounded-md p-1">
-            <strong>debug data</strong>
-            <ul>
-              <li>order: {cardData.order}</li>
-            </ul>
-          </div>
-        )}
-      </section>
-      {isRedacting && (
-        <CardEditorPortal
-          cardData={cardData}
-          setCardData={(card) => {
-            if (cards && setCards) {
-              const cardIdx = cards.findIndex((card2) => {
-                return card2.id === card.id;
-              });
-              const newCards = [...cards];
-              newCards[cardIdx] = card;
-              setCards(newCards);
-            } else {
-              throw new Error("trying to change unknown card");
-            }
+  return (
+    <>
+      {drag(
+        <div
+          className={`${isDragging ? "cursor-move" : "cursor-pointer"} size-fit relative w-full`}
+          onMouseEnter={(e) => {
+            setIsActive(true);
           }}
-          blocked={blocked}
-          isRedacting={isRedacting}
-          setIsRedacting={setIsRedacting}
-        />
+          onMouseLeave={(e) => {
+            setIsActive(false);
+          }}
+        >
+          {!blocked &&
+            isActive &&
+            renderActionMenu(columns, cardData, setColumns, setIsRedacting)}
+          <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
+            <header className="font-bold overflow-hidden line-clamp-3 break-words max-w-[200px]">
+              {name}
+            </header>
+            <p className="text-wrap break-words line-clamp-3">{description}</p>
+            <TagList tags={tags} />
+            {debug && (
+              <div className="bg-red-600/30 rounded-md p-1">
+                <strong>debug data</strong>
+                <ul>
+                  <li>order: {cardData.order}</li>
+                </ul>
+              </div>
+            )}
+          </section>
+        </div>,
       )}
-    </div>,
+      {isRedacting &&
+        renderEditor(
+          cardData,
+          blocked,
+          isRedacting,
+          setIsRedacting,
+          cards,
+          setCards,
+        )}
+    </>
   );
 }
 
@@ -145,4 +138,34 @@ function renderActionMenu(
   ];
 
   return <ActionMenu options={options} />;
+}
+
+function renderEditor(
+  cardData: CardData,
+  blocked: boolean | undefined,
+  isRedacting: boolean,
+  setIsRedacting: (arg: boolean) => void,
+  cards: CardData[] | undefined,
+  setCards: ((cards: CardData[]) => void) | undefined,
+) {
+  return (
+    <CardEditorPortal
+      cardData={cardData}
+      setCardData={(card) => {
+        if (cards && setCards) {
+          const cardIdx = cards.findIndex((card2) => {
+            return card2.id === card.id;
+          });
+          const newCards = [...cards];
+          newCards[cardIdx] = card;
+          setCards(newCards);
+        } else {
+          throw new Error("trying to change unknown card");
+        }
+      }}
+      blocked={blocked}
+      isRedacting={isRedacting}
+      setIsRedacting={setIsRedacting}
+    />
+  );
 }
