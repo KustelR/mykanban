@@ -56,56 +56,58 @@ export default function Kanban(props: KanbanProps) {
       updateKanban(dispatch, { name: label, columns: columns, tags: tags });
   }, [label, tags, columns]);
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div
-        className={`${className} h-fit rounded-2xl border-[1px] p-1 md:p-3 border-neutral-300 dark:border-neutral-700`}
-      >
-        <h2 className="font-2xl font-bold">KANBAN: {label}</h2>
-        {(!columns || columns.length <= 0) && (
-          <button
-            className="items-center justify-items-center"
-            onClick={(e) => {
-              setAddingDirection("end");
-              setIsAdding(true);
-            }}
-          >
-            <PlusIcon
-              height={50}
-              width={50}
-              className="*:dark:fill-white"
-            ></PlusIcon>
-          </button>
-        )}
-        {columns &&
-          columns.length > 0 &&
-          renderColumnList(
-            columns,
-            setColumns,
-            debug,
-            setAddingDirection,
-            setIsAdding,
+    <>
+      <DndProvider backend={HTML5Backend}>
+        <div
+          className={`${className} h-fit rounded-2xl border-[1px] p-1 md:p-3 border-neutral-300 dark:border-neutral-700`}
+        >
+          <h2 className="font-2xl font-bold">KANBAN: {label}</h2>
+          {(!columns || columns.length <= 0) && (
+            <button
+              className="items-center justify-items-center"
+              onClick={(e) => {
+                setAddingDirection("end");
+                setIsAdding(true);
+              }}
+            >
+              <PlusIcon
+                height={50}
+                width={50}
+                className="*:dark:fill-white"
+              ></PlusIcon>
+            </button>
           )}
-        {isAdding && (
-          <ColumnEditorPortal
-            setIsRedacting={setIsAdding}
-            addColumn={(name, id, cards) => {
-              setColumns(
-                addColumn(
-                  columns ? columns : [],
-                  {
-                    name: name,
-                    id: id,
-                    cards: [],
-                    order: columns ? columns.length : 1,
-                  },
-                  { place: addingDirection },
-                ),
-              );
-            }}
-          />
-        )}
-      </div>
-    </DndProvider>
+          {columns &&
+            columns.length > 0 &&
+            renderColumnList(
+              columns,
+              setColumns,
+              debug,
+              setAddingDirection,
+              setIsAdding,
+            )}
+        </div>
+      </DndProvider>
+      {isAdding && (
+        <ColumnEditorPortal
+          setIsRedacting={setIsAdding}
+          addColumn={(name, id, cards) => {
+            setColumns(
+              addColumn(
+                columns ? columns : [],
+                {
+                  name: name,
+                  id: id,
+                  cards: [],
+                  order: columns ? columns.length : 1,
+                },
+                { place: addingDirection },
+              ),
+            );
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -124,9 +126,9 @@ function renderColumnList(
           gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))`,
         }}
       >
-        <li>
+        <li className="h-full">
           <button
-            className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
+            className="h-full hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
             onClick={(e) => {
               setAddingDirection("start");
               setIsAdding(true);
@@ -139,9 +141,12 @@ function renderColumnList(
           .sort((col1, col2) => col1.order - col2.order)
           .map((col) => {
             return (
-              <li className="col-span-1 min-w-40 basis-0 grow" key={col.id}>
+              <li
+                className="col-span-1 min-h-full min-w-40 basis-0 grow"
+                key={col.id}
+              >
                 <CardColumn
-                  className="w-full"
+                  className="w-full h-full"
                   debug={debug}
                   columns={columns}
                   setColumns={setColumns}
@@ -150,9 +155,9 @@ function renderColumnList(
               </li>
             );
           })}
-        <li>
+        <li className="h-full">
           <button
-            className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
+            className="hover:bg-black/10 h-full hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
             onClick={(e) => {
               setIsAdding(true);
               setAddingDirection("end");
