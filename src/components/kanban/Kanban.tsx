@@ -14,6 +14,7 @@ import axios from "axios";
 import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
 import objectHash from "object-hash";
 import TextButton from "@/shared/TextButton";
+import { ProjectEditorPortal } from "./editors/ProjectEditor";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -31,6 +32,7 @@ export default function Kanban(props: KanbanProps) {
   const [tags, setTags] = useState<Array<TagData> | null>([]);
   const store = useAppStore();
   const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
     "start",
   );
@@ -89,7 +91,13 @@ export default function Kanban(props: KanbanProps) {
             )}
           <section>
             <header className="font-bold">Controls</header>
-            <TextButton>EDIT</TextButton>
+            <TextButton
+              onClick={() => {
+                setIsEditing(true);
+              }}
+            >
+              EDIT
+            </TextButton>
           </section>
         </div>
       </DndProvider>
@@ -112,6 +120,7 @@ export default function Kanban(props: KanbanProps) {
           }}
         />
       )}
+      {isEditing && <ProjectEditorPortal setIsRedacting={setIsEditing} />}
     </>
   );
 }

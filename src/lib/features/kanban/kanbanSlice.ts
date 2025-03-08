@@ -13,6 +13,9 @@ const initialState: KanbanState = {
 };
 
 const setKanbanAction = createAction<KanbanState>("kanban/setKanban");
+const setKanbanMetaAction = createAction<{ name: string; tags: TagData[] }>(
+  "kanban/setKanbanMeta",
+);
 const setTagsAction = createAction<TagData[]>("kanban/setTags");
 export const kanbanSlice = createSlice({
   name: "kanban",
@@ -28,8 +31,30 @@ export const kanbanSlice = createSlice({
       const payload = action.payload as TagData[];
       state.tags = payload;
     },
+    setKanbanMeta: (state, action) => {
+      const { name, tags } = action.payload as {
+        name: string;
+        tags: TagData[];
+      };
+      state.name = name;
+      state.tags = tags;
+    },
   },
 });
+
+function updateKanbanMeta(
+  dispatch: any,
+  store: EnhancedStore,
+  data: { name: string; tags: TagData[] },
+) {
+  dispatch(setKanbanMetaAction(data));
+  dispatch(
+    updateLastChanged([
+      { ...store.getState().kanban, name: data.name, tags: data.tags },
+      "kanban/setKanbanMeta",
+    ]),
+  );
+}
 
 function updateKanban(dispatch: any, data: KanbanState) {
   dispatch(setKanbanAction(data));
@@ -45,5 +70,5 @@ function updateTags(dispatch: any, store: EnhancedStore, data: TagData[]) {
   );
 }
 
-export { setTagsAction, updateKanban, updateTags };
+export { setTagsAction, updateKanban, updateTags, updateKanbanMeta };
 export default kanbanSlice.reducer;
