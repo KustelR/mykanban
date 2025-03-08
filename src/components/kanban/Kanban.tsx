@@ -12,6 +12,7 @@ import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import { redirect, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
+import objectHash from "object-hash";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -33,8 +34,8 @@ export default function Kanban(props: KanbanProps) {
     "start",
   );
   const dispatch = useAppDispatch();
+  let lastHash: string = "";
   useEffect(() => {
-    let lastHash: string = "";
     store.subscribe(() => {
       const storeStamp = store.getState();
       const lastChanged = storeStamp.lastChanged;
@@ -47,12 +48,13 @@ export default function Kanban(props: KanbanProps) {
     });
   }, []);
   useEffect(() => {
-    updateKanban(dispatch, {
-      name: label ? label : "fake name fake name",
-      columns: columns ? columns : [],
-      tags,
-    });
-  }, [columns, label, tags]);
+    if (!label || !tags || !columns) {
+      return;
+    }
+    const project = { name: label, columns: columns, tags: tags };
+    if (objectHash(project) != lastHash)
+      updateKanban(dispatch, { name: label, columns: columns, tags: tags });
+  }, [label, tags, columns]);
   return (
     <DndProvider backend={HTML5Backend}>
       <div
