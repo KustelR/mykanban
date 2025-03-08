@@ -82,7 +82,7 @@ export default function CardColumn(props: {
         {isActive &&
           renderActionMenu(columns, setColumns, setIsEditing, colData)}
       </div>
-      <ol className="w-full h-full space-y-2">
+      <ol className="w-full space-y-2">
         {colData.cards &&
           [...colData.cards]
             .sort((card1, card2) => {

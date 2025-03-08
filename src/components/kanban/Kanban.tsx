@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import CardColumn from "./CardColumn";
+import CardColumn from "./Column";
 import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { nanoid, ThunkDispatch } from "@reduxjs/toolkit";
@@ -13,6 +13,7 @@ import { redirect, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
 import objectHash from "object-hash";
+import TextButton from "@/shared/TextButton";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -86,6 +87,10 @@ export default function Kanban(props: KanbanProps) {
               setAddingDirection,
               setIsAdding,
             )}
+          <section>
+            <header className="font-bold">Controls</header>
+            <TextButton>EDIT</TextButton>
+          </section>
         </div>
       </DndProvider>
       {isAdding && (
@@ -121,14 +126,11 @@ function renderColumnList(
   return (
     <>
       <ol
-        className={`overflow-auto flex flex-row space-x-1 md:space-x-3 `}
-        style={{
-          gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))`,
-        }}
+        className={`h-96 flex overflow-x-auto overflow-y-hidden flex-row space-x-1 md:space-x-3 `}
       >
-        <li className="h-full">
+        <li>
           <button
-            className="h-full hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
+            className=" hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
             onClick={(e) => {
               setAddingDirection("start");
               setIsAdding(true);
@@ -142,7 +144,7 @@ function renderColumnList(
           .map((col) => {
             return (
               <li
-                className="col-span-1 min-h-full min-w-40 basis-0 grow"
+                className=" overflow-y-auto min-w-40 basis-0 grow"
                 key={col.id}
               >
                 <CardColumn
@@ -155,9 +157,9 @@ function renderColumnList(
               </li>
             );
           })}
-        <li className="h-full">
+        <li>
           <button
-            className="hover:bg-black/10 h-full hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
+            className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
             onClick={(e) => {
               setIsAdding(true);
               setAddingDirection("end");

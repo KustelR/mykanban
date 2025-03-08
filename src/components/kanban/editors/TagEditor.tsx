@@ -36,7 +36,6 @@ function tagForm(tag: TagData, setTag: (arg: TagData) => void) {
       className="block *:block space-y-1"
       onSubmit={(e) => {
         e.preventDefault();
-        (e.target as HTMLFormElement).reset();
       }}
     >
       <TextInput

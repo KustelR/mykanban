@@ -8,7 +8,6 @@ import DeleteIcon from "@public/delete.svg";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
 import { moveCard, removeCard } from "@/scripts/kanban";
-import Tag from "@/components/kanban/Tag";
 import TagList from "./TagList";
 import ActionMenu from "../ui/ActionMenu";
 import { useAppStore } from "@/lib/hooks";
