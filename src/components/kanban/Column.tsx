@@ -107,7 +107,7 @@ export default function CardColumn(props: {
                       });
                       setColumns(newColumns);
                     }}
-                    cardData={card}
+                    id={card.id}
                   />
                 </li>
               );

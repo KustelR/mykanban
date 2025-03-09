@@ -7,13 +7,13 @@ import ArrowDownIcon from "@public/arrow-down.svg";
 import DeleteIcon from "@public/delete.svg";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
-import { moveCard, removeCard } from "@/scripts/kanban";
+import { moveCard, onCardChange, removeCard } from "@/scripts/kanban";
 import TagList from "./TagList";
 import ActionMenu from "../ui/ActionMenu";
 import { useAppStore } from "@/lib/hooks";
 
 type CardProps = {
-  cardData: CardData;
+  id: string;
   blocked?: boolean;
   debug?: boolean;
   cards?: Array<CardData>;
@@ -23,14 +23,24 @@ type CardProps = {
 };
 
 export function Card(props: CardProps) {
-  const { cardData, blocked, cards, setCards, columns, setColumns, debug } =
-    props;
+  const { id, blocked, cards, setCards, columns, setColumns, debug } = props;
+  const [cardData, setCardData] = useState<CardData>({
+    id: "",
+    order: 99,
+    columnId: "",
+    name: "Loading...",
+    description: "Loading...",
+    tagIds: [],
+  });
+
   const { name, description, tagIds } = cardData;
   const [isRedacting, setIsRedacting] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [tags, setTags] = useState<Array<TagData>>([]);
   const store = useAppStore();
   useEffect(() => {
+    onCardChange(store, id, setCardData);
+    /*
     store.subscribe(() => {
       const data = store.getState();
       const locTags = data.kanban.tags;
@@ -44,6 +54,7 @@ export function Card(props: CardProps) {
         }),
       );
     });
+    */
   }, []);
 
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({

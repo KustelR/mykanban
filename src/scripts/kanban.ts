@@ -1,4 +1,5 @@
-import { nanoid } from "@reduxjs/toolkit";
+import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
+import objectHash from "object-hash";
 
 /**
  * Gets an array of columns and pushes card to column with specified id
@@ -240,4 +241,49 @@ export function removeTag(
     ...cardData,
     tagIds: cardData.tagIds.filter((tag) => tag !== tagId),
   };
+}
+
+function loadCard(
+  state: { kanban: KanbanState; lastChanged: LastChangedState },
+  id: string,
+): CardData | undefined {
+  const cards: CardData[] = state.kanban.columns
+    .map((col) => {
+      return col.cards ? col.cards : [];
+    })
+    .flat();
+  const cardData = cards.find((c) => c.id === id);
+  return cardData;
+}
+
+/**
+ * Calls callback when state of card changes
+ */
+export function onCardChange(
+  store: EnhancedStore,
+  id: string,
+  callback: (card: CardData) => void,
+): void {
+  let lastHash = "";
+  let lastCardHash = "";
+  const firstStateStamp = store.getState() as {
+    kanban: KanbanState;
+    lastChanged: LastChangedState;
+  };
+  const firstState = loadCard(firstStateStamp, id);
+  if (firstState) callback(firstState);
+  store.subscribe(() => {
+    const stateStamp = store.getState() as {
+      kanban: KanbanState;
+      lastChanged: LastChangedState;
+    };
+    if (stateStamp.lastChanged.hash == lastHash) return;
+    lastHash = stateStamp.lastChanged.hash;
+    const cardData = loadCard(stateStamp, id);
+    if (!cardData) return;
+    const cardHash = objectHash(cardData);
+    if (cardHash == lastCardHash) return;
+    lastCardHash = cardHash;
+    callback(cardData);
+  });
 }
