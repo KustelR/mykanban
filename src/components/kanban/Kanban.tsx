@@ -55,7 +55,7 @@ export default function Kanban(props: KanbanProps) {
       return;
     }
     const project = { name: label, columns: columns, tags: tags };
-    if (objectHash(project) != lastHash)
+    if (objectHash(project) != lastHash && lastHash != "")
       updateKanban(dispatch, { name: label, columns: columns, tags: tags });
   }, [label, tags, columns]);
   return (
