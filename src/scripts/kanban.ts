@@ -1,4 +1,6 @@
-import { nanoid } from "@reduxjs/toolkit";
+import { updateCardTags } from "@/lib/features/kanban/kanbanSlice";
+import { getCard } from "@/lib/features/kanban/utils";
+import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
 
 /**
  * Gets an array of columns and pushes card to column with specified id
@@ -228,16 +230,16 @@ export function replaceColumn(
  * @returns  changed card
  */
 export function removeTag(
-  kanban: KanbanState,
-  cardData: CardData,
+  store: EnhancedStore,
+  dispatch: AppDispatch,
+  cardId: string,
   tagId: string,
-): CardData {
-  if (!cardData.tagIds || !kanban.tags) return cardData;
-  kanban.tags = kanban.tags.filter((tag) => {
-    tag.id !== tagId;
-  });
-  return {
-    ...cardData,
-    tagIds: cardData.tagIds.filter((tag) => tag !== tagId),
-  };
+) {
+  const { card } = getCard(store.getState().kanban, cardId);
+  updateCardTags(
+    dispatch,
+    store,
+    cardId,
+    card.tagIds.filter((t) => t != tagId),
+  );
 }
