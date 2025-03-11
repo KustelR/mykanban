@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Tag from "./Tag";
+import { useAppStore } from "@/lib/hooks";
+import { EnhancedStore } from "@reduxjs/toolkit";
 
 export default function TagList(props: {
-  tags: Array<TagData>;
+  tagIds: string[];
   className?: string;
 }) {
-  const { tags, className } = props;
+  const { tagIds, className } = props;
+  const [tags, setTags] = useState<TagData[]>([]);
+  const store = useAppStore();
+  useEffect(() => {
+    loadTags(tagIds, setTags, store);
+    store.subscribe(() => {
+      loadTags(tagIds, setTags, store);
+    });
+  }, []);
   return (
     <ul className={`${className} flex flex-wrap`}>
       {tags.map((tag, idx) => {
@@ -18,4 +28,14 @@ export default function TagList(props: {
       })}
     </ul>
   );
+}
+
+function loadTags(
+  tagIds: string[],
+  setTags: (arg: TagData[]) => void,
+  store: EnhancedStore<{ kanban: KanbanState }>,
+) {
+  const storeTags = store.getState().kanban.tags;
+  if (!storeTags) return;
+  setTags(storeTags.filter((t) => tagIds.includes(t.id)));
 }
