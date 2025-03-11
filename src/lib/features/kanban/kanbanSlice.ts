@@ -17,6 +17,9 @@ const setKanbanMetaAction = createAction<{ name: string; tags: TagData[] }>(
   "kanban/setKanbanMeta",
 );
 const setTagsAction = createAction<TagData[]>("kanban/setTags");
+const setCardTagsAction = createAction<{ cardId: string; tagIds: string[] }>(
+  "kanban/setCardTags",
+);
 export const kanbanSlice = createSlice({
   name: "kanban",
   initialState,
@@ -39,6 +42,24 @@ export const kanbanSlice = createSlice({
       state.name = name;
       state.tags = tags;
     },
+    setCardTags: (state, action) => {
+      const { cardId, tagIds } = action.payload as {
+        cardId: string;
+        tagIds: string[];
+      };
+      const colIdx = state.columns.findIndex((col) =>
+        col.cards?.filter((card) => card.id === cardId),
+      );
+      const cardIdx = state.columns[colIdx].cards?.findIndex(
+        (c) => (c.id = cardId),
+      );
+      if (!cardIdx || !state.columns[colIdx].cards) return;
+      const card = state.columns[colIdx].cards[cardIdx];
+      state.columns[colIdx].cards?.splice(cardIdx, 1, {
+        ...card,
+        tagIds: tagIds,
+      });
+    },
   },
 });
 
@@ -55,7 +76,12 @@ function updateKanbanMeta(
     ]),
   );
 }
-
+function updateCardTags(
+  dispatch: any,
+  store: EnhancedStore,
+  id: string,
+  data: TagData[],
+) {}
 function updateKanban(dispatch: any, data: KanbanState) {
   dispatch(setKanbanAction(data));
   dispatch(updateLastChanged([data, "kanban/setKanban"]));
@@ -70,5 +96,11 @@ function updateTags(dispatch: any, store: EnhancedStore, data: TagData[]) {
   );
 }
 
-export { setTagsAction, updateKanban, updateTags, updateKanbanMeta };
+export {
+  setTagsAction,
+  updateKanban,
+  updateTags,
+  updateKanbanMeta,
+  updateCardTags,
+};
 export default kanbanSlice.reducer;
