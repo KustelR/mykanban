@@ -66,12 +66,7 @@ function preview(card: CardData) {
   return (
     <div className="max-w-96">
       <header className="font-bold">Preview</header>
-      <Card
-        columns={[]}
-        setColumns={() => {}}
-        blocked
-        cardData={{ ...card }}
-      ></Card>
+      <Card cardData={{ ...card }}></Card>
     </div>
   );
 }
