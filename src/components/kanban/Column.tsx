@@ -21,6 +21,7 @@ import DeleteIcon from "@public/delete.svg";
 import ChangeIcon from "@public/change.svg";
 import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import ActionMenu from "../ui/ActionMenu";
+import CardActions from "./CardActions";
 
 export default function CardColumn(props: {
   className?: string;
@@ -91,24 +92,13 @@ export default function CardColumn(props: {
             .map((card) => {
               return (
                 <li key={card.id}>
-                  <Card
-                    cards={colData.cards ? colData.cards : []}
-                    debug={debug}
+                  <CardActions
                     columns={columns}
                     setColumns={setColumns}
-                    setCards={(newCards) => {
-                      const colIdx = columns.findIndex((col) => {
-                        return col.id === colData.id;
-                      });
-                      const newColumns: Array<ColData> = [...columns];
-                      newColumns.splice(colIdx, 1, {
-                        ...colData,
-                        ...{ cards: newCards },
-                      });
-                      setColumns(newColumns);
-                    }}
                     cardData={card}
-                  />
+                  >
+                    <Card debug={debug} cardData={card} />
+                  </CardActions>
                 </li>
               );
             })}
