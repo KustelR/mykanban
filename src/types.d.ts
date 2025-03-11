@@ -1,9 +1,16 @@
+import {
+  ThunkDispatch,
+  UnknownAction,
+  Dispatch,
+  EnhancedStore,
+} from "@reduxjs/toolkit";
+
 declare global {
   type validator = (input: string) => [boolean, string];
   interface CardData {
     name: string;
     description: string;
-    tagIds: Array<string> | null;
+    tagIds: string[];
     id: string;
     order: number;
     columnId: string;
@@ -38,5 +45,19 @@ declare global {
     hash: string;
     lastAction: string;
   };
+
+  type AppDispatch = ThunkDispatch<
+    {
+      kanban: KanbanState;
+      lastChanged: LastChangedState;
+    },
+    undefined,
+    UnknownAction
+  > &
+    Dispatch<UnknownAction>;
+  type AppStore = EnhancedStore<{
+    kanban: KanbanState;
+    lastChanged: LastChangedState;
+  }>;
 }
 export {};
