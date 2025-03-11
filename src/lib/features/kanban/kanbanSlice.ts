@@ -1,10 +1,14 @@
 import {
   createAction,
   createSlice,
+  Dispatch,
   EnhancedStore,
   nanoid,
+  ThunkDispatch,
+  UnknownAction,
 } from "@reduxjs/toolkit";
 import { updateLastChanged } from "../lastChanged/lastChangedSlice";
+import { getCard } from "./utils";
 
 const initialState: KanbanState = {
   columns: [],
@@ -17,7 +21,7 @@ const setKanbanMetaAction = createAction<{ name: string; tags: TagData[] }>(
   "kanban/setKanbanMeta",
 );
 const setTagsAction = createAction<TagData[]>("kanban/setTags");
-const setCardTagsAction = createAction<{ cardId: string; tagIds: string[] }>(
+const setCardTagsAction = createAction<{ cardId: string; tags: string[] }>(
   "kanban/setCardTags",
 );
 export const kanbanSlice = createSlice({
@@ -43,21 +47,15 @@ export const kanbanSlice = createSlice({
       state.tags = tags;
     },
     setCardTags: (state, action) => {
-      const { cardId, tagIds } = action.payload as {
+      const { cardId, tags } = action.payload as {
         cardId: string;
-        tagIds: string[];
+        tags: string[];
       };
-      const colIdx = state.columns.findIndex((col) =>
-        col.cards?.filter((card) => card.id === cardId),
-      );
-      const cardIdx = state.columns[colIdx].cards?.findIndex(
-        (c) => (c.id = cardId),
-      );
-      if (!cardIdx || !state.columns[colIdx].cards) return;
-      const card = state.columns[colIdx].cards[cardIdx];
-      state.columns[colIdx].cards?.splice(cardIdx, 1, {
+
+      const { cardIdx, columnIdx, card } = getCard(state, cardId);
+      state.columns[columnIdx].cards?.splice(cardIdx, 1, {
         ...card,
-        tagIds: tagIds,
+        tagIds: tags,
       });
     },
   },
@@ -77,23 +75,25 @@ function updateKanbanMeta(
   );
 }
 function updateCardTags(
-  dispatch: any,
+  dispatch: AppDispatch,
   store: EnhancedStore,
   id: string,
-  data: TagData[],
-) {}
-function updateKanban(dispatch: any, data: KanbanState) {
+  data: string[],
+) {
+  dispatch(setCardTagsAction({ cardId: id, tags: data }));
+  dispatch(updateLastChanged([store.getState().kanban, "kanban/setCardTags"]));
+}
+function updateKanban(dispatch: AppDispatch, data: KanbanState) {
   dispatch(setKanbanAction(data));
   dispatch(updateLastChanged([data, "kanban/setKanban"]));
 }
-function updateTags(dispatch: any, store: EnhancedStore, data: TagData[]) {
+function updateTags(
+  dispatch: AppDispatch,
+  store: EnhancedStore,
+  data: TagData[],
+) {
   dispatch(setTagsAction(data));
-  dispatch(
-    updateLastChanged([
-      { ...store.getState().kanban, tags: data },
-      "kanban/setTags",
-    ]),
-  );
+  dispatch(updateLastChanged([store.getState().kanban, "kanban/setTags"]));
 }
 
 export {
