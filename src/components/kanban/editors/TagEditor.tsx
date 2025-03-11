@@ -2,17 +2,19 @@
 
 import TextButton from "@/shared/TextButton";
 import TextInput from "@/shared/TextInput";
-import { nanoid } from "@reduxjs/toolkit";
+import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import TagList from "../TagList";
 import Tag from "../Tag";
 import DeleteIcon from "@public/delete.svg";
 import PlusIcon from "@public/plus.svg";
 import ActionMenu from "@/components/ui/ActionMenu";
+import { updateCardTags } from "@/lib/features/kanban/kanbanSlice";
+import { useAppDispatch, useAppStore } from "@/lib/hooks";
 
 type TagEditorProps = {
   tags: Array<TagData>;
-  cardId?: string;
+  cardId: string;
   tagIds: string[];
   setTagIds: (arg: string[]) => void;
   setTags: (arg: Array<TagData>) => void;
@@ -25,7 +27,7 @@ export default function TagEditor(props: TagEditorProps) {
     <section>
       <header className="font-semibold">Tag Editor</header>
       {tagForm(tag, setTag)}
-      {renderTagSuggestions(tags, tag, setTags, tagIds, setTagIds)}
+      {renderTagSuggestions(cardId, tags, tag, setTags, tagIds, setTagIds)}
     </section>
   );
 }
@@ -67,32 +69,8 @@ function createTag(name?: string, color?: string, cardId?: string): TagData {
   };
 }
 
-function SuggestedTag(props: {
-  data: TagData;
-  tags: TagData[];
-  setTags: (tags: TagData[]) => void;
-  tagIds: string[];
-  setTagIds: (ids: string[]) => void;
-}) {
-  const { data, tags, setTags, tagIds, setTagIds } = props;
-  const [isHovered, setIsHovered] = useState(false);
-  return (
-    <div
-      className="relative w-full h-fit"
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
-    >
-      <Tag data={data}></Tag>
-      {isHovered && renderActionMenu(data, tags, setTags, tagIds, setTagIds)}
-    </div>
-  );
-}
-
 function renderTagSuggestions(
+  cardId: string,
   tags: TagData[],
   tag: TagData,
   setTags: (tags: TagData[]) => void,
@@ -111,6 +89,7 @@ function renderTagSuggestions(
             return (
               <li key={idx}>
                 <SuggestedTag
+                  cardId={cardId}
                   data={item}
                   tags={tags}
                   setTags={setTags}
@@ -125,8 +104,49 @@ function renderTagSuggestions(
   );
 }
 
+function SuggestedTag(props: {
+  data: TagData;
+  tags: TagData[];
+  cardId: string;
+  setTags: (tags: TagData[]) => void;
+  tagIds: string[];
+  setTagIds: (ids: string[]) => void;
+}) {
+  const { data, tags, setTags, cardId, tagIds, setTagIds } = props;
+  const [isHovered, setIsHovered] = useState(false);
+  const dispatch = useAppDispatch();
+  const store = useAppStore();
+  return (
+    <div
+      className="relative w-full h-fit"
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
+    >
+      <Tag data={data}></Tag>
+      {isHovered &&
+        renderActionMenu(
+          data,
+          store,
+          cardId,
+          dispatch,
+          tags,
+          setTags,
+          tagIds,
+          setTagIds,
+        )}
+    </div>
+  );
+}
+
 function renderActionMenu(
   tag: TagData,
+  store: EnhancedStore,
+  cardId: string,
+  dispatch: AppDispatch,
   tags: Array<TagData>,
   setTags: (arg: Array<TagData>) => void,
   tagIds: string[],
@@ -137,13 +157,19 @@ function renderActionMenu(
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
-        setTagIds(tagIds.filter((t) => t != tag.id));
+        updateCardTags(
+          dispatch,
+          store,
+          cardId,
+          tagIds.filter((t) => t != tag.id),
+        );
       },
     },
     {
       icon: PlusIcon,
       className: "bg-green-800 hover:bg-green-900",
       callback: () => {
+        updateCardTags(dispatch, store, cardId, tagIds.concat(tag.id));
         if (tags.filter((t) => t.id == tag.id).length == 0) {
           setTags(tags.concat(tag));
         }
