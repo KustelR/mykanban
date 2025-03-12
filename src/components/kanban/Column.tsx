@@ -91,11 +91,7 @@ export default function CardColumn(props: {
             .map((card) => {
               return (
                 <li key={card.id}>
-                  <CardActions
-                    columns={columns}
-                    setColumns={() => {}}
-                    cardData={card}
-                  >
+                  <CardActions cardData={card}>
                     <Card debug={debug} cardData={card} />
                   </CardActions>
                 </li>
