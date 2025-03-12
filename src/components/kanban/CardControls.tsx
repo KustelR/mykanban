@@ -16,12 +16,10 @@ type CardActionsProps = {
   children?: ReactNode;
   blocked?: boolean;
   cardData: CardData;
-  cards?: Array<CardData>;
-  setCards?: (arg: Array<CardData>) => void;
 };
 
 export default function CardActions(props: CardActionsProps) {
-  const { children, blocked, cardData, cards, setCards } = props;
+  const { children, blocked, cardData } = props;
 
   const [isActive, setIsActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
