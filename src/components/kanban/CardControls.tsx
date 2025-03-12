@@ -9,7 +9,7 @@ import { CardEditorPortal } from "./editors/CardEditor";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
 import { updateColumnCards } from "@/lib/features/kanban/kanbanSlice";
-import { getCard, getColumn } from "@/lib/features/kanban/utils";
+import { getColumn } from "@/lib/features/kanban/utils";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 
 type CardActionsProps = {
@@ -37,10 +37,10 @@ export default function CardActions(props: CardActionsProps) {
   }));
 
   return (
-    <div>
+    <>
       {drag(
         <div
-          className={`${isDragging ? "cursor-move" : "cursor-pointer"} size-fit relative w-full`}
+          className={`${isDragging ? "cursor-move" : "cursor-pointer"} h-full relative w-full`}
           onMouseEnter={(e) => {
             setIsActive(true);
           }}
@@ -62,7 +62,7 @@ export default function CardActions(props: CardActionsProps) {
           setIsEditing={setIsEditing}
         />
       )}
-    </div>
+    </>
   );
 }
 
