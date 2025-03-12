@@ -8,6 +8,7 @@ export function getCard(
   const colIdx = columns.findIndex(
     (col) => col.cards && col.cards.filter((card) => card.id === id).length > 0,
   );
+  if (colIdx == -1) throw new Error("Column not found");
   const column = columns[colIdx];
   if (!column.cards) throw new Error("Card not found");
 
@@ -23,10 +24,8 @@ export function getColumn(
   id: string,
 ): { idx: number; column: ColData } {
   const columns = [...state.columns];
-  const colIdx = columns.findIndex(
-    (col) => col.cards && col.cards.filter((card) => card.id === id).length > 0,
-  );
+  const colIdx = columns.findIndex((col) => col.id === id);
   if (colIdx === -1) throw new Error("Column was not found");
-  const column = columns[colIdx]
-  return {idx: colIdx, column: {...column}}
+  const column = columns[colIdx];
+  return { idx: colIdx, column: { ...column } };
 }
