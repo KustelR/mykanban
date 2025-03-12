@@ -3,7 +3,7 @@
 import TextButton from "@/shared/TextButton";
 import TextInput from "@/shared/TextInput";
 import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TagList from "../TagList";
 import Tag from "../Tag";
 import DeleteIcon from "@public/delete.svg";
@@ -13,19 +13,32 @@ import { updateCardTags, updateTags } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 
 type TagEditorProps = {
-  tags: Array<TagData>;
   cardId: string;
   tagIds: string[];
+  setTagIds: (arg: string[]) => void;
 };
 
 export default function TagEditor(props: TagEditorProps) {
-  const { tags, cardId, tagIds } = props;
+  const { cardId, tagIds, setTagIds } = props;
   const [tag, setTag] = useState<TagData>(createTag());
+  const [tags, setTags] = useState<TagData[]>([]);
+
+  const store = useAppStore();
+
+  useEffect(() => {
+    let projectTags = store.getState().kanban.tags;
+    if (projectTags) setTags(projectTags);
+    store.subscribe(() => {
+      projectTags = store.getState().kanban.tags;
+      if (projectTags) setTags(projectTags);
+    });
+  }, []);
+
   return (
     <section>
       <header className="font-semibold">Tag Editor</header>
       {tagForm(tag, setTag)}
-      {renderTagSuggestions(cardId, tags, tag, tagIds)}
+      {renderTagSuggestions(cardId, tags, tag, tagIds, setTagIds)}
     </section>
   );
 }
@@ -72,6 +85,7 @@ function renderTagSuggestions(
   tags: TagData[],
   tag: TagData,
   tagIds: string[],
+  setTagIds: (arg: string[]) => void,
 ) {
   return (
     <section>
@@ -84,7 +98,12 @@ function renderTagSuggestions(
           .map((item, idx) => {
             return (
               <li key={idx}>
-                <SuggestedTag cardId={cardId} data={item} tagIds={tagIds} />
+                <SuggestedTag
+                  cardId={cardId}
+                  data={item}
+                  tagIds={tagIds}
+                  setTagIds={setTagIds}
+                />
               </li>
             );
           })}
@@ -97,8 +116,9 @@ function SuggestedTag(props: {
   data: TagData;
   cardId: string;
   tagIds: string[];
+  setTagIds: (arg: string[]) => void;
 }) {
-  const { data, cardId, tagIds } = props;
+  const { data, cardId, tagIds, setTagIds } = props;
   const [isHovered, setIsHovered] = useState(false);
   const dispatch = useAppDispatch();
   const store = useAppStore();
@@ -113,7 +133,8 @@ function SuggestedTag(props: {
       }}
     >
       <Tag data={data}></Tag>
-      {isHovered && renderActionMenu(data, store, cardId, dispatch, tagIds)}
+      {isHovered &&
+        renderActionMenu(data, store, cardId, dispatch, tagIds, setTagIds)}
     </div>
   );
 }
@@ -124,35 +145,32 @@ function renderActionMenu(
   cardId: string,
   dispatch: AppDispatch,
   tagIds: string[],
+  setTagIds: (arg: string[]) => void,
 ) {
   const options = [
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
-        updateCardTags(
-          dispatch,
-          store,
-          cardId,
-          tagIds.filter((t) => t != tag.id),
-        );
+        setTagIds(tagIds.filter((t) => t != tag.id));
       },
     },
     {
       icon: PlusIcon,
       className: "bg-green-800 hover:bg-green-900",
       callback: () => {
-        const storeTags = store
-          .getState()
-          .kanban.tags?.filter((t) => t.id === tag.id);
+        const storeTags = store.getState().kanban.tags;
         if (!storeTags) throw new Error("Can't read tags");
         if (storeTags.filter((t) => t.id === tag.id).length === 0) {
           updateTags(dispatch, store, storeTags.concat(tag));
         }
-        updateCardTags(dispatch, store, cardId, tagIds.concat(tag.id));
+        setTagIds(tagIds.concat(tag.id));
       },
     },
   ];
-
-  return <ActionMenu options={options} />;
+  if (tagIds.includes(tag.id)) {
+    return <ActionMenu options={[options[0]]} />;
+  } else {
+    return <ActionMenu options={[options[1]]} />;
+  }
 }
