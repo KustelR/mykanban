@@ -8,7 +8,6 @@ import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
-import { updateCardTags } from "@/lib/features/kanban/kanbanSlice";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;

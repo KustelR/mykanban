@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import CardColumn from "./Column";
+import Column from "./Column";
 import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { nanoid, ThunkDispatch } from "@reduxjs/toolkit";
@@ -15,6 +15,7 @@ import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
 import objectHash from "object-hash";
 import TextButton from "@/shared/TextButton";
 import { ProjectEditorPortal } from "./editors/ProjectEditor";
+import ColumnControls from "./ColumnControls";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -155,13 +156,13 @@ function renderColumnList(
                 className=" overflow-y-auto min-w-40 basis-0 grow"
                 key={col.id}
               >
-                <CardColumn
-                  className="w-full h-full"
-                  debug={debug}
+                <ColumnControls
                   columns={columns}
                   setColumns={setColumns}
                   colData={col}
-                />
+                >
+                  <Column debug={debug} colData={col} />
+                </ColumnControls>
               </li>
             );
           })}

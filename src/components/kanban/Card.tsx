@@ -1,8 +1,4 @@
-import { useEffect, useState } from "react";
 import TagList from "./TagList";
-import { useAppStore } from "@/lib/hooks";
-import { getCard } from "@/lib/features/kanban/utils";
-import objectHash from "object-hash";
 
 type CardProps = {
   cardData: CardData;
