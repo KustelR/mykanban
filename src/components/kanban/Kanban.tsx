@@ -36,18 +36,17 @@ export default function Kanban(props: KanbanProps) {
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
     "start",
   );
+  const [lastHash, setLastHash] = useState("");
   const dispatch = useAppDispatch();
-  let lastHash: string = "";
   useEffect(() => {
     store.subscribe(() => {
       const storeStamp = store.getState();
       const lastChanged = storeStamp.lastChanged;
-      if (lastChanged.hash == lastHash) return;
-      lastHash = lastChanged.hash;
+      setLastHash(lastChanged.hash);
       const data = storeStamp.kanban;
       setLabel(data.name);
       setColumns(data.columns);
-      setTags(data.tags);
+      setTags(data.tags ? [...data.tags] : []);
     });
   }, []);
   useEffect(() => {
@@ -55,8 +54,8 @@ export default function Kanban(props: KanbanProps) {
       return;
     }
     const project = { name: label, columns: columns, tags: tags };
-    if (objectHash(project) != lastHash && lastHash != "")
-      updateKanban(dispatch, { name: label, columns: columns, tags: tags });
+    if (objectHash(project) === lastHash || lastHash === "") return;
+    updateKanban(dispatch, { name: label, columns: columns, tags: tags });
   }, [label, tags, columns]);
   return (
     <>
