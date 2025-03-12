@@ -9,25 +9,23 @@ import Tag from "../Tag";
 import DeleteIcon from "@public/delete.svg";
 import PlusIcon from "@public/plus.svg";
 import ActionMenu from "@/components/ui/ActionMenu";
-import { updateCardTags } from "@/lib/features/kanban/kanbanSlice";
+import { updateCardTags, updateTags } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 
 type TagEditorProps = {
   tags: Array<TagData>;
   cardId: string;
   tagIds: string[];
-  setTagIds: (arg: string[]) => void;
-  setTags: (arg: Array<TagData>) => void;
 };
 
 export default function TagEditor(props: TagEditorProps) {
-  const { tags, setTags, cardId, tagIds, setTagIds } = props;
+  const { tags, cardId, tagIds } = props;
   const [tag, setTag] = useState<TagData>(createTag());
   return (
     <section>
       <header className="font-semibold">Tag Editor</header>
       {tagForm(tag, setTag)}
-      {renderTagSuggestions(cardId, tags, tag, setTags, tagIds, setTagIds)}
+      {renderTagSuggestions(cardId, tags, tag, tagIds)}
     </section>
   );
 }
@@ -73,9 +71,7 @@ function renderTagSuggestions(
   cardId: string,
   tags: TagData[],
   tag: TagData,
-  setTags: (tags: TagData[]) => void,
   tagIds: string[],
-  setTagIds: (ids: string[]) => void,
 ) {
   return (
     <section>
@@ -88,14 +84,7 @@ function renderTagSuggestions(
           .map((item, idx) => {
             return (
               <li key={idx}>
-                <SuggestedTag
-                  cardId={cardId}
-                  data={item}
-                  tags={tags}
-                  setTags={setTags}
-                  tagIds={tagIds}
-                  setTagIds={setTagIds}
-                />
+                <SuggestedTag cardId={cardId} data={item} tagIds={tagIds} />
               </li>
             );
           })}
@@ -106,13 +95,10 @@ function renderTagSuggestions(
 
 function SuggestedTag(props: {
   data: TagData;
-  tags: TagData[];
   cardId: string;
-  setTags: (tags: TagData[]) => void;
   tagIds: string[];
-  setTagIds: (ids: string[]) => void;
 }) {
-  const { data, tags, setTags, cardId, tagIds, setTagIds } = props;
+  const { data, cardId, tagIds } = props;
   const [isHovered, setIsHovered] = useState(false);
   const dispatch = useAppDispatch();
   const store = useAppStore();
@@ -127,30 +113,17 @@ function SuggestedTag(props: {
       }}
     >
       <Tag data={data}></Tag>
-      {isHovered &&
-        renderActionMenu(
-          data,
-          store,
-          cardId,
-          dispatch,
-          tags,
-          setTags,
-          tagIds,
-          setTagIds,
-        )}
+      {isHovered && renderActionMenu(data, store, cardId, dispatch, tagIds)}
     </div>
   );
 }
 
 function renderActionMenu(
   tag: TagData,
-  store: EnhancedStore,
+  store: AppStore,
   cardId: string,
   dispatch: AppDispatch,
-  tags: Array<TagData>,
-  setTags: (arg: Array<TagData>) => void,
   tagIds: string[],
-  setTagIds: (ids: string[]) => void,
 ) {
   const options = [
     {
@@ -169,11 +142,14 @@ function renderActionMenu(
       icon: PlusIcon,
       className: "bg-green-800 hover:bg-green-900",
       callback: () => {
-        updateCardTags(dispatch, store, cardId, tagIds.concat(tag.id));
-        if (tags.filter((t) => t.id == tag.id).length == 0) {
-          setTags(tags.concat(tag));
+        const storeTags = store
+          .getState()
+          .kanban.tags?.filter((t) => t.id === tag.id);
+        if (!storeTags) throw new Error("Can't read tags");
+        if (storeTags.filter((t) => t.id === tag.id).length === 0) {
+          updateTags(dispatch, store, storeTags.concat(tag));
         }
-        setTagIds(tagIds.concat(tag.id));
+        updateCardTags(dispatch, store, cardId, tagIds.concat(tag.id));
       },
     },
   ];
