@@ -1,14 +1,6 @@
-import {
-  createAction,
-  createSlice,
-  Dispatch,
-  EnhancedStore,
-  nanoid,
-  ThunkDispatch,
-  UnknownAction,
-} from "@reduxjs/toolkit";
+import { createAction, createSlice, EnhancedStore } from "@reduxjs/toolkit";
 import { updateLastChanged } from "../lastChanged/lastChangedSlice";
-import { getCard } from "./utils";
+import { getCard, getColumn } from "./utils";
 
 const initialState: KanbanState = {
   columns: [],
@@ -21,6 +13,9 @@ const setKanbanMetaAction = createAction<{ name: string; tags: TagData[] }>(
   "kanban/setKanbanMeta",
 );
 const setTagsAction = createAction<TagData[]>("kanban/setTags");
+const setColumnCardsAction = createAction<{ id: string; cards: CardData[] }>(
+  "kanban/setColumnCards",
+);
 const setCardTagsAction = createAction<{ cardId: string; tags: string[] }>(
   "kanban/setCardTags",
 );
@@ -57,6 +52,11 @@ export const kanbanSlice = createSlice({
         ...card,
         tagIds: tags,
       });
+    },
+    setColumnCards: (state, action) => {
+      const { id, cards } = action.payload as { id: string; cards: CardData[] };
+      const { idx, column } = getColumn(state, id);
+      state.columns.splice(idx, 1, { ...column, cards: cards });
     },
   },
 });
@@ -96,11 +96,24 @@ function updateTags(
   dispatch(updateLastChanged([store.getState().kanban, "kanban/setTags"]));
 }
 
+function updateColumnCards(
+  dispatch: AppDispatch,
+  store: EnhancedStore,
+  id: string,
+  data: CardData[],
+) {
+  dispatch(setColumnCardsAction({ id: id, cards: data }));
+  dispatch(
+    updateLastChanged([store.getState().kanban, "kanban/setColumnCards"]),
+  );
+}
+
 export {
   setTagsAction,
   updateKanban,
   updateTags,
   updateKanbanMeta,
   updateCardTags,
+  updateColumnCards,
 };
 export default kanbanSlice.reducer;
