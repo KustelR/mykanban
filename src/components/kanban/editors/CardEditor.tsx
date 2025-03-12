@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TextInput from "@/shared/TextInput";
 import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import { setTagsAction, updateTags } from "@/lib/features/kanban/kanbanSlice";
 import Popup from "@/shared/Popup";
 
 export default function CardEditor(props: {
@@ -100,17 +99,8 @@ function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
 
       <TagEditor
         tags={tags ? tags : []}
-        setTags={(t) => {
-          updateTags(dispatch, store, t);
-        }}
         cardId={card.id}
         tagIds={card.tagIds ? card.tagIds : []}
-        setTagIds={(ids) => {
-          setCard({
-            ...card,
-            tagIds: ids,
-          });
-        }}
       />
     </div>
   );

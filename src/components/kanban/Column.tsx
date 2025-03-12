@@ -13,7 +13,6 @@ import {
   removeCard,
   removeColumn,
   replaceColumn,
-  swapColumns,
 } from "@/scripts/kanban";
 import ArrowLeftIcon from "@public/arrow-left.svg";
 import ArrowRightIcon from "@public/arrow-right.svg";
@@ -21,7 +20,7 @@ import DeleteIcon from "@public/delete.svg";
 import ChangeIcon from "@public/change.svg";
 import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import ActionMenu from "../ui/ActionMenu";
-import CardActions from "./CardActions";
+import CardActions from "./CardControls";
 
 export default function CardColumn(props: {
   className?: string;
@@ -94,7 +93,7 @@ export default function CardColumn(props: {
                 <li key={card.id}>
                   <CardActions
                     columns={columns}
-                    setColumns={setColumns}
+                    setColumns={() => {}}
                     cardData={card}
                   >
                     <Card debug={debug} cardData={card} />
