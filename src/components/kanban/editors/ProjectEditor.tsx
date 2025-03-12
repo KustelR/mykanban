@@ -10,18 +10,16 @@ import TagEditor from "./TagEditor";
 
 export default function ProjectEditor() {
   const [name, setName] = useState<string | null>(null);
-  const [tags, setTags] = useState<TagData[] | null>(null);
+  const [state, setState] = useState<KanbanState | null>(null);
   const dispatch = useAppDispatch();
   const store = useAppStore();
 
   useEffect(() => {
-    const stateStamp = store.getState().kanban;
-    setName(stateStamp.name);
-    setTags(stateStamp.tags ? stateStamp.tags : []);
+    setState(store.getState().kanban);
+    store.subscribe(() => {
+      setState(store.getState().kanban);
+    });
   }, []);
-  useEffect(() => {
-    if (name && tags) updateKanbanMeta(dispatch, store, { name, tags });
-  }, [tags]);
   return (
     <div className="w-full h-full place-content-center place-items-center">
       <section
@@ -34,7 +32,11 @@ export default function ProjectEditor() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (name && tags) updateKanbanMeta(dispatch, store, { name, tags });
+            if (name && state)
+              updateKanbanMeta(dispatch, store, {
+                name,
+                tags: state.tags ? state.tags : [],
+              });
           }}
         >
           <TextInput
@@ -45,13 +47,21 @@ export default function ProjectEditor() {
             label="name"
           />
         </form>
-        {tags && (
+        {state && state.tags && (
           <TagEditor
-            tags={tags}
-            setTags={setTags}
-            tagIds={tags.map((tag) => tag.id)}
+            cardId=""
+            tagIds={state.tags.map((tag) => tag.id)}
             setTagIds={(tagIds) => {
-              setTags(tags.filter((tag) => tagIds.includes(tag.id)));
+              const tags = state.tags;
+              if (!tags) return;
+              const filteredTags = tags.filter((tag) =>
+                tagIds.includes(tag.id),
+              );
+              if (filteredTags.length !== tags.length)
+                updateKanbanMeta(dispatch, store, {
+                  name: state.name,
+                  tags: filteredTags,
+                });
             }}
           ></TagEditor>
         )}
