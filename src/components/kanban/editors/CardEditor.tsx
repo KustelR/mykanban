@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
+import { updateCardTags } from "@/lib/features/kanban/kanbanSlice";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -92,15 +93,17 @@ function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
           onChange={(e) => {
             setCard({ ...card, description: e.target.value });
           }}
-          id="cardCreator_addDescription"
+          id="cardCreator_description"
           label="Description"
         />
       </form>
 
       <TagEditor
-        tags={tags ? tags : []}
         cardId={card.id}
         tagIds={card.tagIds ? card.tagIds : []}
+        setTagIds={(tagIds) => {
+          setCard({ ...card, tagIds: tagIds });
+        }}
       />
     </div>
   );

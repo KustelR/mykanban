@@ -8,23 +8,25 @@ import ActionMenu from "../ui/ActionMenu";
 import { CardEditorPortal } from "./editors/CardEditor";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
+import { updateColumnCards } from "@/lib/features/kanban/kanbanSlice";
+import { getCard, getColumn } from "@/lib/features/kanban/utils";
+import { useAppDispatch, useAppStore } from "@/lib/hooks";
 
 type CardActionsProps = {
   children?: ReactNode;
   blocked?: boolean;
   cardData: CardData;
-  columns: ColData[];
-  setColumns: (arg: ColData[]) => void;
   cards?: Array<CardData>;
   setCards?: (arg: Array<CardData>) => void;
 };
 
 export default function CardActions(props: CardActionsProps) {
-  const { children, blocked, cardData, columns, setColumns, cards, setCards } =
-    props;
+  const { children, blocked, cardData, cards, setCards } = props;
 
   const [isActive, setIsActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const dispatch = useAppDispatch();
+  const store = useAppStore();
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CARD,
@@ -49,41 +51,62 @@ export default function CardActions(props: CardActionsProps) {
           {children}
           {!blocked &&
             isActive &&
-            renderActionMenu(columns, cardData, setColumns, setIsEditing)}
+            renderActionMenu(cardData, setIsEditing, dispatch, store)}
         </div>,
       )}
-      {isEditing &&
-        renderEditor(
-          cardData,
-          blocked,
-          isEditing,
-          setIsEditing,
-          cards,
-          setCards,
-        )}
+      {isEditing && (
+        <Editor
+          blocked={blocked}
+          cardData={cardData}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+        />
+      )}
     </div>
   );
 }
 
 function renderActionMenu(
-  columns: Array<ColData>,
   cardData: CardData,
-  setColumns: (arg: Array<ColData>) => void,
   setIsEditing: (arg: boolean) => void,
+  dispatch: AppDispatch,
+  store: AppStore,
 ) {
   const options = [
     {
       icon: ArrowUpIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        setColumns(moveCard(columns, cardData.columnId, cardData.id, -1));
+        const { column } = getColumn(
+          store.getState().kanban,
+          cardData.columnId,
+        );
+        const cards = column.cards;
+        if (!cards) throw new Error("Column doesn't have any cards");
+        updateColumnCards(
+          dispatch,
+          store,
+          cardData.columnId,
+          moveCard(cards, cardData.id, -1),
+        );
       },
     },
     {
       icon: ArrowDownIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        setColumns(moveCard(columns, cardData.columnId, cardData.id, 1));
+        const { column } = getColumn(
+          store.getState().kanban,
+          cardData.columnId,
+        );
+        const cards = column.cards;
+        if (!cards) throw new Error("Column doesn't have any cards");
+        updateColumnCards(
+          dispatch,
+          store,
+          cardData.columnId,
+          moveCard(cards, cardData.id, 1),
+        );
       },
     },
     {
@@ -97,7 +120,18 @@ function renderActionMenu(
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
-        setColumns(removeCard(cardData.id, cardData.columnId, columns));
+        const { column } = getColumn(
+          store.getState().kanban,
+          cardData.columnId,
+        );
+        const cards = column.cards;
+        if (!cards) throw new Error("Column doesn't have any cards");
+        updateColumnCards(
+          dispatch,
+          store,
+          cardData.columnId,
+          removeCard(cards, cardData.id),
+        );
       },
     },
   ];
@@ -105,32 +139,33 @@ function renderActionMenu(
   return <ActionMenu options={options} />;
 }
 
-function renderEditor(
-  cardData: CardData,
-  blocked: boolean | undefined,
-  isRedacting: boolean,
-  setIsRedacting: (arg: boolean) => void,
-  cards: CardData[] | undefined,
-  setCards: ((cards: CardData[]) => void) | undefined,
-) {
+function Editor(props: {
+  cardData: CardData;
+  blocked: boolean | undefined;
+  isEditing: boolean;
+  setIsEditing: (arg: boolean) => void;
+}) {
+  const { cardData, blocked, isEditing, setIsEditing } = props;
+  const dispatch = useAppDispatch();
+  const store = useAppStore();
   return (
     <CardEditorPortal
       cardData={cardData}
       setCardData={(card) => {
-        if (cards && setCards) {
-          const cardIdx = cards.findIndex((card2) => {
-            return card2.id === card.id;
-          });
-          const newCards = [...cards];
-          newCards[cardIdx] = card;
-          setCards(newCards);
-        } else {
-          throw new Error("trying to change unknown card");
-        }
+        const state = store.getState().kanban;
+        const { column } = getColumn(state, cardData.columnId);
+
+        const cards = column.cards;
+        if (!cards) throw new Error("Column doesn't have any cards");
+        const cardIdx = cards.findIndex((c) => c.id === card.id);
+        if (cardIdx === -1) throw new Error("Card not found");
+        const newCards = [...cards];
+        newCards.splice(cardIdx, 1, card);
+        updateColumnCards(dispatch, store, cardData.columnId, newCards);
       }}
       blocked={blocked}
-      isRedacting={isRedacting}
-      setIsRedacting={setIsRedacting}
+      isRedacting={isEditing}
+      setIsRedacting={setIsEditing}
     />
   );
 }
