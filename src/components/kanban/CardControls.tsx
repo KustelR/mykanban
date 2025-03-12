@@ -6,6 +6,8 @@ import DeleteIcon from "@public/delete.svg";
 import { moveCard, removeCard } from "@/scripts/kanban";
 import ActionMenu from "../ui/ActionMenu";
 import { CardEditorPortal } from "./editors/CardEditor";
+import { useDrag } from "react-dnd";
+import { ItemTypes } from "@/Constants";
 
 type CardActionsProps = {
   children?: ReactNode;
@@ -23,22 +25,33 @@ export default function CardActions(props: CardActionsProps) {
 
   const [isActive, setIsActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: ItemTypes.CARD,
+    item: cardData,
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
+
   return (
-    <>
-      <div
-        className="size-fit relative w-full"
-        onMouseEnter={(e) => {
-          setIsActive(true);
-        }}
-        onMouseLeave={(e) => {
-          setIsActive(false);
-        }}
-      >
-        {children}
-        {!blocked &&
-          isActive &&
-          renderActionMenu(columns, cardData, setColumns, setIsEditing)}
-      </div>
+    <div>
+      {drag(
+        <div
+          className={`${isDragging ? "cursor-move" : "cursor-pointer"} size-fit relative w-full`}
+          onMouseEnter={(e) => {
+            setIsActive(true);
+          }}
+          onMouseLeave={(e) => {
+            setIsActive(false);
+          }}
+        >
+          {children}
+          {!blocked &&
+            isActive &&
+            renderActionMenu(columns, cardData, setColumns, setIsEditing)}
+        </div>,
+      )}
       {isEditing &&
         renderEditor(
           cardData,
@@ -48,7 +61,7 @@ export default function CardActions(props: CardActionsProps) {
           cards,
           setCards,
         )}
-    </>
+    </div>
   );
 }
 
