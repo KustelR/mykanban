@@ -12,6 +12,9 @@ const setKanbanAction = createAction<KanbanState>("kanban/setKanban");
 const setKanbanMetaAction = createAction<{ name: string; tags: TagData[] }>(
   "kanban/setKanbanMeta",
 );
+const pushCardAction = createAction<{ columnId: string; card: CardData }>(
+  "kanban/pushCard",
+);
 const setTagsAction = createAction<TagData[]>("kanban/setTags");
 const setColumnCardsAction = createAction<{ id: string; cards: CardData[] }>(
   "kanban/setColumnCards",
@@ -57,6 +60,22 @@ export const kanbanSlice = createSlice({
       const { id, cards } = action.payload as { id: string; cards: CardData[] };
       const { idx, column } = getColumn(state, id);
       state.columns.splice(idx, 1, { ...column, cards: cards });
+    },
+    pushCard: (state, action) => {
+      const { columnId, card } = action.payload as {
+        columnId: string;
+        card: CardData;
+      };
+      const { idx, column } = getColumn(state, columnId);
+      const cards = column.cards ? column.cards : [];
+      state.columns.splice(idx, 1, {
+        ...column,
+        cards: [
+          ...cards,
+          { ...card, order: cards.length, columnId: column.id },
+        ],
+      });
+      state.lastAction = "push_card";
     },
   },
 });
@@ -115,5 +134,6 @@ export {
   updateKanbanMeta,
   updateCardTags,
   updateColumnCards,
+  pushCardAction,
 };
 export default kanbanSlice.reducer;

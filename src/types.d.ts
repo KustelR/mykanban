@@ -28,6 +28,7 @@ declare global {
     columns: Array<ColData & Identified>;
     name: string;
     tags: Array<TagData> | null;
+    lastAction?: string;
   };
   type TagData = {
     name: string;

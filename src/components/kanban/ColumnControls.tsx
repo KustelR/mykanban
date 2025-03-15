@@ -18,6 +18,8 @@ import ArrowRightIcon from "@public/arrow-right.svg";
 import DeleteIcon from "@public/delete.svg";
 import ChangeIcon from "@public/change.svg";
 import ActionMenu from "../ui/ActionMenu";
+import { useAppDispatch } from "@/lib/hooks";
+import { pushCardAction } from "@/lib/features/kanban/kanbanSlice";
 
 type ColumnControlProps = {
   columns: ColData[];
@@ -32,6 +34,7 @@ export default function ColumnControls(props: ColumnControlProps) {
   const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const dispatch = useAppDispatch();
   const [droppedElement, setDroppedElement] = useState<CardData | null>(null);
   const [{ el }, drop] = useDrop(
     () => ({
@@ -115,7 +118,7 @@ export default function ColumnControls(props: ColumnControlProps) {
             columnId: colData.id,
           }}
           setCardData={(data) => {
-            setColumns(pushNewCard(data, colData.id, columns));
+            dispatch(pushCardAction({ columnId: colData.id, card: data }));
           }}
         />
       )}

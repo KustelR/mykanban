@@ -11,7 +11,7 @@ export default function ProjectControl() {
   let id: string | null | undefined;
   useEffect(() => {
     id = params.get("id");
-    if (id) {
+    if (id && id != "") {
       readProject(id, dispatch);
     } else {
       createProject(data);

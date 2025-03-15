@@ -153,7 +153,7 @@ function renderColumnList(
           .map((col) => {
             return (
               <li
-                className=" overflow-y-auto min-w-40 basis-0 grow"
+                className=" overflow-y-auto min-w-80 basis-0 grow"
                 key={col.id}
               >
                 <ColumnControls
