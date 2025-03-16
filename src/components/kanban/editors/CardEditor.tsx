@@ -8,6 +8,7 @@ import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
+import { requestToApi } from "@/scripts/project";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -16,6 +17,7 @@ export default function CardEditor(props: {
   let { defaultCard, setCardData } = props;
 
   const [card, setCard] = useState(defaultCard);
+  const [newTagIds, setNewTagIds] = useState<string[]>([]);
   return (
     <>
       {card && (
@@ -27,13 +29,22 @@ export default function CardEditor(props: {
             }}
           >
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-              {cardDataEditor(card, setCard)}
+              {cardDataEditor(card, setCard, (id) => {
+                setNewTagIds(newTagIds.concat(id));
+              })}
               {preview(card)}
             </div>
             <TextButton
               className="w-full mt-2"
               onClick={(e) => {
                 if (setCardData) setCardData(card);
+                newTagIds.forEach((tagId) => {
+                  requestToApi(
+                    "tags/link",
+                    { cardId: card.id, tagId: tagId },
+                    "put",
+                  );
+                });
               }}
             >
               ADD
@@ -70,10 +81,11 @@ function preview(card: CardData) {
   );
 }
 
-function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
-  const store = useAppStore();
-  const dispatch = useAppDispatch();
-  const tags = store.getState().kanban.tags;
+function cardDataEditor(
+  card: CardData,
+  setCard: (arg: CardData) => void,
+  pushNewTagId: (arg: string) => void,
+) {
   return (
     <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
       <header className="font-bold">Editor</header>
@@ -101,6 +113,9 @@ function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
         cardId={card.id}
         tagIds={card.tagIds ? card.tagIds : []}
         setTagIds={(tagIds) => {
+          const tagId = tagIds.at(-1);
+          if (tagId) pushNewTagId(tagId);
+
           setCard({ ...card, tagIds: tagIds });
         }}
       />

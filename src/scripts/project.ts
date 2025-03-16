@@ -46,11 +46,11 @@ export async function requestToApi(
         })
         .join("&")
     : "";
-  switch (method) {
-    case "post":
-      return axios.post(`${projectHost}/${url}${paramString}`, payload);
-      break;
-  }
+  return axios.request({
+    url: `${projectHost}/${url}${paramString}`,
+    method: method,
+    data: payload,
+  });
 }
 
 export async function readProject(id: string, dispatch: any) {
