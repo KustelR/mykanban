@@ -1,4 +1,5 @@
-import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
+import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
+import { setProjectIdAction } from "@/lib/features/projectId/projectIdSlice";
 import { EnhancedStore } from "@reduxjs/toolkit";
 import axios from "axios";
 import { redirect } from "next/navigation";
@@ -28,12 +29,37 @@ export async function createProject(data: KanbanState) {
   redirect(`/project?id=${r.data}`);
 }
 
+export async function requestToApi(
+  url: string,
+  payload: any,
+  method: string = "get",
+  params?: { name: string; value: string }[],
+) {
+  console.log(method);
+  const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
+  if (!projectHost) return;
+  const paramString: string = params
+    ? "?" +
+      params
+        .map((val) => {
+          return `${val.name}=${val.value}`;
+        })
+        .join("&")
+    : "";
+  switch (method) {
+    case "post":
+      return axios.post(`${projectHost}/${url}${paramString}`, payload);
+      break;
+  }
+}
+
 export async function readProject(id: string, dispatch: any) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
   const r = await axios.get(`${projectHost}/read?id=${id}`);
   addProjectToStorage(id, r.data.name);
-  updateKanban(dispatch, r.data);
+  dispatch(setKanbanAction(r.data));
+  dispatch(setProjectIdAction(id));
 }
 
 export function addProjectToStorage(projectId: string, name?: string) {

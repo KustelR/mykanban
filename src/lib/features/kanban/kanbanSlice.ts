@@ -9,7 +9,7 @@ const initialState: KanbanState = {
 };
 
 const setKanbanAction = createAction<KanbanState>("kanban/setKanban");
-const setKanbanMetaAction = createAction<{ name: string; tags: TagData[] }>(
+const setProjectDataAction = createAction<{ name: string; tags: TagData[] }>(
   "kanban/setKanbanMeta",
 );
 const pushCardAction = createAction<{ columnId: string; card: CardData }>(
@@ -31,10 +31,13 @@ export const kanbanSlice = createSlice({
       state.columns = payload.columns;
       state.name = payload.name;
       state.tags = payload.tags;
+
+      state.lastAction = "set_project";
     },
     setTags: (state, action) => {
       const payload = action.payload as TagData[];
       state.tags = payload;
+      state.lastAction = "set_tags";
     },
     setKanbanMeta: (state, action) => {
       const { name, tags } = action.payload as {
@@ -43,6 +46,7 @@ export const kanbanSlice = createSlice({
       };
       state.name = name;
       state.tags = tags;
+      state.lastAction = "set_project_data";
     },
     setCardTags: (state, action) => {
       const { cardId, tags } = action.payload as {
@@ -55,11 +59,13 @@ export const kanbanSlice = createSlice({
         ...card,
         tagIds: tags,
       });
+      state.lastAction = "set_card_tags";
     },
     setColumnCards: (state, action) => {
       const { id, cards } = action.payload as { id: string; cards: CardData[] };
       const { idx, column } = getColumn(state, id);
       state.columns.splice(idx, 1, { ...column, cards: cards });
+      state.lastAction = "set_cards";
     },
     pushCard: (state, action) => {
       const { columnId, card } = action.payload as {
@@ -80,60 +86,12 @@ export const kanbanSlice = createSlice({
   },
 });
 
-function updateKanbanMeta(
-  dispatch: any,
-  store: EnhancedStore,
-  data: { name: string; tags: TagData[] },
-) {
-  dispatch(setKanbanMetaAction(data));
-  dispatch(
-    updateLastChanged([
-      { ...store.getState().kanban, name: data.name, tags: data.tags },
-      "kanban/setKanbanMeta",
-    ]),
-  );
-}
-function updateCardTags(
-  dispatch: AppDispatch,
-  store: EnhancedStore,
-  id: string,
-  data: string[],
-) {
-  dispatch(setCardTagsAction({ cardId: id, tags: data }));
-  dispatch(updateLastChanged([store.getState().kanban, "kanban/setCardTags"]));
-}
-function updateKanban(dispatch: AppDispatch, data: KanbanState) {
-  dispatch(setKanbanAction(data));
-  dispatch(updateLastChanged([data, "kanban/setKanban"]));
-}
-function updateTags(
-  dispatch: AppDispatch,
-  store: EnhancedStore,
-  data: TagData[],
-) {
-  dispatch(setTagsAction(data));
-  dispatch(updateLastChanged([store.getState().kanban, "kanban/setTags"]));
-}
-
-function updateColumnCards(
-  dispatch: AppDispatch,
-  store: EnhancedStore,
-  id: string,
-  data: CardData[],
-) {
-  dispatch(setColumnCardsAction({ id: id, cards: data }));
-  dispatch(
-    updateLastChanged([store.getState().kanban, "kanban/setColumnCards"]),
-  );
-}
-
 export {
+  setColumnCardsAction,
+  setKanbanAction,
+  setProjectDataAction,
+  setCardTagsAction,
   setTagsAction,
-  updateKanban,
-  updateTags,
-  updateKanbanMeta,
-  updateCardTags,
-  updateColumnCards,
   pushCardAction,
 };
 export default kanbanSlice.reducer;

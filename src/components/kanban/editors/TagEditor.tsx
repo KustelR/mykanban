@@ -9,8 +9,9 @@ import Tag from "../Tag";
 import DeleteIcon from "@public/delete.svg";
 import PlusIcon from "@public/plus.svg";
 import ActionMenu from "@/components/ui/ActionMenu";
-import { updateCardTags, updateTags } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
+import { setTagsAction } from "@/lib/features/kanban/kanbanSlice";
+import { requestToApi } from "@/scripts/project";
 
 type TagEditorProps = {
   cardId: string;
@@ -159,10 +160,15 @@ function renderActionMenu(
       icon: PlusIcon,
       className: "bg-green-800 hover:bg-green-900",
       callback: () => {
-        const storeTags = store.getState().kanban.tags;
-        if (!storeTags) throw new Error("Can't read tags");
+        const projectId = store.getState().projectId;
+
+        let storeTags = store.getState().kanban.tags;
+        if (!storeTags) storeTags = [];
         if (storeTags.filter((t) => t.id === tag.id).length === 0) {
-          updateTags(dispatch, store, storeTags.concat(tag));
+          dispatch(setTagsAction(storeTags.concat(tag)));
+          requestToApi("tags/create", tag, "post", [
+            { name: "id", value: projectId },
+          ]);
         }
         setTagIds(tagIds.concat(tag.id));
       },

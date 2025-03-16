@@ -47,18 +47,14 @@ declare global {
     lastAction: string;
   };
 
-  type AppDispatch = ThunkDispatch<
-    {
-      kanban: KanbanState;
-      lastChanged: LastChangedState;
-    },
-    undefined,
-    UnknownAction
-  > &
+  type AppDispatch = ThunkDispatch<StoredState, undefined, UnknownAction> &
     Dispatch<UnknownAction>;
-  type AppStore = EnhancedStore<{
-    kanban: KanbanState;
-    lastChanged: LastChangedState;
-  }>;
+  type AppStore = EnhancedStore<StoredState>;
 }
 export {};
+
+type StoredState = {
+  kanban: KanbanState;
+  lastChanged: LastChangedState;
+  projectId: string;
+};
