@@ -73,13 +73,18 @@ export default function ColumnControls(props: ColumnControlProps) {
         },
         "put",
       );
-      requestToApi(
-        "columns/force_reorder",
-        {
-          columnId: oldCol.id,
-          order: dropped.order,
-        },
-        "patch",
+
+      setTimeout(
+        () =>
+          requestToApi(
+            "columns/force_reorder",
+            {
+              columnId: oldCol.id,
+              order: dropped.order,
+            },
+            "patch",
+          ),
+        100,
       );
       newCols.splice(colIdx, 1, {
         ...oldCol,
@@ -141,7 +146,7 @@ export default function ColumnControls(props: ColumnControlProps) {
             name: "",
             description: "",
             tagIds: [],
-            order: colData.cards ? colData.cards.length : 0,
+            order: colData.cards ? colData.cards.length + 1 : 1,
             id: nanoid(),
             columnId: colData.id,
           }}
