@@ -18,8 +18,13 @@ import ArrowRightIcon from "@public/arrow-right.svg";
 import DeleteIcon from "@public/delete.svg";
 import ChangeIcon from "@public/change.svg";
 import ActionMenu from "../ui/ActionMenu";
-import { useAppDispatch } from "@/lib/hooks";
-import { pushCardAction } from "@/lib/features/kanban/kanbanSlice";
+import { useAppDispatch, useAppStore } from "@/lib/hooks";
+import {
+  pushCardAction,
+  setColumnCardsAction,
+  setKanbanAction,
+} from "@/lib/features/kanban/kanbanSlice";
+import { requestToApi } from "@/scripts/project";
 
 type ColumnControlProps = {
   columns: ColData[];
@@ -34,6 +39,7 @@ export default function ColumnControls(props: ColumnControlProps) {
   const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const store = useAppStore();
   const dispatch = useAppDispatch();
   const [droppedElement, setDroppedElement] = useState<CardData | null>(null);
   const [{ el }, drop] = useDrop(
@@ -58,11 +64,33 @@ export default function ColumnControls(props: ColumnControlProps) {
       const colIdx = newCols.findIndex((c) => c.id === dropped.columnId);
       const oldCol = columns[colIdx];
       if (!oldCol.cards) return;
+      requestToApi(
+        "cards/update",
+        {
+          ...dropped,
+          columnId: colData.id,
+          order: colData.cards ? colData.cards.length + 1 : 1,
+        },
+        "put",
+      );
+      requestToApi(
+        "columns/force_reorder",
+        {
+          columnId: oldCol.id,
+          order: dropped.order,
+        },
+        "patch",
+      );
       newCols.splice(colIdx, 1, {
         ...oldCol,
         cards: removeCard(oldCol.cards, dropped.id),
       });
-      setColumns(pushNewCard(dropped, colData.id, newCols));
+      dispatch(
+        setKanbanAction({
+          ...store.getState().kanban,
+          columns: pushNewCard(dropped, colData.id, newCols),
+        }),
+      );
     }
     setIsDropped(false);
   }, [isDropped]);
@@ -118,6 +146,7 @@ export default function ColumnControls(props: ColumnControlProps) {
             columnId: colData.id,
           }}
           setCardData={(data) => {
+            requestToApi("cards/create", data, "post");
             dispatch(pushCardAction({ columnId: colData.id, card: data }));
           }}
         />

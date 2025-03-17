@@ -8,9 +8,10 @@ import ActionMenu from "../ui/ActionMenu";
 import { CardEditorPortal } from "./editors/CardEditor";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
-import { updateColumnCards } from "@/lib/features/kanban/kanbanSlice";
 import { getColumn } from "@/lib/features/kanban/utils";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
+import { setColumnCardsAction } from "@/lib/features/kanban/kanbanSlice";
+import { requestToApi } from "@/scripts/project";
 
 type CardActionsProps = {
   children?: ReactNode;
@@ -81,11 +82,15 @@ function renderActionMenu(
         );
         const cards = column.cards;
         if (!cards) throw new Error("Column doesn't have any cards");
-        updateColumnCards(
-          dispatch,
-          store,
-          cardData.columnId,
-          moveCard(cards, cardData.id, -1),
+        const moveResult = moveCard(cards, cardData.id, -1);
+        dispatch(
+          setColumnCardsAction({
+            id: cardData.columnId,
+            cards: moveResult.cards,
+          }),
+        );
+        moveResult.changed?.forEach((c) =>
+          requestToApi("cards/update", c, "put"),
         );
       },
     },
@@ -99,11 +104,15 @@ function renderActionMenu(
         );
         const cards = column.cards;
         if (!cards) throw new Error("Column doesn't have any cards");
-        updateColumnCards(
-          dispatch,
-          store,
-          cardData.columnId,
-          moveCard(cards, cardData.id, 1),
+        const moveResult = moveCard(cards, cardData.id, 1);
+        dispatch(
+          setColumnCardsAction({
+            id: cardData.columnId,
+            cards: moveResult.cards,
+          }),
+        );
+        moveResult.changed?.forEach((c) =>
+          requestToApi("cards/update", c, "put"),
         );
       },
     },
@@ -124,11 +133,12 @@ function renderActionMenu(
         );
         const cards = column.cards;
         if (!cards) throw new Error("Column doesn't have any cards");
-        updateColumnCards(
-          dispatch,
-          store,
-          cardData.columnId,
-          removeCard(cards, cardData.id),
+        requestToApi("cards/delete", { id: cardData.id }, "delete");
+        dispatch(
+          setColumnCardsAction({
+            id: cardData.columnId,
+            cards: removeCard(cards, cardData.id),
+          }),
         );
       },
     },
@@ -159,7 +169,21 @@ function Editor(props: {
         if (cardIdx === -1) throw new Error("Card not found");
         const newCards = [...cards];
         newCards.splice(cardIdx, 1, card);
-        updateColumnCards(dispatch, store, cardData.columnId, newCards);
+        requestToApi("cards/update", card, "put");
+        requestToApi(
+          "columns/force_reorder",
+          {
+            columnId: getColumn(state, cardData.columnId).column.id,
+            order: cardData.order,
+          },
+          "patch",
+        );
+        dispatch(
+          setColumnCardsAction({
+            id: cardData.columnId,
+            cards: newCards,
+          }),
+        );
       }}
       blocked={blocked}
       isRedacting={isEditing}
