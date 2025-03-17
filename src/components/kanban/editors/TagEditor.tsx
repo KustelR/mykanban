@@ -153,7 +153,9 @@ function renderActionMenu(
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
-        setTagIds(tagIds.filter((t) => t != tag.id));
+        const data = tagIds.filter((t) => t !== tag.id);
+        console.log(data);
+        setTagIds([...data]);
       },
     },
     {

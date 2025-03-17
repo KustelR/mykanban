@@ -18,6 +18,7 @@ export default function CardEditor(props: {
 
   const [card, setCard] = useState(defaultCard);
   const [newTagIds, setNewTagIds] = useState<string[]>([]);
+  const [removingTagIds, setRemovingTagIds] = useState<string[]>([]);
   return (
     <>
       {card && (
@@ -29,9 +30,16 @@ export default function CardEditor(props: {
             }}
           >
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-              {cardDataEditor(card, setCard, (id) => {
-                setNewTagIds(newTagIds.concat(id));
-              })}
+              {cardDataEditor(
+                card,
+                setCard,
+                (id) => {
+                  setNewTagIds(newTagIds.concat(id));
+                },
+                (id) => {
+                  setRemovingTagIds(removingTagIds.concat(id));
+                },
+              )}
               {preview(card)}
             </div>
             <TextButton
@@ -43,6 +51,13 @@ export default function CardEditor(props: {
                     "tags/link",
                     { cardId: card.id, tagId: tagId },
                     "put",
+                  );
+                });
+                removingTagIds.forEach((tagId) => {
+                  requestToApi(
+                    "tags/unlink",
+                    { cardId: card.id, tagId: tagId },
+                    "delete",
                   );
                 });
               }}
@@ -85,6 +100,7 @@ function cardDataEditor(
   card: CardData,
   setCard: (arg: CardData) => void,
   pushNewTagId: (arg: string) => void,
+  removeTagId: (arg: string) => void,
 ) {
   return (
     <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
@@ -114,8 +130,11 @@ function cardDataEditor(
         tagIds={card.tagIds ? card.tagIds : []}
         setTagIds={(tagIds) => {
           const tagId = tagIds.at(-1);
-          if (tagId) pushNewTagId(tagId);
-
+          if (tagId && !card.tagIds.includes(tagId)) pushNewTagId(tagId);
+          const newRemovingIds = card.tagIds.filter(
+            (id) => !tagIds.includes(id),
+          );
+          newRemovingIds.forEach((val) => removeTagId(val));
           setCard({ ...card, tagIds: tagIds });
         }}
       />

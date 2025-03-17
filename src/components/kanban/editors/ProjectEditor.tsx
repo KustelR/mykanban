@@ -1,12 +1,13 @@
 "use client";
 
-import { updateKanbanMeta } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
 import TextInput from "@/shared/TextInput";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
+import { setProjectDataAction } from "@/lib/features/kanban/kanbanSlice";
+import { requestToApi } from "@/scripts/project";
 
 export default function ProjectEditor() {
   const [name, setName] = useState<string | null>(null);
@@ -33,10 +34,12 @@ export default function ProjectEditor() {
           onSubmit={(e) => {
             e.preventDefault();
             if (name && state)
-              updateKanbanMeta(dispatch, store, {
-                name,
-                tags: state.tags ? state.tags : [],
-              });
+              dispatch(
+                setProjectDataAction({
+                  name,
+                  tags: state.tags ? state.tags : [],
+                }),
+              );
           }}
         >
           <TextInput
@@ -54,14 +57,25 @@ export default function ProjectEditor() {
             setTagIds={(tagIds) => {
               const tags = state.tags;
               if (!tags) return;
-              const filteredTags = tags.filter((tag) =>
-                tagIds.includes(tag.id),
+              const filteredTags = tags.filter(
+                (tag) => !tagIds.includes(tag.id),
               );
-              if (filteredTags.length !== tags.length)
-                updateKanbanMeta(dispatch, store, {
-                  name: state.name,
-                  tags: filteredTags,
-                });
+              console.log(tags, tagIds, filteredTags);
+              filteredTags.forEach(() => {
+                const projectId = store.getState().projectId;
+                requestToApi(
+                  "tags/delete",
+                  { id: filteredTags[0].id },
+                  "delete",
+                  [{ name: "id", value: projectId }],
+                );
+                dispatch(
+                  setProjectDataAction({
+                    name: state.name,
+                    tags: tags.filter((t) => tagIds.includes(t.id)),
+                  }),
+                );
+              });
             }}
           ></TagEditor>
         )}
