@@ -1,18 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Column from "./Column";
-import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import { nanoid, ThunkDispatch } from "@reduxjs/toolkit";
 import PlusIcon from "@public/plus.svg";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { addColumn } from "@/scripts/kanban";
 import { ColumnEditorPortal } from "./editors/ColumnEditor";
-import { redirect, useSearchParams } from "next/navigation";
-import axios from "axios";
-import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
-import objectHash from "object-hash";
 import TextButton from "@/shared/TextButton";
 import { ProjectEditorPortal } from "./editors/ProjectEditor";
 import ColumnControls from "./ColumnControls";
@@ -50,14 +44,6 @@ export default function Kanban(props: KanbanProps) {
       setTags(data.tags ? [...data.tags] : []);
     });
   }, []);
-  useEffect(() => {
-    if (!label || !tags || !columns) {
-      return;
-    }
-    const project = { name: label, columns: columns, tags: tags };
-    if (objectHash(project) === lastHash || lastHash === "") return;
-    updateKanban(dispatch, { name: label, columns: columns, tags: tags });
-  }, [label, tags, columns]);
   return (
     <>
       <DndProvider backend={HTML5Backend}>
