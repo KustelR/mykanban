@@ -35,7 +35,6 @@ export async function requestToApi(
   method: string = "get",
   params?: { name: string; value: string }[],
 ) {
-  console.log(method);
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
   const paramString: string = params

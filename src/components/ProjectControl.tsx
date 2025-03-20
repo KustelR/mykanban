@@ -17,7 +17,6 @@ export default function ProjectControl() {
       createProject(data);
       return;
     }
-    updateProject(id, store);
   }, []);
   const data: KanbanState = store.getState().kanban;
   if (id) {

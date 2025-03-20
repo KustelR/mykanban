@@ -1,4 +1,4 @@
-import { updateCardTags } from "@/lib/features/kanban/kanbanSlice";
+import { setCardTagsAction } from "@/lib/features/kanban/kanbanSlice";
 import { getCard } from "@/lib/features/kanban/utils";
 import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
 
@@ -73,7 +73,7 @@ export function moveCard(
   cards: CardData[],
   id: string,
   amount: number,
-): CardData[] {
+): { cards: CardData[]; changed?: CardData[] } {
   const cardIdx = cards.findIndex((card) => card.id === id);
   if (cardIdx === -1) throw new Error("Moving card was not found");
   const newCards = [...cards];
@@ -81,7 +81,7 @@ export function moveCard(
   const card = { ...newCards[cardIdx] };
 
   const newOrder = Math.max(1, Math.min(card.order + amount, newCards.length));
-  if (newOrder === card.order) return cards;
+  if (newOrder === card.order) return { cards };
   const replacedCardIdx = newCards.findIndex((c) => {
     return c.order == newOrder;
   });
@@ -92,8 +92,10 @@ export function moveCard(
     });
   }
   newCards.splice(cardIdx, 1, { ...card, order: newOrder });
-
-  return newCards;
+  return {
+    cards: newCards,
+    changed: [newCards[cardIdx], newCards[replacedCardIdx]].filter(Boolean),
+  };
 }
 
 export function moveColumn(
@@ -211,10 +213,10 @@ export function removeTag(
   tagId: string,
 ) {
   const { card } = getCard(store.getState().kanban, cardId);
-  updateCardTags(
-    dispatch,
-    store,
-    cardId,
-    card.tagIds.filter((t) => t != tagId),
+  dispatch(
+    setCardTagsAction({
+      cardId: cardId,
+      tags: card.tagIds.filter((t) => t != tagId),
+    }),
   );
 }

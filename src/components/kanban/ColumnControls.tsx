@@ -73,19 +73,6 @@ export default function ColumnControls(props: ColumnControlProps) {
         },
         "put",
       );
-
-      setTimeout(
-        () =>
-          requestToApi(
-            "columns/force_reorder",
-            {
-              columnId: oldCol.id,
-              order: dropped.order,
-            },
-            "patch",
-          ),
-        100,
-      );
       newCols.splice(colIdx, 1, {
         ...oldCol,
         cards: removeCard(oldCol.cards, dropped.id),

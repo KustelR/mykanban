@@ -111,9 +111,9 @@ function renderActionMenu(
             cards: moveResult.cards,
           }),
         );
-        moveResult.changed?.forEach((c) =>
-          requestToApi("cards/update", c, "put"),
-        );
+        moveResult.changed?.forEach((c) => {
+          requestToApi("cards/update", c, "put");
+        });
       },
     },
     {
@@ -170,14 +170,6 @@ function Editor(props: {
         const newCards = [...cards];
         newCards.splice(cardIdx, 1, card);
         requestToApi("cards/update", card, "put");
-        requestToApi(
-          "columns/force_reorder",
-          {
-            columnId: getColumn(state, cardData.columnId).column.id,
-            order: cardData.order,
-          },
-          "patch",
-        );
         dispatch(
           setColumnCardsAction({
             id: cardData.columnId,
