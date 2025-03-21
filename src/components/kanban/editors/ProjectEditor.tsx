@@ -33,13 +33,18 @@ export default function ProjectEditor() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (name && state)
+            if (name && state) {
+              const projectId = store.getState().projectId;
+              requestToApi("data/update", { name: name }, "patch", [
+                { name: "id", value: projectId },
+              ]);
               dispatch(
                 setProjectDataAction({
                   name,
                   tags: state.tags ? state.tags : [],
                 }),
               );
+            }
           }}
         >
           <TextInput
@@ -60,7 +65,6 @@ export default function ProjectEditor() {
               const filteredTags = tags.filter(
                 (tag) => !tagIds.includes(tag.id),
               );
-              console.log(tags, tagIds, filteredTags);
               filteredTags.forEach(() => {
                 const projectId = store.getState().projectId;
                 requestToApi(

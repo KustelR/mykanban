@@ -122,7 +122,7 @@ export default function ColumnControls(props: ColumnControlProps) {
           }}
         >
           {isActive &&
-            renderActionMenu(columns, setColumns, setIsEditing, colData)}
+            renderActionMenu(columns, store, setColumns, setIsEditing, colData)}
         </div>
       </div>
       {isAdding && (
@@ -148,12 +148,24 @@ export default function ColumnControls(props: ColumnControlProps) {
           setIsRedacting={setIsEditing}
           colData={colData}
           addColumn={(name, id, cards) => {
+            const projectId = store.getState().projectId;
+            requestToApi(
+              "columns/update",
+              {
+                name: name,
+                id: colData.id,
+                cards: colData.cards,
+                order: colData.order,
+              },
+              "put",
+              [{ name: "id", value: projectId }],
+            );
             setColumns(
               replaceColumn(
                 colData.id,
                 {
                   name: name,
-                  id: id,
+                  id: colData.id,
                   cards: colData.cards,
                   order: colData.order,
                 },
@@ -169,6 +181,7 @@ export default function ColumnControls(props: ColumnControlProps) {
 
 function renderActionMenu(
   columns: Array<ColData>,
+  store: AppStore,
   setColumns: (arg: Array<ColData>) => void,
   setIsEditing: (arg: boolean) => void,
   colData: ColData,
@@ -178,14 +191,28 @@ function renderActionMenu(
       icon: ArrowLeftIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        setColumns(moveColumn(columns, colData.id, -1));
+        const projectId = store.getState().projectId;
+        const moveData = moveColumn(columns, colData.id, -1);
+        setColumns(moveData.columns);
+        moveData.changed.forEach((item) => {
+          requestToApi("columns/update", item, "put", [
+            { name: "id", value: projectId },
+          ]);
+        });
       },
     },
     {
       icon: ArrowRightIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        setColumns(moveColumn(columns, colData.id, 1));
+        const projectId = store.getState().projectId;
+        const moveData = moveColumn(columns, colData.id, 1);
+        setColumns(moveData.columns);
+        moveData.changed.forEach((item) => {
+          requestToApi("columns/update", item, "put", [
+            { name: "id", value: projectId },
+          ]);
+        });
       },
     },
     {
@@ -199,6 +226,10 @@ function renderActionMenu(
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
+        const projectId = store.getState().projectId;
+        requestToApi("/columns/delete", { id: colData.id }, "delete", [
+          { name: "id", value: projectId },
+        ]);
         setColumns(removeColumn(colData.id, columns));
       },
     },

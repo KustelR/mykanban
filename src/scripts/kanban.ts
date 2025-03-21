@@ -55,18 +55,25 @@ export function addColumn(
   columns: Array<ColData>,
   column: ColData,
   options?: { place?: "start" | "end" },
-): Array<ColData> {
+): { columns: Array<ColData>; changed: Array<ColData> } {
+  let newColumn: ColData | undefined = column;
   if (!options) {
-    return [...columns, { ...column, order: columns.length + 1 }];
+    newColumn.order = columns.length + 1;
+    return {
+      columns: [...columns, { ...column, order: columns.length + 1 }],
+      changed: [],
+    };
   } else {
     if (options.place === "start") {
-      return [column, ...columns];
+      newColumn.order = 1;
     } else if (options.place === "end") {
-      return [...columns, { ...column, order: columns.length + 1 }];
+      newColumn.order = columns.length + 1;
     } else {
-      return [...columns];
+      newColumn = undefined;
     }
   }
+  const newCols: ColData[] = [...columns, newColumn].filter((c) => !!c);
+  return { columns: newCols, changed: newColumn ? [newColumn] : [] };
 }
 
 export function moveCard(
@@ -102,13 +109,12 @@ export function moveColumn(
   columns: Array<ColData>,
   colId: string,
   amount: number,
-): Array<ColData> {
+): { columns: Array<ColData>; changed: Array<ColData> } {
   const colIdx = columns.findIndex((col) => col.id === colId);
   if (colIdx === -1) throw new Error("No column found, can't move nothing");
   const col1 = columns[colIdx];
   const newOrder = Math.max(1, Math.min(col1.order + amount, columns.length));
-  console.log(col1.order, newOrder);
-  if (newOrder === col1.order) return columns;
+  if (newOrder === col1.order) return { columns, changed: [] };
   const col2Idx = columns.findIndex((col) => col1.order + amount === col.order);
   const newCols = [...columns];
   if (col2Idx !== -1) {
@@ -122,7 +128,13 @@ export function moveColumn(
     order: col1.order + amount,
   });
 
-  return newCols;
+  return {
+    columns: newCols,
+    changed: [
+      { ...col1, order: col1.order + amount },
+      { ...columns[col2Idx], order: col1.order },
+    ],
+  };
 }
 export function swapColumns(
   columns: Array<ColData>,

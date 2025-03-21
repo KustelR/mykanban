@@ -10,6 +10,7 @@ import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import TextButton from "@/shared/TextButton";
 import { ProjectEditorPortal } from "./editors/ProjectEditor";
 import ColumnControls from "./ColumnControls";
+import { requestToApi } from "@/scripts/project";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -91,18 +92,23 @@ export default function Kanban(props: KanbanProps) {
         <ColumnEditorPortal
           setIsRedacting={setIsAdding}
           addColumn={(name, id, cards) => {
-            setColumns(
-              addColumn(
-                columns ? columns : [],
-                {
-                  name: name,
-                  id: id,
-                  cards: [],
-                  order: columns ? columns.length : 1,
-                },
-                { place: addingDirection },
-              ),
+            const projectId = store.getState().projectId;
+            const addData = addColumn(
+              columns ? columns : [],
+              {
+                name: name,
+                id: id,
+                cards: [],
+                order: columns ? columns.length : 1,
+              },
+              { place: addingDirection },
             );
+            addData.changed.forEach((item) => {
+              requestToApi("columns/create", item, "post", [
+                { name: "id", value: projectId },
+              ]);
+            });
+            setColumns(addData.columns);
           }}
         />
       )}
