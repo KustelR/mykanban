@@ -1,20 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import CardColumn from "./Column";
-import { updateKanban } from "@/lib/features/kanban/kanbanSlice";
+import Column from "./Column";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import { nanoid, ThunkDispatch } from "@reduxjs/toolkit";
 import PlusIcon from "@public/plus.svg";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { addColumn } from "@/scripts/kanban";
 import { ColumnEditorPortal } from "./editors/ColumnEditor";
-import { redirect, useSearchParams } from "next/navigation";
-import axios from "axios";
-import { updateLastChanged } from "@/lib/features/lastChanged/lastChangedSlice";
-import objectHash from "object-hash";
 import TextButton from "@/shared/TextButton";
 import { ProjectEditorPortal } from "./editors/ProjectEditor";
+import ColumnControls from "./ColumnControls";
+import { requestToApi } from "@/scripts/project";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -36,28 +32,19 @@ export default function Kanban(props: KanbanProps) {
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
     "start",
   );
+  const [lastHash, setLastHash] = useState("");
   const dispatch = useAppDispatch();
-  let lastHash: string = "";
   useEffect(() => {
     store.subscribe(() => {
       const storeStamp = store.getState();
       const lastChanged = storeStamp.lastChanged;
-      if (lastChanged.hash == lastHash) return;
-      lastHash = lastChanged.hash;
+      setLastHash(lastChanged.hash);
       const data = storeStamp.kanban;
       setLabel(data.name);
       setColumns(data.columns);
-      setTags(data.tags);
+      setTags(data.tags ? [...data.tags] : []);
     });
   }, []);
-  useEffect(() => {
-    if (!label || !tags || !columns) {
-      return;
-    }
-    const project = { name: label, columns: columns, tags: tags };
-    if (objectHash(project) != lastHash && lastHash != "")
-      updateKanban(dispatch, { name: label, columns: columns, tags: tags });
-  }, [label, tags, columns]);
   return (
     <>
       <DndProvider backend={HTML5Backend}>
@@ -105,18 +92,23 @@ export default function Kanban(props: KanbanProps) {
         <ColumnEditorPortal
           setIsRedacting={setIsAdding}
           addColumn={(name, id, cards) => {
-            setColumns(
-              addColumn(
-                columns ? columns : [],
-                {
-                  name: name,
-                  id: id,
-                  cards: [],
-                  order: columns ? columns.length : 1,
-                },
-                { place: addingDirection },
-              ),
+            const projectId = store.getState().projectId;
+            const addData = addColumn(
+              columns ? columns : [],
+              {
+                name: name,
+                id: id,
+                cards: [],
+                order: columns ? columns.length : 1,
+              },
+              { place: addingDirection },
             );
+            addData.changed.forEach((item) => {
+              requestToApi("columns/create", item, "post", [
+                { name: "id", value: projectId },
+              ]);
+            });
+            setColumns(addData.columns);
           }}
         />
       )}
@@ -153,16 +145,16 @@ function renderColumnList(
           .map((col) => {
             return (
               <li
-                className=" overflow-y-auto min-w-40 basis-0 grow"
+                className=" overflow-y-auto min-w-80 basis-0 grow"
                 key={col.id}
               >
-                <CardColumn
-                  className="w-full h-full"
-                  debug={debug}
+                <ColumnControls
                   columns={columns}
                   setColumns={setColumns}
                   colData={col}
-                />
+                >
+                  <Column debug={debug} colData={col} />
+                </ColumnControls>
               </li>
             );
           })}

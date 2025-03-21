@@ -3,7 +3,7 @@
 import { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 
 type ButtonProps = {
-  children: string;
+  children: ReactNode;
   onClick?: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => void;
   className?: string;
 };

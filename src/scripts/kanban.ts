@@ -1,4 +1,6 @@
-import { nanoid } from "@reduxjs/toolkit";
+import { setCardTagsAction } from "@/lib/features/kanban/kanbanSlice";
+import { getCard } from "@/lib/features/kanban/utils";
+import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
 
 /**
  * Gets an array of columns and pushes card to column with specified id
@@ -31,26 +33,9 @@ export function pushNewCard(
   return newColumns;
 }
 
-/**
- * Gets an array of columns and removes card with provided id in column with specified id
- * @throws If column or card was not found
- * @returns {Array<ColData>} - changed array
- */
-export function removeCard(
-  cardId: string,
-  colId: string,
-  columns: Array<ColData>,
-): Array<ColData> {
-  const newColumns = [...columns];
-  const colIdx = columns.findIndex((col) => {
-    return col.id === colId;
-  });
-
-  if (colIdx === -1) throw new Error("No column was found");
-  let cards = columns[colIdx].cards;
-  if (!cards) return columns;
+export function removeCard(cards: CardData[], id: string) {
   const card: CardData | undefined = cards.find((card) => {
-    return card.id === cardId;
+    return card.id === id;
   });
   if (!card) throw new Error("No card was found");
   cards = cards.map((c) => {
@@ -58,10 +43,9 @@ export function removeCard(
     return { ...c, order: c.order - 1 };
   });
   cards = cards.filter((card) => {
-    return card.id !== cardId;
+    return card.id !== id;
   });
-  newColumns[colIdx] = { ...columns[colIdx], cards: cards };
-  return newColumns;
+  return cards;
 }
 
 /**
@@ -71,38 +55,40 @@ export function addColumn(
   columns: Array<ColData>,
   column: ColData,
   options?: { place?: "start" | "end" },
-): Array<ColData> {
+): { columns: Array<ColData>; changed: Array<ColData> } {
+  let newColumn: ColData | undefined = column;
   if (!options) {
-    return [...columns, { ...column, order: columns.length + 1 }];
+    newColumn.order = columns.length + 1;
+    return {
+      columns: [...columns, { ...column, order: columns.length + 1 }],
+      changed: [],
+    };
   } else {
     if (options.place === "start") {
-      return [column, ...columns];
+      newColumn.order = 1;
     } else if (options.place === "end") {
-      return [...columns, { ...column, order: columns.length + 1 }];
+      newColumn.order = columns.length + 1;
     } else {
-      return [...columns];
+      newColumn = undefined;
     }
   }
+  const newCols: ColData[] = [...columns, newColumn].filter((c) => !!c);
+  return { columns: newCols, changed: newColumn ? [newColumn] : [] };
 }
 
 export function moveCard(
-  columns: Array<ColData>,
-  colId: string,
-  cardId: string,
+  cards: CardData[],
+  id: string,
   amount: number,
-): Array<ColData> {
-  const colIdx = columns.findIndex((col) => col.id === colId);
-  if (colIdx === -1) throw new Error("Column with moving card was not found");
-  let cards = columns[colIdx].cards;
-  if (!cards) cards = [];
-  const cardIdx = cards.findIndex((card) => card.id === cardId);
+): { cards: CardData[]; changed?: CardData[] } {
+  const cardIdx = cards.findIndex((card) => card.id === id);
   if (cardIdx === -1) throw new Error("Moving card was not found");
   const newCards = [...cards];
 
   const card = { ...newCards[cardIdx] };
 
   const newOrder = Math.max(1, Math.min(card.order + amount, newCards.length));
-  if (newOrder === card.order) return columns;
+  if (newOrder === card.order) return { cards };
   const replacedCardIdx = newCards.findIndex((c) => {
     return c.order == newOrder;
   });
@@ -113,23 +99,22 @@ export function moveCard(
     });
   }
   newCards.splice(cardIdx, 1, { ...card, order: newOrder });
-  const newCol = { ...columns[colIdx], cards: newCards };
-
-  const newCols = [...columns];
-  newCols.splice(colIdx, 1, newCol);
-  return newCols;
+  return {
+    cards: newCards,
+    changed: [newCards[cardIdx], newCards[replacedCardIdx]].filter(Boolean),
+  };
 }
+
 export function moveColumn(
   columns: Array<ColData>,
   colId: string,
   amount: number,
-): Array<ColData> {
+): { columns: Array<ColData>; changed: Array<ColData> } {
   const colIdx = columns.findIndex((col) => col.id === colId);
   if (colIdx === -1) throw new Error("No column found, can't move nothing");
   const col1 = columns[colIdx];
   const newOrder = Math.max(1, Math.min(col1.order + amount, columns.length));
-  console.log(col1.order, newOrder);
-  if (newOrder === col1.order) return columns;
+  if (newOrder === col1.order) return { columns, changed: [] };
   const col2Idx = columns.findIndex((col) => col1.order + amount === col.order);
   const newCols = [...columns];
   if (col2Idx !== -1) {
@@ -143,7 +128,13 @@ export function moveColumn(
     order: col1.order + amount,
   });
 
-  return newCols;
+  return {
+    columns: newCols,
+    changed: [
+      { ...col1, order: col1.order + amount },
+      { ...columns[col2Idx], order: col1.order },
+    ],
+  };
 }
 export function swapColumns(
   columns: Array<ColData>,
@@ -228,16 +219,16 @@ export function replaceColumn(
  * @returns  changed card
  */
 export function removeTag(
-  kanban: KanbanState,
-  cardData: CardData,
+  store: EnhancedStore,
+  dispatch: AppDispatch,
+  cardId: string,
   tagId: string,
-): CardData {
-  if (!cardData.tagIds || !kanban.tags) return cardData;
-  kanban.tags = kanban.tags.filter((tag) => {
-    tag.id !== tagId;
-  });
-  return {
-    ...cardData,
-    tagIds: cardData.tagIds.filter((tag) => tag !== tagId),
-  };
+) {
+  const { card } = getCard(store.getState().kanban, cardId);
+  dispatch(
+    setCardTagsAction({
+      cardId: cardId,
+      tags: card.tagIds.filter((t) => t != tagId),
+    }),
+  );
 }

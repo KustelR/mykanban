@@ -10,7 +10,6 @@ export default function Project() {
         <ProjectControl />
       </Suspense>
       <Kanban className="w-full md:max-w-fit"></Kanban>
-      <ManualControl></ManualControl>
     </div>
   );
 }

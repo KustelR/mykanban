@@ -1,27 +1,26 @@
 "use client";
 
-import { updateKanbanMeta } from "@/lib/features/kanban/kanbanSlice";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
 import TextInput from "@/shared/TextInput";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
+import { setProjectDataAction } from "@/lib/features/kanban/kanbanSlice";
+import { requestToApi } from "@/scripts/project";
 
 export default function ProjectEditor() {
   const [name, setName] = useState<string | null>(null);
-  const [tags, setTags] = useState<TagData[] | null>(null);
+  const [state, setState] = useState<KanbanState | null>(null);
   const dispatch = useAppDispatch();
   const store = useAppStore();
 
   useEffect(() => {
-    const stateStamp = store.getState().kanban;
-    setName(stateStamp.name);
-    setTags(stateStamp.tags ? stateStamp.tags : []);
+    setState(store.getState().kanban);
+    store.subscribe(() => {
+      setState(store.getState().kanban);
+    });
   }, []);
-  useEffect(() => {
-    if (name && tags) updateKanbanMeta(dispatch, store, { name, tags });
-  }, [tags]);
   return (
     <div className="w-full h-full place-content-center place-items-center">
       <section
@@ -34,7 +33,18 @@ export default function ProjectEditor() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (name && tags) updateKanbanMeta(dispatch, store, { name, tags });
+            if (name && state) {
+              const projectId = store.getState().projectId;
+              requestToApi("data/update", { name: name }, "patch", [
+                { name: "id", value: projectId },
+              ]);
+              dispatch(
+                setProjectDataAction({
+                  name,
+                  tags: state.tags ? state.tags : [],
+                }),
+              );
+            }
           }}
         >
           <TextInput
@@ -45,13 +55,31 @@ export default function ProjectEditor() {
             label="name"
           />
         </form>
-        {tags && (
+        {state && state.tags && (
           <TagEditor
-            tags={tags}
-            setTags={setTags}
-            tagIds={tags.map((tag) => tag.id)}
+            cardId=""
+            tagIds={state.tags.map((tag) => tag.id)}
             setTagIds={(tagIds) => {
-              setTags(tags.filter((tag) => tagIds.includes(tag.id)));
+              const tags = state.tags;
+              if (!tags) return;
+              const filteredTags = tags.filter(
+                (tag) => !tagIds.includes(tag.id),
+              );
+              filteredTags.forEach(() => {
+                const projectId = store.getState().projectId;
+                requestToApi(
+                  "tags/delete",
+                  { id: filteredTags[0].id },
+                  "delete",
+                  [{ name: "id", value: projectId }],
+                );
+                dispatch(
+                  setProjectDataAction({
+                    name: state.name,
+                    tags: tags.filter((t) => tagIds.includes(t.id)),
+                  }),
+                );
+              });
             }}
           ></TagEditor>
         )}

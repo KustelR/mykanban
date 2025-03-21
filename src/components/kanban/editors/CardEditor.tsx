@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import TextInput from "@/shared/TextInput";
 import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import { setTagsAction, updateTags } from "@/lib/features/kanban/kanbanSlice";
 import Popup from "@/shared/Popup";
+import { requestToApi } from "@/scripts/project";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -17,6 +17,8 @@ export default function CardEditor(props: {
   let { defaultCard, setCardData } = props;
 
   const [card, setCard] = useState(defaultCard);
+  const [newTagIds, setNewTagIds] = useState<string[]>([]);
+  const [removingTagIds, setRemovingTagIds] = useState<string[]>([]);
   return (
     <>
       {card && (
@@ -28,13 +30,36 @@ export default function CardEditor(props: {
             }}
           >
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-              {cardDataEditor(card, setCard)}
+              {cardDataEditor(
+                card,
+                setCard,
+                (id) => {
+                  setNewTagIds(newTagIds.concat(id));
+                },
+                (id) => {
+                  setRemovingTagIds(removingTagIds.concat(id));
+                },
+              )}
               {preview(card)}
             </div>
             <TextButton
               className="w-full mt-2"
               onClick={(e) => {
                 if (setCardData) setCardData(card);
+                newTagIds.forEach((tagId) => {
+                  requestToApi(
+                    "tags/link",
+                    { cardId: card.id, tagId: tagId },
+                    "put",
+                  );
+                });
+                removingTagIds.forEach((tagId) => {
+                  requestToApi(
+                    "tags/unlink",
+                    { cardId: card.id, tagId: tagId },
+                    "delete",
+                  );
+                });
               }}
             >
               ADD
@@ -66,20 +91,17 @@ function preview(card: CardData) {
   return (
     <div className="max-w-96">
       <header className="font-bold">Preview</header>
-      <Card
-        columns={[]}
-        setColumns={() => {}}
-        blocked
-        cardData={{ ...card }}
-      ></Card>
+      <Card cardData={{ ...card }}></Card>
     </div>
   );
 }
 
-function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
-  const store = useAppStore();
-  const dispatch = useAppDispatch();
-  const tags = store.getState().kanban.tags;
+function cardDataEditor(
+  card: CardData,
+  setCard: (arg: CardData) => void,
+  pushNewTagId: (arg: string) => void,
+  removeTagId: (arg: string) => void,
+) {
   return (
     <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
       <header className="font-bold">Editor</header>
@@ -98,23 +120,22 @@ function cardDataEditor(card: CardData, setCard: (arg: CardData) => void) {
           onChange={(e) => {
             setCard({ ...card, description: e.target.value });
           }}
-          id="cardCreator_addDescription"
+          id="cardCreator_description"
           label="Description"
         />
       </form>
 
       <TagEditor
-        tags={tags ? tags : []}
-        setTags={(t) => {
-          updateTags(dispatch, store, t);
-        }}
         cardId={card.id}
         tagIds={card.tagIds ? card.tagIds : []}
-        setTagIds={(ids) => {
-          setCard({
-            ...card,
-            tagIds: ids,
-          });
+        setTagIds={(tagIds) => {
+          const tagId = tagIds.at(-1);
+          if (tagId && !card.tagIds.includes(tagId)) pushNewTagId(tagId);
+          const newRemovingIds = card.tagIds.filter(
+            (id) => !tagIds.includes(id),
+          );
+          newRemovingIds.forEach((val) => removeTagId(val));
+          setCard({ ...card, tagIds: tagIds });
         }}
       />
     </div>

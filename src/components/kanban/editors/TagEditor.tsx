@@ -2,30 +2,44 @@
 
 import TextButton from "@/shared/TextButton";
 import TextInput from "@/shared/TextInput";
-import { nanoid } from "@reduxjs/toolkit";
-import React, { useState } from "react";
+import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
+import React, { useEffect, useState } from "react";
 import TagList from "../TagList";
 import Tag from "../Tag";
 import DeleteIcon from "@public/delete.svg";
 import PlusIcon from "@public/plus.svg";
 import ActionMenu from "@/components/ui/ActionMenu";
+import { useAppDispatch, useAppStore } from "@/lib/hooks";
+import { setTagsAction } from "@/lib/features/kanban/kanbanSlice";
+import { requestToApi } from "@/scripts/project";
 
 type TagEditorProps = {
-  tags: Array<TagData>;
-  cardId?: string;
+  cardId: string;
   tagIds: string[];
   setTagIds: (arg: string[]) => void;
-  setTags: (arg: Array<TagData>) => void;
 };
 
 export default function TagEditor(props: TagEditorProps) {
-  const { tags, setTags, cardId, tagIds, setTagIds } = props;
+  const { cardId, tagIds, setTagIds } = props;
   const [tag, setTag] = useState<TagData>(createTag());
+  const [tags, setTags] = useState<TagData[]>([]);
+
+  const store = useAppStore();
+
+  useEffect(() => {
+    let projectTags = store.getState().kanban.tags;
+    if (projectTags) setTags(projectTags);
+    store.subscribe(() => {
+      projectTags = store.getState().kanban.tags;
+      if (projectTags) setTags(projectTags);
+    });
+  }, []);
+
   return (
     <section>
       <header className="font-semibold">Tag Editor</header>
       {tagForm(tag, setTag)}
-      {renderTagSuggestions(tags, tag, setTags, tagIds, setTagIds)}
+      {renderTagSuggestions(cardId, tags, tag, tagIds, setTagIds)}
     </section>
   );
 }
@@ -67,37 +81,12 @@ function createTag(name?: string, color?: string, cardId?: string): TagData {
   };
 }
 
-function SuggestedTag(props: {
-  data: TagData;
-  tags: TagData[];
-  setTags: (tags: TagData[]) => void;
-  tagIds: string[];
-  setTagIds: (ids: string[]) => void;
-}) {
-  const { data, tags, setTags, tagIds, setTagIds } = props;
-  const [isHovered, setIsHovered] = useState(false);
-  return (
-    <div
-      className="relative w-full h-fit"
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
-    >
-      <Tag data={data}></Tag>
-      {isHovered && renderActionMenu(data, tags, setTags, tagIds, setTagIds)}
-    </div>
-  );
-}
-
 function renderTagSuggestions(
+  cardId: string,
   tags: TagData[],
   tag: TagData,
-  setTags: (tags: TagData[]) => void,
   tagIds: string[],
-  setTagIds: (ids: string[]) => void,
+  setTagIds: (arg: string[]) => void,
 ) {
   return (
     <section>
@@ -111,9 +100,8 @@ function renderTagSuggestions(
             return (
               <li key={idx}>
                 <SuggestedTag
+                  cardId={cardId}
                   data={item}
-                  tags={tags}
-                  setTags={setTags}
                   tagIds={tagIds}
                   setTagIds={setTagIds}
                 />
@@ -125,32 +113,72 @@ function renderTagSuggestions(
   );
 }
 
+function SuggestedTag(props: {
+  data: TagData;
+  cardId: string;
+  tagIds: string[];
+  setTagIds: (arg: string[]) => void;
+}) {
+  const { data, cardId, tagIds, setTagIds } = props;
+  const [isHovered, setIsHovered] = useState(false);
+  const dispatch = useAppDispatch();
+  const store = useAppStore();
+  return (
+    <div
+      className="relative w-full h-fit"
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
+    >
+      <Tag data={data}></Tag>
+      {isHovered &&
+        renderActionMenu(data, store, cardId, dispatch, tagIds, setTagIds)}
+    </div>
+  );
+}
+
 function renderActionMenu(
   tag: TagData,
-  tags: Array<TagData>,
-  setTags: (arg: Array<TagData>) => void,
+  store: AppStore,
+  cardId: string,
+  dispatch: AppDispatch,
   tagIds: string[],
-  setTagIds: (ids: string[]) => void,
+  setTagIds: (arg: string[]) => void,
 ) {
   const options = [
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
-        setTagIds(tagIds.filter((t) => t != tag.id));
+        const data = tagIds.filter((t) => t !== tag.id);
+        console.log(data);
+        setTagIds([...data]);
       },
     },
     {
       icon: PlusIcon,
       className: "bg-green-800 hover:bg-green-900",
       callback: () => {
-        if (tags.filter((t) => t.id == tag.id).length == 0) {
-          setTags(tags.concat(tag));
+        const projectId = store.getState().projectId;
+
+        let storeTags = store.getState().kanban.tags;
+        if (!storeTags) storeTags = [];
+        if (storeTags.filter((t) => t.id === tag.id).length === 0) {
+          dispatch(setTagsAction(storeTags.concat(tag)));
+          requestToApi("tags/create", tag, "post", [
+            { name: "id", value: projectId },
+          ]);
         }
         setTagIds(tagIds.concat(tag.id));
       },
     },
   ];
-
-  return <ActionMenu options={options} />;
+  if (tagIds.includes(tag.id)) {
+    return <ActionMenu options={[options[0]]} />;
+  } else {
+    return <ActionMenu options={[options[1]]} />;
+  }
 }
