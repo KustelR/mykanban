@@ -227,7 +227,7 @@ function renderActionMenu(
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
         const projectId = store.getState().projectId;
-        requestToApi("/columns/delete", { id: colData.id }, "delete", [
+        requestToApi("columns/delete", { id: colData.id }, "delete", [
           { name: "id", value: projectId },
         ]);
         setColumns(removeColumn(colData.id, columns));
