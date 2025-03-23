@@ -3,13 +3,14 @@ import TagList from "./TagList";
 type CardProps = {
   cardData: CardData;
   debug?: boolean;
+  onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 
 export function Card(props: CardProps) {
-  const { cardData, debug } = props;
+  const { cardData, debug, onClick } = props;
   return (
     <>
-      <div>
+      <div onClick={onClick}>
         <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
           <header className="font-bold overflow-hidden line-clamp-3 break-words max-w-[200px]">
             {cardData.name}
