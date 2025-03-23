@@ -6,7 +6,7 @@ export default function CardView(props: { card: CardData }) {
   const { card } = props;
   return (
     <section
-      className="min-h-52 bg-neutral-950 border-[1px] border-neutral-600 text-white max-w-[800px] mx-1 md:mx-auto mt-8 p-2 rounded-md space-y-2"
+      className="min-h-52 bg-neutral-900 border-[1px] m-1 md:m-0 border-neutral-600 text-white max-w-[800px] p-2 rounded-md space-y-2"
       onClick={(e) => {
         e.stopPropagation();
       }}

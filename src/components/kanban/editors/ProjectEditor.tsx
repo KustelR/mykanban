@@ -22,69 +22,65 @@ export default function ProjectEditor() {
     });
   }, []);
   return (
-    <div className="w-full h-full place-content-center place-items-center">
-      <section
-        className="p-2 dark:bg-neutral-800 rounded-md border-[1px] dark:border-neutral-700 w-fit"
-        onClick={(e) => {
-          e.stopPropagation();
+    <section
+      className="p-2 dark:bg-neutral-800 rounded-md border-[1px] dark:border-neutral-700 w-fit"
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
+      <header className="font-bold">Project Editor</header>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (name && state) {
+            const projectId = store.getState().projectId;
+            requestToApi("data/update", { name: name }, "patch", [
+              { name: "id", value: projectId },
+            ]);
+            dispatch(
+              setProjectDataAction({
+                name,
+                tags: state.tags ? state.tags : [],
+              }),
+            );
+          }
         }}
       >
-        <header className="font-bold">Project Editor</header>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (name && state) {
+        <TextInput
+          onChange={(e) => {
+            setName(e.target.value);
+          }}
+          id="project_editor_name"
+          label="name"
+        />
+      </form>
+      {state && state.tags && (
+        <TagEditor
+          cardId=""
+          tagIds={state.tags.map((tag) => tag.id)}
+          setTagIds={(tagIds) => {
+            const tags = state.tags;
+            if (!tags) return;
+            const filteredTags = tags.filter((tag) => !tagIds.includes(tag.id));
+            filteredTags.forEach(() => {
               const projectId = store.getState().projectId;
-              requestToApi("data/update", { name: name }, "patch", [
-                { name: "id", value: projectId },
-              ]);
+              requestToApi(
+                "tags/delete",
+                { id: filteredTags[0].id },
+                "delete",
+                [{ name: "id", value: projectId }],
+              );
               dispatch(
                 setProjectDataAction({
-                  name,
-                  tags: state.tags ? state.tags : [],
+                  name: state.name,
+                  tags: tags.filter((t) => tagIds.includes(t.id)),
                 }),
               );
-            }
+            });
           }}
-        >
-          <TextInput
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-            id="project_editor_name"
-            label="name"
-          />
-        </form>
-        {state && state.tags && (
-          <TagEditor
-            cardId=""
-            tagIds={state.tags.map((tag) => tag.id)}
-            setTagIds={(tagIds) => {
-              const tags = state.tags;
-              if (!tags) return;
-              const filteredTags = tags.filter(
-                (tag) => !tagIds.includes(tag.id),
-              );
-              filteredTags.forEach(() => {
-                const projectId = store.getState().projectId;
-                requestToApi(
-                  "tags/delete",
-                  { id: filteredTags[0].id },
-                  "delete",
-                  [{ name: "id", value: projectId }],
-                );
-                dispatch(
-                  setProjectDataAction({
-                    name: state.name,
-                    tags: tags.filter((t) => tagIds.includes(t.id)),
-                  }),
-                );
-              });
-            }}
-          ></TagEditor>
-        )}
-      </section>
-    </div>
+        ></TagEditor>
+      )}
+    </section>
   );
 }
 export function ProjectEditorPortal(props: {

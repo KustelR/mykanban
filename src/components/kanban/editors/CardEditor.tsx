@@ -22,49 +22,47 @@ export default function CardEditor(props: {
   return (
     <>
       {card && (
-        <div className="w-full h-full  place-items-center place-content-center">
-          <div
-            className="w-fit bg-slate-100 dark:bg-neutral-900 border-[1px] border-neutral-400 dark:border-neutral-700 p-2 rounded-xl"
+        <div
+          className="w-fit bg-slate-100 dark:bg-neutral-900 border-[1px] border-neutral-400 dark:border-neutral-700 p-2 rounded-xl"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+            {cardDataEditor(
+              card,
+              setCard,
+              (id) => {
+                setNewTagIds(newTagIds.concat(id));
+              },
+              (id) => {
+                setRemovingTagIds(removingTagIds.concat(id));
+              },
+            )}
+            {preview(card)}
+          </div>
+          <TextButton
+            className="w-full mt-2"
             onClick={(e) => {
-              e.stopPropagation();
+              if (setCardData) setCardData(card);
+              newTagIds.forEach((tagId) => {
+                requestToApi(
+                  "tags/link",
+                  { cardId: card.id, tagId: tagId },
+                  "put",
+                );
+              });
+              removingTagIds.forEach((tagId) => {
+                requestToApi(
+                  "tags/unlink",
+                  { cardId: card.id, tagId: tagId },
+                  "delete",
+                );
+              });
             }}
           >
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-              {cardDataEditor(
-                card,
-                setCard,
-                (id) => {
-                  setNewTagIds(newTagIds.concat(id));
-                },
-                (id) => {
-                  setRemovingTagIds(removingTagIds.concat(id));
-                },
-              )}
-              {preview(card)}
-            </div>
-            <TextButton
-              className="w-full mt-2"
-              onClick={(e) => {
-                if (setCardData) setCardData(card);
-                newTagIds.forEach((tagId) => {
-                  requestToApi(
-                    "tags/link",
-                    { cardId: card.id, tagId: tagId },
-                    "put",
-                  );
-                });
-                removingTagIds.forEach((tagId) => {
-                  requestToApi(
-                    "tags/unlink",
-                    { cardId: card.id, tagId: tagId },
-                    "delete",
-                  );
-                });
-              }}
-            >
-              ADD
-            </TextButton>
-          </div>
+            ADD
+          </TextButton>
         </div>
       )}
     </>
