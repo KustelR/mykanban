@@ -1,3 +1,4 @@
+import DebugData from "@/shared/DebugData";
 import { Card } from "./Card";
 
 import CardActions from "./CardControls";
@@ -31,12 +32,10 @@ export default function CardColumn(props: {
             })}
       </ol>
       {debug && (
-        <div className="rounded-md bg-red-600/30 p-1">
-          <strong>debug data</strong>
-          <ul>
-            <li>order: {colData.order}</li>
-          </ul>
-        </div>
+        <DebugData
+          header="column debug data"
+          data={new Map().set("order", colData.order)}
+        />
       )}
     </div>
   );

@@ -1,3 +1,4 @@
+import DebugData from "@/shared/DebugData";
 import TagList from "./TagList";
 
 type CardProps = {
@@ -20,12 +21,10 @@ export function Card(props: CardProps) {
           </p>
           <TagList tagIds={cardData.tagIds} />
           {debug && (
-            <div className="bg-red-600/30 rounded-md p-1">
-              <strong>debug data</strong>
-              <ul>
-                <li>order: {cardData.order}</li>
-              </ul>
-            </div>
+            <DebugData
+              header="card debug data"
+              data={new Map().set("order", cardData.order)}
+            />
           )}
         </section>
       </div>
