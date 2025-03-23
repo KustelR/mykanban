@@ -114,7 +114,7 @@ function cardDataEditor(
         />
         <TextInput
           area
-          placeholder={card.description}
+          defaultValue={card.description}
           onChange={(e) => {
             setCard({ ...card, description: e.target.value });
           }}

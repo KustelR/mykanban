@@ -53,7 +53,7 @@ export default function TextInput(props: TextInputProps) {
             type={type ? type : "text"}
             id={id}
             autoComplete="off"
-            placeholder={defaultValue}
+            value={defaultValue}
             onChange={(e) => {
               validateInput(
                 e.target,
@@ -89,6 +89,7 @@ export default function TextInput(props: TextInputProps) {
           <textarea
             className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full h-fit px-2 rounded-md border-[1px] focus:outline-none focus:bg-neutral-200 dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
             id={id}
+            value={defaultValue}
             placeholder={
               placeholder && placeholder.length < 20
                 ? placeholder
