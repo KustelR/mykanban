@@ -9,6 +9,7 @@ import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
 import { requestToApi } from "@/scripts/project";
+import CardView from "../CardView";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -87,9 +88,12 @@ export function CardEditorPortal(props: {
 
 function preview(card: CardData) {
   return (
-    <div className="max-w-96">
+    <div className="max-w-96 space-y-2">
       <header className="font-bold">Preview</header>
+      <h2>Card:</h2>
       <Card cardData={{ ...card }}></Card>
+      <h2>Full:</h2>
+      <CardView card={card} />
     </div>
   );
 }
