@@ -21,7 +21,6 @@ import ActionMenu from "../ui/ActionMenu";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import {
   pushCardAction,
-  setColumnCardsAction,
   setKanbanAction,
 } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";

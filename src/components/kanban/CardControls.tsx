@@ -12,17 +12,20 @@ import { getColumn } from "@/lib/features/kanban/utils";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { setColumnCardsAction } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
+import { CardViewPortal } from "./CardView";
 
 type CardActionsProps = {
   children?: ReactNode;
   blocked?: boolean;
   cardData: CardData;
+  onClick?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 
 export default function CardActions(props: CardActionsProps) {
-  const { children, blocked, cardData } = props;
+  const { children, blocked, cardData, onClick } = props;
 
   const [isActive, setIsActive] = useState(false);
+  const [isViewing, setIsViewing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const dispatch = useAppDispatch();
   const store = useAppStore();
@@ -40,6 +43,9 @@ export default function CardActions(props: CardActionsProps) {
       {drag(
         <div
           className={`${isDragging ? "cursor-move" : "cursor-pointer"} h-full relative w-full`}
+          onClick={() => {
+            setIsViewing(true);
+          }}
           onMouseEnter={(e) => {
             setIsActive(true);
           }}
@@ -52,6 +58,9 @@ export default function CardActions(props: CardActionsProps) {
             isActive &&
             renderActionMenu(cardData, setIsEditing, dispatch, store)}
         </div>,
+      )}
+      {isViewing && (
+        <CardViewPortal card={cardData} setIsVisible={setIsViewing} />
       )}
       {isEditing && (
         <Editor
