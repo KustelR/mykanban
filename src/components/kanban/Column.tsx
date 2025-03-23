@@ -34,7 +34,9 @@ export default function CardColumn(props: {
       {debug && (
         <DebugData
           header="column debug data"
-          data={new Map().set("order", colData.order)}
+          data={new Map()
+            .set("order", colData.order)
+            .set("cards", colData.cards ? colData.cards.length : 0)}
         />
       )}
     </div>
