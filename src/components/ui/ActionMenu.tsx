@@ -15,7 +15,12 @@ type ActionMenuProps = {
 export default function ActionMenu(props: ActionMenuProps) {
   const { options } = props;
   return (
-    <ul className={`overflow-visible flex absolute top-0 right-0 flex-row"`}>
+    <ul
+      className={`overflow-visible flex absolute top-0 right-0 flex-row"`}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
       {options.map((option, idx) => {
         return (
           <li key={idx}>
