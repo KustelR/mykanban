@@ -8,9 +8,9 @@ export default function DebugData(props: { header: string; data: DebugInfo }) {
     <section className="bg-red-600/30 p-1 text-xs">
       <header className="font-semibold">{header}</header>
       <ul>
-        {data.entries().map((item) => {
+        {[...data.entries()].map((item, idx) => {
           return (
-            <li>
+            <li key={idx}>
               {item[0]}: {item[1]}
             </li>
           );
