@@ -23,7 +23,7 @@ export default function ProjectEditor() {
   }, []);
   return (
     <section
-      className="p-2 dark:bg-neutral-800 rounded-md border-[1px] dark:border-neutral-700 w-fit"
+      className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-md border-[1px] dark:border-neutral-700 w-fit"
       onClick={(e) => {
         e.stopPropagation();
       }}

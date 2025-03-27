@@ -78,7 +78,7 @@ export const kanbanSlice = createSlice({
         ...column,
         cards: [
           ...cards,
-          { ...card, order: cards.length, columnId: column.id },
+          { ...card, order: cards.length + 1, columnId: column.id },
         ],
       });
       state.lastAction = "push_card";

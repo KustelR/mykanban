@@ -138,7 +138,12 @@ export default function ColumnControls(props: ColumnControlProps) {
           }}
           setCardData={(data) => {
             requestToApi("cards/create", data, "post");
-            dispatch(pushCardAction({ columnId: colData.id, card: data }));
+            dispatch(
+              pushCardAction({
+                columnId: colData.id,
+                card: data,
+              }),
+            );
           }}
         />
       )}

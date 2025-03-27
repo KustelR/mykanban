@@ -21,7 +21,7 @@ type TagEditorProps = {
 
 export default function TagEditor(props: TagEditorProps) {
   const { cardId, tagIds, setTagIds } = props;
-  const [tag, setTag] = useState<TagData>(createTag());
+  const [tag, setTag] = useState<TagData>(newTag());
   const [tags, setTags] = useState<TagData[]>([]);
 
   const store = useAppStore();
@@ -38,18 +38,29 @@ export default function TagEditor(props: TagEditorProps) {
   return (
     <section>
       <header className="font-semibold">Tag Editor</header>
-      {tagForm(tag, setTag)}
+      {tagForm(tag, setTag, tags, tagIds, setTagIds)}
       {renderTagSuggestions(cardId, tags, tag, tagIds, setTagIds)}
     </section>
   );
 }
 
-function tagForm(tag: TagData, setTag: (arg: TagData) => void) {
+function tagForm(
+  tag: TagData,
+  setTag: (arg: TagData) => void,
+  tags: TagData[],
+  tagIds: string[],
+  setTagIds: (arg: string[]) => void,
+) {
+  const dispatch = useAppDispatch();
+  const store = useAppStore();
   return (
     <form
       className="block *:block space-y-1"
       onSubmit={(e) => {
         e.preventDefault();
+        const projectId = store.getState().projectId;
+        createTag(tags, tag, tagIds, setTagIds, dispatch, projectId);
+        (e.target as HTMLFormElement).reset();
       }}
     >
       <TextInput
@@ -72,7 +83,7 @@ function tagForm(tag: TagData, setTag: (arg: TagData) => void) {
   );
 }
 
-function createTag(name?: string, color?: string, cardId?: string): TagData {
+function newTag(name?: string, color?: string, cardId?: string): TagData {
   return {
     id: nanoid(),
     name: name ? name : "",
@@ -166,13 +177,7 @@ function renderActionMenu(
 
         let storeTags = store.getState().kanban.tags;
         if (!storeTags) storeTags = [];
-        if (storeTags.filter((t) => t.id === tag.id).length === 0) {
-          dispatch(setTagsAction(storeTags.concat(tag)));
-          requestToApi("tags/create", tag, "post", [
-            { name: "id", value: projectId },
-          ]);
-        }
-        setTagIds(tagIds.concat(tag.id));
+        createTag(storeTags, tag, tagIds, setTagIds, dispatch, projectId);
       },
     },
   ];
@@ -181,4 +186,21 @@ function renderActionMenu(
   } else {
     return <ActionMenu options={[options[1]]} />;
   }
+}
+
+function createTag(
+  tags: TagData[],
+  tag: TagData,
+  tagIds: string[],
+  setTagIds: (arg: string[]) => void,
+  dispatch: AppDispatch,
+  projectId: string,
+) {
+  if (tags.filter((t) => t.id === tag.id).length === 0) {
+    dispatch(setTagsAction(tags.concat(tag)));
+    requestToApi("tags/create", tag, "post", [
+      { name: "id", value: projectId },
+    ]);
+  }
+  setTagIds(tagIds.concat(tag.id));
 }
