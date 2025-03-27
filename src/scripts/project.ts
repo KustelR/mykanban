@@ -22,9 +22,10 @@ export function updateProject(id: string, store: EnhancedStore) {
 }
 
 export async function createProject(data: KanbanState) {
+  console.log("runs");
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
-  const r = await axios.post(`${projectHost}/create`, data);
+  const r = await requestToApi("create", data, "post"); //axios.post(`${projectHost}/create`, data);
   addProjectToStorage(r.data);
   redirect(`/project?id=${r.data}`);
 }
@@ -36,7 +37,7 @@ export async function requestToApi(
   params?: { name: string; value: string }[],
 ) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
-  if (!projectHost) return;
+  if (!projectHost) return Promise.reject("Can't read project host");
   const paramString: string = params
     ? "?" +
       params
@@ -46,7 +47,7 @@ export async function requestToApi(
         .join("&")
     : "";
   return axios.request({
-    url: `${projectHost}/${url}${paramString}`,
+    url: `http://${projectHost}/${url}${paramString}`,
     method: method,
     data: payload,
   });
@@ -55,7 +56,7 @@ export async function requestToApi(
 export async function readProject(id: string, dispatch: any) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
-  const r = await axios.get(`${projectHost}/read?id=${id}`);
+  const r = await requestToApi("read", "", "get", [{ name: "id", value: id }]); // axios.get(`${projectHost}/read?id=${id}`);
   addProjectToStorage(id, r.data.name);
   dispatch(setKanbanAction(r.data));
   dispatch(setProjectIdAction(id));
