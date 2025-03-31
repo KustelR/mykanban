@@ -22,9 +22,6 @@ export function updateProject(id: string, store: EnhancedStore) {
 }
 
 export async function createProject(data: KanbanState) {
-  console.log("runs");
-  const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
-  if (!projectHost) return;
   const r = await requestToApi("create", data, "post"); //axios.post(`${projectHost}/create`, data);
   addProjectToStorage(r.data);
   redirect(`/project?id=${r.data}`);
@@ -37,6 +34,7 @@ export async function requestToApi(
   params?: { name: string; value: string }[],
 ) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
+  console.log("project host: ", projectHost);
   if (!projectHost) return Promise.reject("Can't read project host");
   const paramString: string = params
     ? "?" +
