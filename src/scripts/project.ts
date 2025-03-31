@@ -17,7 +17,7 @@ export function updateProject(id: string, store: EnhancedStore) {
     const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
     if (!projectHost)
       throw new Error("Can't get projectAPI host, can't update");
-    axios.put(`${projectHost}/update?id=${id}`, project);
+    requestToApi("kanban", project, "put");
   });
 }
 
@@ -25,7 +25,7 @@ export async function createProject(data: KanbanState) {
   console.log("runs");
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
-  const r = await requestToApi("create", data, "post"); //axios.post(`${projectHost}/create`, data);
+  const r = await requestToApi("kanban", data, "post"); //axios.post(`${projectHost}/create`, data);
   addProjectToStorage(r.data);
   redirect(`/project?id=${r.data}`);
 }
@@ -56,7 +56,9 @@ export async function requestToApi(
 export async function readProject(id: string, dispatch: any) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
   if (!projectHost) return;
-  const r = await requestToApi("read", "", "get", [{ name: "id", value: id }]); // axios.get(`${projectHost}/read?id=${id}`);
+  const r = await requestToApi("kanban", "", "get", [
+    { name: "id", value: id },
+  ]);
   addProjectToStorage(id, r.data.name);
   dispatch(setKanbanAction(r.data));
   dispatch(setProjectIdAction(id));
