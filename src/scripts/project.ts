@@ -14,18 +14,12 @@ export function updateProject(id: string, store: EnhancedStore) {
     lastHash = lastChanged.hash;
     const project: KanbanState = store.getState().kanban;
     if (project.name == "fake name fake name") return;
-    const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
-    if (!projectHost)
-      throw new Error("Can't get projectAPI host, can't update");
     requestToApi("kanban", project, "put");
   });
 }
 
 export async function createProject(data: KanbanState) {
-  console.log("runs");
-  const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
-  if (!projectHost) return;
-  const r = await requestToApi("kanban", data, "post"); //axios.post(`${projectHost}/create`, data);
+  const r = await requestToApi("kanban", data, "post");
   addProjectToStorage(r.data);
   redirect(`/project?id=${r.data}`);
 }
@@ -55,8 +49,6 @@ export async function requestToApi(
 }
 
 export async function readProject(id: string, dispatch: any) {
-  const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
-  if (!projectHost) return;
   const r = await requestToApi("kanban", "", "get", [
     { name: "id", value: id },
   ]);
