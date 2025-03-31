@@ -37,6 +37,7 @@ export async function requestToApi(
   params?: { name: string; value: string }[],
 ) {
   const projectHost = process.env.NEXT_PUBLIC_PROJECT_HOST;
+  console.log("project host: ", projectHost);
   if (!projectHost) return Promise.reject("Can't read project host");
   const paramString: string = params
     ? "?" +
