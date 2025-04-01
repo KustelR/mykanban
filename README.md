@@ -4,7 +4,7 @@ This repo represents frontend of mykanban
 
 ## Build
 
-If you want to build it - consider using [monorepo](https://github.com/KustelR/mykanban), it will take mere minutes and you will have full working app with backend and database.
+If you want to build it - consider using [monorepo](https://github.com/KustelR/kanbanmono), it will take mere minutes and you will have full working app with backend and database.
 Alternatively build it as normal npm project.
 
 1. Specify environment variables:
