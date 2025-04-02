@@ -132,8 +132,8 @@ export function moveColumn(
     columns: newCols,
     changed: [
       { ...col1, order: col1.order + amount },
-      { ...columns[col2Idx], order: col1.order },
-    ],
+      col2Idx != -1 ? { ...columns[col2Idx], order: col1.order } : null,
+    ].filter((item) => !!item),
   };
 }
 export function swapColumns(
