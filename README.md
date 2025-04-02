@@ -9,27 +9,27 @@ Alternatively build it as normal npm project.
 
 1. Specify environment variables:
 
-    ```env
-        NEXT_PUBLIC_PROJECT_HOST=your.api.host # Api url
-    ```
+   ```env
+       NEXT_PUBLIC_PROJECT_HOST=your.api.host # Api url
+   ```
 
 2. Run npm as usual:
 
-    1. Install dependencies
+   1. Install dependencies
 
-        ```bash
-        npm install
-        ```
+      ```bash
+      npm install
+      ```
 
-    2. Run project:
+   2. Run project:
 
-        ```bash
-            npm run build
-            npm run start
-        ```
-  
-        or else run it in dev mode:
+      ```bash
+          npm run build
+          npm run start
+      ```
 
-        ```bash
-            npm run dev
-        ```
+      or else run it in dev mode:
+
+      ```bash
+          npm run dev
+      ```

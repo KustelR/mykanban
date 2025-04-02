@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -12,10 +11,7 @@ export default function RootLayout({
   return (
     <StoreProvider>
       <html lang="en">
-        <body
-        >
-          {children}
-        </body>
+        <body>{children}</body>
       </html>
     </StoreProvider>
   );
