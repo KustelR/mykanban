@@ -1,17 +1,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root {
+@media (prefers-color-scheme: dark) {
+  html {
+    background: black;
+  }
+}
+
+:root.light {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
