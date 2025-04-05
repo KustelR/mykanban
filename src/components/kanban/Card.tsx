@@ -12,7 +12,7 @@ export function Card(props: CardProps) {
   return (
     <>
       <div onClick={onClick}>
-        <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 hover:dark:bg-neutral-800 p-2 ">
+        <section className="rounded-md hover:bg-neutral-300 border-[1px] dark:border-neutral-700 dark:hover:bg-neutral-800 p-2 ">
           <header className="font-bold overflow-hidden line-clamp-3 break-words max-w-[200px]">
             {cardData.name}
           </header>

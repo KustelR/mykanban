@@ -63,7 +63,7 @@ export default function Kanban(props: KanbanProps) {
               <PlusIcon
                 height={50}
                 width={50}
-                className="*:dark:fill-white"
+                className="dark:*:fill-white"
               ></PlusIcon>
             </button>
           )}
@@ -131,7 +131,7 @@ function renderColumnList(
       >
         <li>
           <button
-            className=" hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
+            className=" hover:bg-black/10 dark:hover:bg-white/10 w-fit [writing-mode:vertical-lr]"
             onClick={(e) => {
               setAddingDirection("start");
               setIsAdding(true);
@@ -160,7 +160,7 @@ function renderColumnList(
           })}
         <li>
           <button
-            className="hover:bg-black/10 hover:dark:bg-white/10 w-fit [writing-mode:vertical-lr]"
+            className="hover:bg-black/10 dark:hover:bg-white/10 w-fit [writing-mode:vertical-lr]"
             onClick={(e) => {
               setIsAdding(true);
               setAddingDirection("end");

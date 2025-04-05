@@ -22,7 +22,7 @@ export default function ProjectList() {
           })
           .map((p, idx) => {
             return (
-              <li key={idx} className="hover:dark:bg-neutral-800 px-2">
+              <li key={idx} className="dark:hover:bg-neutral-800 px-2">
                 <Link className="block w-full" href={`project/?id=${p.id}`}>
                   {p.name ? p.name : p.id} :{" "}
                   {new Date(p.lastOpened).toUTCString()}
