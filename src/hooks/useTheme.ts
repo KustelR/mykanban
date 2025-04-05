@@ -4,7 +4,12 @@ class Themes {
   static theme: ColorTheme;
   static subscribers: Array<(theme: ColorTheme) => void> = [];
   constructor() {
-    const filteredTheme = filterTheme(localStorage.getItem("theme"));
+    let filteredTheme: ColorTheme
+    try {
+      filteredTheme = filterTheme(localStorage.getItem("theme"));
+    } catch (e) {
+      filteredTheme = undefined
+    }
     this.setTheme(filteredTheme);
   }
   getTheme() {
