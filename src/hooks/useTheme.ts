@@ -4,11 +4,11 @@ class Themes {
   static theme: ColorTheme;
   static subscribers: Array<(theme: ColorTheme) => void> = [];
   constructor() {
-    let filteredTheme: ColorTheme
+    let filteredTheme: ColorTheme;
     try {
       filteredTheme = filterTheme(localStorage.getItem("theme"));
     } catch (e) {
-      filteredTheme = undefined
+      filteredTheme = undefined;
     }
     this.setTheme(filteredTheme);
   }
