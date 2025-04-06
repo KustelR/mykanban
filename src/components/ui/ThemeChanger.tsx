@@ -6,6 +6,9 @@ import Computer from "@public/computer.svg";
 import Sun from "@public/sun.svg";
 import Moon from "@public/moon.svg";
 
+const WIDTH = 24;
+const HEIGHT = 24;
+
 export default function ThemeChanger() {
   const [themeIcon, setThemeIcon] = useState<undefined | "dark" | "light">(
     undefined,
@@ -17,6 +20,7 @@ export default function ThemeChanger() {
   }, []);
   return (
     <button
+      className="bg-blue-800 dark:bg-orange-400 p-1 rounded-full transition-colors duration-300"
       onClick={() => {
         switch (theme.get()) {
           case undefined:
@@ -41,18 +45,22 @@ export default function ThemeChanger() {
     >
       {!themeIcon && (
         <Computer
-          width={32}
-          height={32}
+          width={WIDTH}
+          height={HEIGHT}
           className="*:stroke-transparent *:fill-black dark:*:fill-neutral-600"
         />
       )}
       {themeIcon === "light" && (
-        <Moon width={32} height={32} className="*:stroke-black *:fill-black" />
+        <Moon
+          width={WIDTH}
+          height={HEIGHT}
+          className="*:stroke-white *:fill-white"
+        />
       )}
       {themeIcon === "dark" && (
         <Sun
-          width={32}
-          height={32}
+          width={WIDTH}
+          height={HEIGHT}
           className="*:stroke-white *:fill-transparent"
         />
       )}

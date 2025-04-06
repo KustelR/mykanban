@@ -5,22 +5,22 @@ import ThemeChanger from "./ThemeChanger";
 export default function CustomHeader() {
   return (
     <header className="border-b-[1px] border-neutral-600 p-2">
-      <ul className="flex space-x-5 w-full ">
+      <ul className="flex space-x-5 w-full items-end">
         <li>
           <h1 className="text-2xl font-bold">MYKANBAN</h1>
         </li>
         <li className="flex items-end w-full">
-          <ul className="flex space-x-2 content-end justify-between w-full">
+          <ul className="flex space-x-2 items-end justify-between w-full">
             <NavItem>
               <Link href="/">Home</Link>
             </NavItem>
             <li>
-              <ul className="flex space-x-4">
+              <ul className="space-x-4 items-end flex h-fit">
                 <NavItem>
                   <Link href="/auth">Sign in / Sign up</Link>
                 </NavItem>
                 <NavItem>
-                  <ThemeChanger></ThemeChanger>
+                  <ThemeChanger />
                 </NavItem>
               </ul>
             </li>
@@ -36,6 +36,6 @@ function NavItem(props: {
   onClick?: (e: React.MouseEvent) => void;
 }) {
   return (
-    <li className="dark:hover:bg-white/10 p-1 rounded-md">{props.children}</li>
+    <li className="cursor-pointer inline h-fit w-fit">{props.children}</li>
   );
 }
