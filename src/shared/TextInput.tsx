@@ -30,7 +30,7 @@ export default function TextInput(props: TextInputProps) {
     className,
   } = props;
   const [isFocused, setIsFocused] = useState(false);
-  const [isValid, setIsValid] = useState(false);
+  const [isValid, setIsValid] = useState(true);
   const defaultValidationMessages: Array<string> = [];
   const [validationMessages, setValidationMessages] = useState(
     defaultValidationMessages,
