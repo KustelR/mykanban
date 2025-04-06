@@ -9,7 +9,7 @@ export default function Project() {
       <Suspense>
         <ProjectControl />
       </Suspense>
-      <Kanban debug className="w-full md:max-w-fit"></Kanban>
+      <Kanban className="w-full md:max-w-fit"></Kanban>
     </div>
   );
 }

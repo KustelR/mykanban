@@ -20,7 +20,7 @@ type KanbanProps = {
 };
 
 export default function Kanban(props: KanbanProps) {
-  const { defaultColumns, className, defaultLabel, debug } = props;
+  const { defaultColumns, className, defaultLabel } = props;
   const [columns, setColumns] = useState<Array<ColData> | null | undefined>(
     defaultColumns,
   );
@@ -32,6 +32,7 @@ export default function Kanban(props: KanbanProps) {
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
     "start",
   );
+  const [debug, setDebug] = useState(false);
   const [lastHash, setLastHash] = useState("");
   const dispatch = useAppDispatch();
   useEffect(() => {
@@ -76,16 +77,15 @@ export default function Kanban(props: KanbanProps) {
               setAddingDirection,
               setIsAdding,
             )}
-          <section>
-            <header className="font-bold">Controls</header>
+          <div className="mt-2 border-t-neutral-600 border-t-[1px] p-2">
             <TextButton
               onClick={() => {
                 setIsEditing(true);
               }}
             >
-              EDIT
+              controls
             </TextButton>
-          </section>
+          </div>
         </div>
       </DndProvider>
       {isAdding && (
@@ -112,7 +112,14 @@ export default function Kanban(props: KanbanProps) {
           }}
         />
       )}
-      {isEditing && <ProjectEditorPortal setIsRedacting={setIsEditing} />}
+      {isEditing && (
+        <ProjectEditorPortal
+          toggleDevMode={() => {
+            setDebug(!debug);
+          }}
+          setIsRedacting={setIsEditing}
+        />
+      )}
     </>
   );
 }

@@ -8,8 +8,10 @@ import { createPortal } from "react-dom";
 import TagEditor from "./TagEditor";
 import { setProjectDataAction } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
+import TextButton from "@/shared/TextButton";
 
-export default function ProjectEditor() {
+export default function ProjectEditor(props: { toggleDevMode: () => void }) {
+  const { toggleDevMode } = props;
   const [name, setName] = useState<string | null>(null);
   const [state, setState] = useState<KanbanState | null>(null);
   const dispatch = useAppDispatch();
@@ -29,68 +31,81 @@ export default function ProjectEditor() {
       }}
     >
       <header className="font-bold">Project Editor</header>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (name && state) {
-            const projectId = store.getState().projectId;
-            requestToApi("data/update", { name: name }, "patch", [
-              { name: "id", value: projectId },
-            ]);
-            dispatch(
-              setProjectDataAction({
-                name,
-                tags: state.tags ? state.tags : [],
-              }),
-            );
-          }
-        }}
-      >
-        <TextInput
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-          id="project_editor_name"
-          label="name"
-        />
-      </form>
-      {state && state.tags && (
-        <TagEditor
-          cardId=""
-          tagIds={state.tags.map((tag) => tag.id)}
-          setTagIds={(tagIds) => {
-            const tags = state.tags;
-            if (!tags) return;
-            const filteredTags = tags.filter((tag) => !tagIds.includes(tag.id));
-            filteredTags.forEach(() => {
-              const projectId = store.getState().projectId;
-              requestToApi(
-                "tags/delete",
-                { id: filteredTags[0].id },
-                "delete",
-                [{ name: "id", value: projectId }],
-              );
-              dispatch(
-                setProjectDataAction({
-                  name: state.name,
-                  tags: tags.filter((t) => tagIds.includes(t.id)),
-                }),
-              );
-            });
-          }}
-        ></TagEditor>
-      )}
+      <ul className="grid grid-cols-2 *:p-2">
+        <li className="col-span-1 border-r-[1px] border-neutral-600">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (name && state) {
+                const projectId = store.getState().projectId;
+                requestToApi("data/update", { name: name }, "patch", [
+                  { name: "id", value: projectId },
+                ]);
+                dispatch(
+                  setProjectDataAction({
+                    name,
+                    tags: state.tags ? state.tags : [],
+                  }),
+                );
+              }
+            }}
+          >
+            <TextInput
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+              id="project_editor_name"
+              label="name"
+            />
+          </form>
+          {state && state.tags && (
+            <TagEditor
+              cardId=""
+              tagIds={state.tags.map((tag) => tag.id)}
+              setTagIds={(tagIds) => {
+                const tags = state.tags;
+                if (!tags) return;
+                const filteredTags = tags.filter(
+                  (tag) => !tagIds.includes(tag.id),
+                );
+                filteredTags.forEach(() => {
+                  const projectId = store.getState().projectId;
+                  requestToApi(
+                    "tags/delete",
+                    { id: filteredTags[0].id },
+                    "delete",
+                    [{ name: "id", value: projectId }],
+                  );
+                  dispatch(
+                    setProjectDataAction({
+                      name: state.name,
+                      tags: tags.filter((t) => tagIds.includes(t.id)),
+                    }),
+                  );
+                });
+              }}
+            ></TagEditor>
+          )}
+        </li>
+        <li className="col-span-1 *:block space-y-2">
+          <TextButton onClick={() => toggleDevMode()}>debug data</TextButton>
+          <TextButton>open log</TextButton>
+        </li>
+      </ul>
     </section>
   );
 }
 export function ProjectEditorPortal(props: {
   projectData?: KanbanState;
+  toggleDevMode?: () => void;
   setIsRedacting: (arg: boolean) => void;
 }) {
-  const { projectData, setIsRedacting } = props;
+  const { projectData, toggleDevMode, setIsRedacting } = props;
   return createPortal(
     <Popup setIsActive={setIsRedacting}>
-      <ProjectEditor></ProjectEditor>
+      <ProjectEditor
+        toggleDevMode={toggleDevMode ? toggleDevMode : () => {}}
+      ></ProjectEditor>
     </Popup>,
     document.body,
   );
