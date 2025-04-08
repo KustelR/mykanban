@@ -246,3 +246,33 @@ export function createTag(
   dispatch(setTagsAction(tags.concat(tag)));
   requestToApi("tags/create", tag, "post", [{ name: "id", value: projectId }]);
 }
+
+export function deleteTag(
+  tags: TagData[],
+  tagId: string,
+  dispatch: AppDispatch,
+  projectId: string,
+) {
+  dispatch(
+    setTagsAction(
+      tags.filter((t) => {
+        return t.id !== tagId;
+      }),
+    ),
+  );
+  requestToApi("tags/delete", { id: tagId }, "delete", [
+    { name: "id", value: projectId },
+  ]);
+}
+
+export function newTag(
+  name?: string,
+  color?: string,
+  cardId?: string,
+): TagData {
+  return {
+    id: nanoid(),
+    name: name ? name : "",
+    color: color ? color : "#ff0000",
+  };
+}
