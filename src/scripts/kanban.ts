@@ -1,6 +1,10 @@
-import { setCardTagsAction } from "@/lib/features/kanban/kanbanSlice";
+import {
+  setCardTagsAction,
+  setTagsAction,
+} from "@/lib/features/kanban/kanbanSlice";
 import { getCard } from "@/lib/features/kanban/utils";
 import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
+import { requestToApi } from "./project";
 
 /**
  * Gets an array of columns and pushes card to column with specified id
@@ -231,4 +235,14 @@ export function removeTag(
       tags: card.tagIds.filter((t) => t != tagId),
     }),
   );
+}
+
+export function createTag(
+  tags: TagData[],
+  tag: TagData,
+  dispatch: AppDispatch,
+  projectId: string,
+) {
+  dispatch(setTagsAction(tags.concat(tag)));
+  requestToApi("tags/create", tag, "post", [{ name: "id", value: projectId }]);
 }

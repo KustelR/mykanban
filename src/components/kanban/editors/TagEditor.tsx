@@ -12,6 +12,7 @@ import ActionMenu from "@/components/ui/ActionMenu";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { setTagsAction } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
+import { createTag } from "@/scripts/kanban";
 
 type TagEditorProps = {
   cardId: string;
@@ -59,7 +60,7 @@ function tagForm(
       onSubmit={(e) => {
         e.preventDefault();
         const projectId = store.getState().projectId;
-        createTag(tags, tag, tagIds, setTagIds, dispatch, projectId);
+        createTag(tags, tag, dispatch, projectId);
         (e.target as HTMLFormElement).reset();
       }}
     >
@@ -83,12 +84,11 @@ function tagForm(
   );
 }
 
-function newTag(name?: string, color?: string, cardId?: string): TagData {
+function newTag(name?: string, color?: string): TagData {
   return {
     id: nanoid(),
     name: name ? name : "",
     color: color ? color : "#ff0000",
-    cardId: cardId ? cardId : "not a card",
   };
 }
 
@@ -165,7 +165,6 @@ function renderActionMenu(
       className: "bg-red-800 hover:bg-red-900",
       callback: () => {
         const data = tagIds.filter((t) => t !== tag.id);
-        console.log(data);
         setTagIds([...data]);
       },
     },
@@ -177,7 +176,7 @@ function renderActionMenu(
 
         let storeTags = store.getState().kanban.tags;
         if (!storeTags) storeTags = [];
-        createTag(storeTags, tag, tagIds, setTagIds, dispatch, projectId);
+        createTag(storeTags, tag, dispatch, projectId);
       },
     },
   ];
@@ -186,21 +185,4 @@ function renderActionMenu(
   } else {
     return <ActionMenu options={[options[1]]} />;
   }
-}
-
-function createTag(
-  tags: TagData[],
-  tag: TagData,
-  tagIds: string[],
-  setTagIds: (arg: string[]) => void,
-  dispatch: AppDispatch,
-  projectId: string,
-) {
-  if (tags.filter((t) => t.id === tag.id).length === 0) {
-    dispatch(setTagsAction(tags.concat(tag)));
-    requestToApi("tags/create", tag, "post", [
-      { name: "id", value: projectId },
-    ]);
-  }
-  setTagIds(tagIds.concat(tag.id));
 }
