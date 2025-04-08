@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 
 type TagInfo = {
   name: string;
+  id: string;
   color: string;
   frequency: number;
 };
@@ -17,8 +18,21 @@ export default function TagEditorNew() {
   useEffect(() => {
     const state = store.getState();
     const rawTags: TagInfo[] = [];
+    const cards: CardData[] = [];
+    state.kanban.columns.forEach((col) => {
+      if (col.cards) cards.push(...col.cards);
+    });
     state.kanban.tags?.forEach((t) => {
-      rawTags.push({ name: t.name, color: t.color, frequency: 999 });
+      let frequency = 0;
+      cards.forEach((c) => {
+        if (c.tagIds.includes(t.id)) frequency++;
+      });
+      rawTags.push({
+        name: t.name,
+        id: t.id,
+        color: t.color,
+        frequency: frequency,
+      });
     });
     setTags(rawTags);
   }, []);
@@ -55,7 +69,7 @@ function Suggestions(props: { tags: TagInfo[]; filterString: string }) {
             return (
               <li
                 className="flex space-x-2 px-3 dark:hover:bg-neutral-900"
-                key={t.name + t.color + t.frequency + idx}
+                key={t.id}
               >
                 <span
                   className="h-full px-2 rounded-sm"
@@ -63,7 +77,7 @@ function Suggestions(props: { tags: TagInfo[]; filterString: string }) {
                 >
                   {t.name}
                 </span>
-                <span>cards: {t.frequency}</span>
+                <span>marked {t.frequency} cards</span>
               </li>
             );
           })}
