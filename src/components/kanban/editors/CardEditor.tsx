@@ -5,16 +5,14 @@ import TextInput from "@/shared/TextInput";
 import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
-import TagEditor from "./TagEditor";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
 import { requestToApi } from "@/scripts/project";
 import CardView from "../CardView";
-import TagEditorNew from "./TagEditorNew";
-import { createTag } from "@/scripts/kanban";
+import TagEditor from "./TagEditor";
+import { createTag, newTag } from "@/scripts/kanban";
 import DeleteIcon from "@public/delete.svg";
 import PlusIcon from "@public/plus.svg";
-import { nanoid } from "@reduxjs/toolkit";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -159,7 +157,7 @@ function cardDataEditor(
           label="Description"
         />
       </form>
-      <TagEditorNew
+      <TagEditor
         options={options}
         onTagCreation={(name, color) => {
           const t = newTag(name, color);
@@ -168,15 +166,7 @@ function cardDataEditor(
           setCard({ ...card, tagIds: card.tagIds.concat(t.id) });
           pushNewTagId(t.id);
         }}
-      ></TagEditorNew>
+      ></TagEditor>
     </div>
   );
-}
-
-function newTag(name?: string, color?: string, cardId?: string): TagData {
-  return {
-    id: nanoid(),
-    name: name ? name : "",
-    color: color ? color : "#ff0000",
-  };
 }

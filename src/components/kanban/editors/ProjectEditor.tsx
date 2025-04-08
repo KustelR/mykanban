@@ -5,10 +5,12 @@ import Popup from "@/shared/Popup";
 import TextInput from "@/shared/TextInput";
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import TagEditor from "./TagEditor";
 import { setProjectDataAction } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
 import TextButton from "@/shared/TextButton";
+import TagEditor from "./TagEditor";
+import { createTag, deleteTag, newTag, removeTag } from "@/scripts/kanban";
+import DeleteIcon from "@public/delete.svg";
 
 export default function ProjectEditor(props: { toggleDevMode: () => void }) {
   const { toggleDevMode } = props;
@@ -23,6 +25,22 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
       setState(store.getState().kanban);
     });
   }, []);
+
+  const options = [
+    {
+      icon: DeleteIcon,
+      className: "bg-red-800 hover:bg-red-900",
+      condition: () => {
+        return true;
+      },
+      callback: (tag: TagData) => {
+        const tags = store.getState().kanban.tags;
+        const projectId = store.getState().projectId;
+        if (tags) deleteTag(tags, tag.id, dispatch, projectId);
+      },
+    },
+  ];
+
   return (
     <section
       className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-md border-[1px] dark:border-neutral-700 w-fit"
@@ -58,7 +76,18 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
               label="name"
             />
           </form>
-          {state && state.tags && (
+          {
+            state && state.tags && (
+              <TagEditor
+                options={options}
+                onTagCreation={(name, color) => {
+                  const tags = store.getState().kanban.tags;
+                  const projectId = store.getState().projectId;
+                  if (tags)
+                    createTag(tags, newTag(name, color), dispatch, projectId);
+                }}
+              />
+            ) /*(
             <TagEditor
               cardId=""
               tagIds={state.tags.map((tag) => tag.id)}
@@ -85,7 +114,8 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
                 });
               }}
             ></TagEditor>
-          )}
+          )*/
+          }
         </li>
         <li className="col-span-1 *:block space-y-2">
           <TextButton onClick={() => toggleDevMode()}>debug data</TextButton>
