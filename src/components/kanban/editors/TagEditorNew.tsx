@@ -2,22 +2,19 @@ import { useAppStore } from "@/lib/hooks";
 import TextInput from "@/shared/TextInput";
 import React, { useEffect, useState } from "react";
 
-type TagInfo = {
-  name: string;
-  id: string;
-  color: string;
+interface Frequent {
   frequency: number;
-};
+}
 
 export default function TagEditorNew() {
   const [isActive, setIsActive] = useState(false);
   const [input, setInput] = useState("");
-  const [tags, setTags] = useState<TagInfo[]>([]);
+  const [tags, setTags] = useState<(TagData & Frequent)[]>([]);
   const store: AppStore = useAppStore();
 
   useEffect(() => {
     const state = store.getState();
-    const rawTags: TagInfo[] = [];
+    const rawTags: (TagData & Frequent)[] = [];
     const cards: CardData[] = [];
     state.kanban.columns.forEach((col) => {
       if (col.cards) cards.push(...col.cards);
@@ -28,9 +25,7 @@ export default function TagEditorNew() {
         if (c.tagIds.includes(t.id)) frequency++;
       });
       rawTags.push({
-        name: t.name,
-        id: t.id,
-        color: t.color,
+        ...t,
         frequency: frequency,
       });
     });
@@ -52,7 +47,10 @@ export default function TagEditorNew() {
   );
 }
 
-function Suggestions(props: { tags: TagInfo[]; filterString: string }) {
+function Suggestions(props: {
+  tags: (TagData & Frequent)[];
+  filterString: string;
+}) {
   const { tags, filterString } = props;
   const filteredTags = tags.filter((t) => t.name.startsWith(filterString));
   if (filterString === "") return;
