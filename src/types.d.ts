@@ -34,7 +34,6 @@ declare global {
     name: string;
     color: string;
     id: string;
-    cardId: string;
   };
   type ProjectStamp = {
     id: string;
