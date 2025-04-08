@@ -1,188 +1,169 @@
-"use client";
-
+import ActionMenu from "@/components/ui/ActionMenu";
+import { useAppStore } from "@/lib/hooks";
 import TextButton from "@/shared/TextButton";
 import TextInput from "@/shared/TextInput";
-import { EnhancedStore, nanoid } from "@reduxjs/toolkit";
-import React, { useEffect, useState } from "react";
-import TagList from "../TagList";
-import Tag from "../Tag";
-import DeleteIcon from "@public/delete.svg";
-import PlusIcon from "@public/plus.svg";
-import ActionMenu from "@/components/ui/ActionMenu";
-import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import { setTagsAction } from "@/lib/features/kanban/kanbanSlice";
-import { requestToApi } from "@/scripts/project";
-import { createTag } from "@/scripts/kanban";
+import React, { ReactNode, useEffect, useState } from "react";
 
-type TagEditorProps = {
-  cardId: string;
-  tagIds: string[];
-  setTagIds: (arg: string[]) => void;
+interface Frequent {
+  frequency: number;
+}
+
+type Option = {
+  condition: (t: TagData) => boolean;
+  callback: (t: TagData) => void;
+  icon: (props: {
+    width: number;
+    height: number;
+    className: string;
+  }) => ReactNode;
+  className: string;
 };
 
-export default function TagEditor(props: TagEditorProps) {
-  const { cardId, tagIds, setTagIds } = props;
-  const [tag, setTag] = useState<TagData>(newTag());
-  const [tags, setTags] = useState<TagData[]>([]);
-
-  const store = useAppStore();
+/**
+ * Accepts actions as in actionMenu that will appear on tag
+ */
+export default function TagEditorNew(props: {
+  options?: Option[];
+  onTagCreation?: (name: string, color: string) => void;
+}) {
+  const { options, onTagCreation } = props;
+  const [isActive, setIsActive] = useState(false);
+  const [input, setInput] = useState("");
+  const [tags, setTags] = useState<(TagData & Frequent)[]>([]);
+  const store: AppStore = useAppStore();
 
   useEffect(() => {
-    let projectTags = store.getState().kanban.tags;
-    if (projectTags) setTags(projectTags);
-    store.subscribe(() => {
-      projectTags = store.getState().kanban.tags;
-      if (projectTags) setTags(projectTags);
+    const state = store.getState();
+    const rawTags: (TagData & Frequent)[] = [];
+    const cards: CardData[] = [];
+    state.kanban.columns.forEach((col) => {
+      if (col.cards) cards.push(...col.cards);
     });
+    state.kanban.tags?.forEach((t) => {
+      let frequency = 0;
+      cards.forEach((c) => {
+        if (c.tagIds.includes(t.id)) frequency++;
+      });
+      rawTags.push({
+        ...t,
+        frequency: frequency,
+      });
+    });
+    setTags(rawTags);
   }, []);
 
   return (
-    <section>
-      <header className="font-semibold">Tag Editor</header>
-      {tagForm(tag, setTag, tags, tagIds, setTagIds)}
-      {renderTagSuggestions(cardId, tags, tag, tagIds, setTagIds)}
-    </section>
-  );
-}
-
-function tagForm(
-  tag: TagData,
-  setTag: (arg: TagData) => void,
-  tags: TagData[],
-  tagIds: string[],
-  setTagIds: (arg: string[]) => void,
-) {
-  const dispatch = useAppDispatch();
-  const store = useAppStore();
-  return (
-    <form
-      className="block *:block space-y-1"
-      onSubmit={(e) => {
-        e.preventDefault();
-        const projectId = store.getState().projectId;
-        createTag(tags, tag, dispatch, projectId);
-        (e.target as HTMLFormElement).reset();
-      }}
-    >
+    <div>
       <TextInput
         onChange={(e) => {
-          setTag({ ...tag, name: e.target.value });
+          setInput(e.target.value);
+          setIsActive(true);
         }}
-        placeholder={tag?.name}
-        id="tag_name"
-        label="tag name"
+        id="tag_editor_input"
+        label="enter tag name..."
       />
-      <label htmlFor="tag_color">Color</label>
-      <input
-        onChange={(e) => {
-          setTag({ ...tag, color: e.target.value });
-        }}
-        id="tag_color"
-        type="color"
-      />
-    </form>
-  );
-}
-
-function newTag(name?: string, color?: string): TagData {
-  return {
-    id: nanoid(),
-    name: name ? name : "",
-    color: color ? color : "#ff0000",
-  };
-}
-
-function renderTagSuggestions(
-  cardId: string,
-  tags: TagData[],
-  tag: TagData,
-  tagIds: string[],
-  setTagIds: (arg: string[]) => void,
-) {
-  return (
-    <section>
-      {" "}
-      <strong>Suggested tags</strong>
-      <ul className="space-y-1">
-        {[...tags, ...(tag ? [tag] : [])]
-          .filter((t) => t.name.startsWith(tag?.name ? tag.name : ""))
-          .slice(0, 5)
-          .map((item, idx) => {
-            return (
-              <li key={idx}>
-                <SuggestedTag
-                  cardId={cardId}
-                  data={item}
-                  tagIds={tagIds}
-                  setTagIds={setTagIds}
-                />
-              </li>
-            );
-          })}
-      </ul>
-    </section>
-  );
-}
-
-function SuggestedTag(props: {
-  data: TagData;
-  cardId: string;
-  tagIds: string[];
-  setTagIds: (arg: string[]) => void;
-}) {
-  const { data, cardId, tagIds, setTagIds } = props;
-  const [isHovered, setIsHovered] = useState(false);
-  const dispatch = useAppDispatch();
-  const store = useAppStore();
-  return (
-    <div
-      className="relative w-full h-fit"
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
-    >
-      <Tag data={data}></Tag>
-      {isHovered &&
-        renderActionMenu(data, store, cardId, dispatch, tagIds, setTagIds)}
+      {isActive && (
+        <Suggestions
+          filterString={input}
+          tags={tags}
+          onTagCreation={(color) => {
+            onTagCreation ? onTagCreation(input, color) : () => {};
+          }}
+          options={options ? options : []}
+        />
+      )}
     </div>
   );
 }
 
-function renderActionMenu(
-  tag: TagData,
-  store: AppStore,
-  cardId: string,
-  dispatch: AppDispatch,
-  tagIds: string[],
-  setTagIds: (arg: string[]) => void,
-) {
-  const options = [
-    {
-      icon: DeleteIcon,
-      className: "bg-red-800 hover:bg-red-900",
-      callback: () => {
-        const data = tagIds.filter((t) => t !== tag.id);
-        setTagIds([...data]);
-      },
-    },
-    {
-      icon: PlusIcon,
-      className: "bg-green-800 hover:bg-green-900",
-      callback: () => {
-        const projectId = store.getState().projectId;
+function Suggestions(props: {
+  tags: (TagData & Frequent)[];
+  filterString: string;
+  options: Array<Option>;
+  onTagCreation: (color: string) => void;
+}) {
+  const [color, setColor] = useState("#000000");
+  const { tags, filterString, options, onTagCreation } = props;
+  const filteredTags = tags.filter((t) => t.name.startsWith(filterString));
+  if (filterString === "") return;
+  if (filteredTags.length + tags.length === 0) return;
+  return (
+    <div className="bg-transparent pt-2 absolute min-w-64">
+      <ol className="bg-neutral-200 border-neutral-400 dark:bg-neutral-800 space-y-0.5 py-1 rounded-md dark:border-neutral-700 border-[1px]">
+        {filteredTags.length === 0 && (
+          <li className=" px-3">
+            <form
+              className="*:block"
+              action=""
+              onSubmit={(e) => {
+                e.preventDefault();
+                onTagCreation(color);
+              }}
+            >
+              <header className="font-semibold">
+                "{filterString}" not found... Create it?
+              </header>
+              <div className="*:block">
+                <label className=" m-auto" htmlFor="new-tag-color">
+                  color
+                </label>
+                <input
+                  style={{ width: 60, height: 40 }}
+                  id="new-tag-color"
+                  type="color"
+                  onChange={(e) => {
+                    setColor(e.target.value);
+                  }}
+                />
+              </div>
+              <TextButton className="w-full">add new</TextButton>
+            </form>
+          </li>
+        )}
+        {filteredTags.length > 0 &&
+          filteredTags.map((t, idx) => {
+            if (idx > 10) return;
+            return <TagSuggestion key={t.id} tag={t} options={options} />;
+          })}
+      </ol>
+    </div>
+  );
+}
 
-        let storeTags = store.getState().kanban.tags;
-        if (!storeTags) storeTags = [];
-        createTag(storeTags, tag, dispatch, projectId);
-      },
-    },
-  ];
-  if (tagIds.includes(tag.id)) {
-    return <ActionMenu options={[options[0]]} />;
-  } else {
-    return <ActionMenu options={[options[1]]} />;
-  }
+function renderActionMenu(options: Option[], tagData: TagData) {
+  return (
+    <ActionMenu
+      options={options
+        .filter((o) => o.condition(tagData))
+        .map((o) => {
+          return {
+            ...o,
+            callback: () => {
+              o.callback(tagData);
+            },
+          };
+        })}
+    />
+  );
+}
+
+function TagSuggestion(props: { tag: TagData & Frequent; options: Option[] }) {
+  const { tag, options } = props;
+  const [isHovered, setIsHovered] = useState(false);
+  return (
+    <li
+      className=" flex space-x-2 px-3 hover:bg-neutral-300 dark:hover:bg-neutral-900 relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {isHovered && renderActionMenu(options, tag)}
+      <span
+        className=" text-white h-full px-2 rounded-sm"
+        style={{ backgroundColor: tag.color }}
+      >
+        {tag.name}
+      </span>
+      <span>marked {tag.frequency} cards</span>
+    </li>
+  );
 }
