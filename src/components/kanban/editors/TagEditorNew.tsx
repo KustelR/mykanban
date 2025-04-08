@@ -89,7 +89,7 @@ function Suggestions(props: {
   if (filteredTags.length + tags.length === 0) return;
   return (
     <div className="bg-transparent pt-2 absolute min-w-64">
-      <ol className="dark:bg-neutral-800 space-y-0.5 py-1 rounded-md dark:border-neutral-700 border-[1px]">
+      <ol className="bg-neutral-200 border-neutral-400 dark:bg-neutral-800 space-y-0.5 py-1 rounded-md dark:border-neutral-700 border-[1px]">
         {filteredTags.length === 0 && (
           <li className=" px-3">
             <form
@@ -104,7 +104,7 @@ function Suggestions(props: {
                 "{filterString}" not found... Create it?
               </header>
               <div className="*:block">
-                <label className=" m-auto text-center" htmlFor="new-tag-color">
+                <label className=" m-auto" htmlFor="new-tag-color">
                   color
                 </label>
                 <input
@@ -152,13 +152,13 @@ function TagSuggestion(props: { tag: TagData & Frequent; options: Option[] }) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <li
-      className="flex space-x-2 px-3 dark:hover:bg-neutral-900 relative"
+      className=" flex space-x-2 px-3 hover:bg-neutral-300 dark:hover:bg-neutral-900 relative"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {isHovered && renderActionMenu(options, tag)}
       <span
-        className="h-full px-2 rounded-sm"
+        className=" text-white h-full px-2 rounded-sm"
         style={{ backgroundColor: tag.color }}
       >
         {tag.name}
