@@ -1,0 +1,73 @@
+import { useAppStore } from "@/lib/hooks";
+import TextInput from "@/shared/TextInput";
+import React, { useEffect, useState } from "react";
+
+type TagInfo = {
+  name: string;
+  color: string;
+  frequency: number;
+};
+
+export default function TagEditorNew() {
+  const [isActive, setIsActive] = useState(false);
+  const [input, setInput] = useState("");
+  const [tags, setTags] = useState<TagInfo[]>([]);
+  const store: AppStore = useAppStore();
+
+  useEffect(() => {
+    const state = store.getState();
+    const rawTags: TagInfo[] = [];
+    state.kanban.tags?.forEach((t) => {
+      rawTags.push({ name: t.name, color: t.color, frequency: 999 });
+    });
+    setTags(rawTags);
+  }, []);
+
+  return (
+    <div>
+      <TextInput
+        onChange={(e) => {
+          setInput(e.target.value);
+          setIsActive(true);
+        }}
+        id="tag_editor_input"
+        label="enter tag name..."
+      />
+      {isActive && <Suggestions filterString={input} tags={tags} />}
+    </div>
+  );
+}
+
+function Suggestions(props: { tags: TagInfo[]; filterString: string }) {
+  const { tags, filterString } = props;
+  const filteredTags = tags.filter((t) => t.name.startsWith(filterString));
+  if (filterString === "") return;
+  if (filteredTags.length + tags.length === 0) return;
+  return (
+    <div className="bg-transparent pt-2 absolute min-w-64">
+      <ol className="dark:bg-neutral-800 space-y-0.5 py-1 rounded-md dark:border-neutral-700 border-[1px]">
+        {filteredTags.length === 0 && (
+          <li className=" px-3 dark:hover:bg-neutral-900">create new...</li>
+        )}
+        {filteredTags.length > 0 &&
+          filteredTags.map((t, idx) => {
+            if (idx > 10) return;
+            return (
+              <li
+                className="flex space-x-2 px-3 dark:hover:bg-neutral-900"
+                key={t.name + t.color + t.frequency + idx}
+              >
+                <span
+                  className="h-full px-2 rounded-sm"
+                  style={{ backgroundColor: t.color }}
+                >
+                  {t.name}
+                </span>
+                <span>cards: {t.frequency}</span>
+              </li>
+            );
+          })}
+      </ol>
+    </div>
+  );
+}
