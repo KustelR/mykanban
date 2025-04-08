@@ -10,6 +10,11 @@ import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import Popup from "@/shared/Popup";
 import { requestToApi } from "@/scripts/project";
 import CardView from "../CardView";
+import TagEditorNew from "./TagEditorNew";
+import { createTag } from "@/scripts/kanban";
+import DeleteIcon from "@public/delete.svg";
+import PlusIcon from "@public/plus.svg";
+import { nanoid } from "@reduxjs/toolkit";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
@@ -104,6 +109,34 @@ function cardDataEditor(
   pushNewTagId: (arg: string) => void,
   removeTagId: (arg: string) => void,
 ) {
+  const store = useAppStore();
+  const dispatch = useAppDispatch();
+  const options = [
+    {
+      icon: DeleteIcon,
+      className: "bg-red-800 hover:bg-red-900",
+      condition: (tag: TagData) => {
+        return card.tagIds.includes(tag.id);
+      },
+      callback: (tag: TagData) => {
+        const data = card.tagIds.filter((t) => t !== tag.id);
+        setCard({ ...card, tagIds: data });
+        removeTagId(tag.id);
+      },
+    },
+    {
+      icon: PlusIcon,
+      className: "bg-green-800 hover:bg-green-900",
+      condition: (tag: TagData) => {
+        return !card.tagIds.includes(tag.id);
+      },
+      callback: (tag: TagData) => {
+        setCard({ ...card, tagIds: card.tagIds.concat(tag.id) });
+        pushNewTagId(tag.id);
+      },
+    },
+  ];
+
   return (
     <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
       <header className="font-bold">Editor</header>
@@ -126,20 +159,24 @@ function cardDataEditor(
           label="Description"
         />
       </form>
-
-      <TagEditor
-        cardId={card.id}
-        tagIds={card.tagIds ? card.tagIds : []}
-        setTagIds={(tagIds) => {
-          const tagId = tagIds.at(-1);
-          if (tagId && !card.tagIds.includes(tagId)) pushNewTagId(tagId);
-          const newRemovingIds = card.tagIds.filter(
-            (id) => !tagIds.includes(id),
-          );
-          newRemovingIds.forEach((val) => removeTagId(val));
-          setCard({ ...card, tagIds: tagIds });
+      <TagEditorNew
+        options={options}
+        onTagCreation={(name, color) => {
+          const t = newTag(name, color);
+          const tags = store.getState().kanban.tags;
+          createTag(tags ? tags : [], t, dispatch, store.getState().projectId);
+          setCard({ ...card, tagIds: card.tagIds.concat(t.id) });
+          pushNewTagId(t.id);
         }}
-      />
+      ></TagEditorNew>
     </div>
   );
+}
+
+function newTag(name?: string, color?: string, cardId?: string): TagData {
+  return {
+    id: nanoid(),
+    name: name ? name : "",
+    color: color ? color : "#ff0000",
+  };
 }
