@@ -33,23 +33,10 @@ export default function TagEditorNew(props: {
   const store: AppStore = useAppStore();
 
   useEffect(() => {
-    const state = store.getState();
-    const rawTags: (TagData & Frequent)[] = [];
-    const cards: CardData[] = [];
-    state.kanban.columns.forEach((col) => {
-      if (col.cards) cards.push(...col.cards);
+    updateTags(store.getState().kanban, setTags);
+    store.subscribe(() => {
+      updateTags(store.getState().kanban, setTags);
     });
-    state.kanban.tags?.forEach((t) => {
-      let frequency = 0;
-      cards.forEach((c) => {
-        if (c.tagIds.includes(t.id)) frequency++;
-      });
-      rawTags.push({
-        ...t,
-        frequency: frequency,
-      });
-    });
-    setTags(rawTags);
   }, []);
 
   return (
@@ -86,7 +73,6 @@ function Suggestions(props: {
   const { tags, filterString, options, onTagCreation } = props;
   const filteredTags = tags.filter((t) => t.name.startsWith(filterString));
   if (filterString === "") return;
-  if (filteredTags.length + tags.length === 0) return;
   return (
     <div className="bg-transparent pt-2 absolute min-w-64">
       <ol className="bg-neutral-200 border-neutral-400 dark:bg-neutral-800 space-y-0.5 py-1 rounded-md dark:border-neutral-700 border-[1px]">
@@ -166,4 +152,26 @@ function TagSuggestion(props: { tag: TagData & Frequent; options: Option[] }) {
       <span>marked {tag.frequency} cards</span>
     </li>
   );
+}
+
+function updateTags(
+  state: KanbanState,
+  setTags: (tags: (TagData & Frequent)[]) => void,
+) {
+  const rawTags: (TagData & Frequent)[] = [];
+  const cards: CardData[] = [];
+  state.columns.forEach((col) => {
+    if (col.cards) cards.push(...col.cards);
+  });
+  state.tags?.forEach((t) => {
+    let frequency = 0;
+    cards.forEach((c) => {
+      if (c.tagIds.includes(t.id)) frequency++;
+    });
+    rawTags.push({
+      ...t,
+      frequency: frequency,
+    });
+  });
+  setTags(rawTags);
 }
