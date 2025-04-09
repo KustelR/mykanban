@@ -159,10 +159,14 @@ function cardDataEditor(
       </form>
       <TagEditor
         options={options}
-        onTagCreation={(name, color) => {
-          const t = newTag(name, color);
+        onTagCreation={async (name, color) => {
           const tags = store.getState().kanban.tags;
-          createTag(tags ? tags : [], t, dispatch, store.getState().projectId);
+          const t = await createTag(
+            tags ? tags : [],
+            newTag(name, color),
+            dispatch,
+            store.getState().projectId,
+          );
           setCard({ ...card, tagIds: card.tagIds.concat(t.id) });
           pushNewTagId(t.id);
         }}

@@ -237,14 +237,19 @@ export function removeTag(
   );
 }
 
-export function createTag(
+export async function createTag(
   tags: TagData[],
   tag: TagData,
   dispatch: AppDispatch,
   projectId: string,
-) {
-  dispatch(setTagsAction(tags.concat(tag)));
-  requestToApi("tags/create", tag, "post", [{ name: "id", value: projectId }]);
+): Promise<TagData> {
+  const data = await requestToApi("tags/create", tag, "post", [
+    { name: "id", value: projectId },
+  ]);
+  const tagData = data.data[0];
+  dispatch(setTagsAction(tags.concat(tagData)));
+  console.log(tagData);
+  return tagData;
 }
 
 export function deleteTag(
