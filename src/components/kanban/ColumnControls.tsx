@@ -136,16 +136,17 @@ export default function ColumnControls(props: ColumnControlProps) {
             name: "",
             description: "",
             tagIds: [],
-            order: colData.cards ? colData.cards.length + 1 : 1,
-            id: nanoid(),
+            order: 999,
+            id: "smth",
             columnId: colData.id,
           }}
-          setCardData={(data) => {
-            requestToApi("cards/create", data, "post");
+          setCardData={async (data) => {
+            const newCard = (await requestToApi("cards/create", data, "post"))
+              .data[0];
             dispatch(
               pushCardAction({
                 columnId: colData.id,
-                card: data,
+                card: newCard,
               }),
             );
           }}

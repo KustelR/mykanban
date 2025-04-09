@@ -76,10 +76,7 @@ export const kanbanSlice = createSlice({
       const cards = column.cards ? column.cards : [];
       state.columns.splice(idx, 1, {
         ...column,
-        cards: [
-          ...cards,
-          { ...card, order: cards.length + 1, columnId: column.id },
-        ],
+        cards: [...cards, { ...card }],
       });
       state.lastAction = "push_card";
     },
