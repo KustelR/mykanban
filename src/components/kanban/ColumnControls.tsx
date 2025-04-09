@@ -24,6 +24,7 @@ import {
   setKanbanAction,
 } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
+import { getCard } from "@/lib/features/kanban/utils";
 
 type ColumnControlProps = {
   columns: ColData[];
@@ -40,7 +41,9 @@ export default function ColumnControls(props: ColumnControlProps) {
   const [isEditing, setIsEditing] = useState(false);
   const store = useAppStore();
   const dispatch = useAppDispatch();
-  const [droppedElement, setDroppedElement] = useState<CardData | null>(null);
+  const [droppedElement, setDroppedElement] = useState<{ id: string } | null>(
+    null,
+  );
   const [{ el }, drop] = useDrop(
     () => ({
       accept: ItemTypes.CARD,
@@ -57,7 +60,8 @@ export default function ColumnControls(props: ColumnControlProps) {
   useEffect(() => {
     if (!isDropped) return;
     if (!droppedElement) return;
-    const dropped = droppedElement as CardData;
+    const { id } = droppedElement as { id: string };
+    const dropped = getCard(store.getState().kanban, id).card;
     if (dropped.columnId) {
       const newCols = [...columns];
       const colIdx = newCols.findIndex((c) => c.id === dropped.columnId);
@@ -87,7 +91,7 @@ export default function ColumnControls(props: ColumnControlProps) {
   }, [isDropped]);
 
   useEffect(() => {
-    if (el && "name" in (el as any)) setDroppedElement(el as CardData);
+    if (el && "id" in (el as any)) setDroppedElement(el as { id: string });
   }, [el]);
 
   return (
