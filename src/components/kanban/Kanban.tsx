@@ -33,14 +33,11 @@ export default function Kanban(props: KanbanProps) {
     "start",
   );
   const [debug, setDebug] = useState(false);
-  const [lastHash, setLastHash] = useState("");
-  const dispatch = useAppDispatch();
   useEffect(() => {
     store.subscribe(() => {
       const storeStamp = store.getState();
-      const lastChanged = storeStamp.lastChanged;
-      setLastHash(lastChanged.hash);
       const data = storeStamp.kanban;
+      console.log(data);
       setLabel(data.name);
       setColumns(data.columns);
       setTags(data.tags ? [...data.tags] : []);
