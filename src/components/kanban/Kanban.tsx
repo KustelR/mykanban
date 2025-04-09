@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Column from "./Column";
-import { useAppDispatch, useAppStore } from "@/lib/hooks";
+import { useAppStore } from "@/lib/hooks";
 import PlusIcon from "@public/plus.svg";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -25,7 +25,6 @@ export default function Kanban(props: KanbanProps) {
     defaultColumns,
   );
   const [label, setLabel] = useState(defaultLabel);
-  const [tags, setTags] = useState<Array<TagData> | null>([]);
   const store = useAppStore();
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -37,10 +36,8 @@ export default function Kanban(props: KanbanProps) {
     store.subscribe(() => {
       const storeStamp = store.getState();
       const data = storeStamp.kanban;
-      console.log(data);
       setLabel(data.name);
       setColumns(data.columns);
-      setTags(data.tags ? [...data.tags] : []);
     });
   }, []);
   return (
