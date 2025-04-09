@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Column from "./Column";
-import { useAppStore } from "@/lib/hooks";
+import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import PlusIcon from "@public/plus.svg";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -11,6 +11,7 @@ import TextButton from "@/shared/TextButton";
 import { ProjectEditorPortal } from "./editors/ProjectEditor";
 import ColumnControls from "./ColumnControls";
 import { requestToApi } from "@/scripts/project";
+import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -31,6 +32,7 @@ export default function Kanban(props: KanbanProps) {
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
     "start",
   );
+  const dispatch = useAppDispatch();
   const [debug, setDebug] = useState(false);
   useEffect(() => {
     store.subscribe(() => {
@@ -85,23 +87,22 @@ export default function Kanban(props: KanbanProps) {
       {isAdding && (
         <ColumnEditorPortal
           setIsRedacting={setIsAdding}
-          addColumn={(name, id, cards) => {
+          addColumn={async (name, id, cards) => {
             const projectId = store.getState().projectId;
-            const addData = addColumn(
-              columns ? columns : [],
-              {
-                name: name,
-                id: id,
-                cards: [],
-                order: columns ? columns.length : 1,
-              },
-              { place: addingDirection },
-            );
-            addData.changed.forEach((item) => {
-              requestToApi("columns/create", item, "post", [
-                { name: "id", value: projectId },
-              ]);
+            const addData = await addColumn(columns ? columns : [], projectId, {
+              name: name,
+              id: id,
+              cards: [],
+              order: columns ? columns.length : 1,
             });
+            const currentState = store.getState().kanban;
+            dispatch(
+              setKanbanAction({
+                columns: addData.columns,
+                tags: currentState.tags ? currentState.tags : [],
+                name: name,
+              }),
+            );
             setColumns(addData.columns);
           }}
         />

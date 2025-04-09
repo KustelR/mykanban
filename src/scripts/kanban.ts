@@ -55,29 +55,18 @@ export function removeCard(cards: CardData[], id: string) {
 /**
  * Creates new empty column. Returns changed array
  */
-export function addColumn(
+export async function addColumn(
   columns: Array<ColData>,
+  projectId: string,
   column: ColData,
-  options?: { place?: "start" | "end" },
-): { columns: Array<ColData>; changed: Array<ColData> } {
-  let newColumn: ColData | undefined = column;
-  if (!options) {
-    newColumn.order = columns.length + 1;
-    return {
-      columns: [...columns, { ...column, order: columns.length + 1 }],
-      changed: [],
-    };
-  } else {
-    if (options.place === "start") {
-      newColumn.order = 1;
-    } else if (options.place === "end") {
-      newColumn.order = columns.length + 1;
-    } else {
-      newColumn = undefined;
-    }
-  }
-  const newCols: ColData[] = [...columns, newColumn].filter((c) => !!c);
-  return { columns: newCols, changed: newColumn ? [newColumn] : [] };
+): Promise<{ columns: Array<ColData>; changed: Array<ColData> }> {
+  const apiCols = (
+    await requestToApi("columns/create", column, "post", [
+      { name: "id", value: projectId },
+    ])
+  ).data;
+  const newCols: ColData[] = [...columns, ...apiCols].filter((c) => !!c);
+  return { columns: newCols, changed: apiCols };
 }
 
 export function moveCard(

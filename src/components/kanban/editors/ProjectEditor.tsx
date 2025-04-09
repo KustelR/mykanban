@@ -56,7 +56,7 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
               e.preventDefault();
               if (name && state) {
                 const projectId = store.getState().projectId;
-                requestToApi("data/update", { name: name }, "patch", [
+                requestToApi("data", { name: name }, "patch", [
                   { name: "id", value: projectId },
                 ]);
                 dispatch(
