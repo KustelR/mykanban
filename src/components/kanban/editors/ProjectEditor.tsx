@@ -76,46 +76,17 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
               label="name"
             />
           </form>
-          {
-            state && state.tags && (
-              <TagEditor
-                options={options}
-                onTagCreation={(name, color) => {
-                  const tags = store.getState().kanban.tags;
-                  const projectId = store.getState().projectId;
-                  if (tags)
-                    createTag(tags, newTag(name, color), dispatch, projectId);
-                }}
-              />
-            ) /*(
+          {state && state.tags && (
             <TagEditor
-              cardId=""
-              tagIds={state.tags.map((tag) => tag.id)}
-              setTagIds={(tagIds) => {
-                const tags = state.tags;
-                if (!tags) return;
-                const filteredTags = tags.filter(
-                  (tag) => !tagIds.includes(tag.id),
-                );
-                filteredTags.forEach(() => {
-                  const projectId = store.getState().projectId;
-                  requestToApi(
-                    "tags/delete",
-                    { id: filteredTags[0].id },
-                    "delete",
-                    [{ name: "id", value: projectId }],
-                  );
-                  dispatch(
-                    setProjectDataAction({
-                      name: state.name,
-                      tags: tags.filter((t) => tagIds.includes(t.id)),
-                    }),
-                  );
-                });
+              options={options}
+              onTagCreation={(name, color) => {
+                const tags = store.getState().kanban.tags;
+                const projectId = store.getState().projectId;
+                if (tags)
+                  createTag(tags, newTag(name, color), dispatch, projectId);
               }}
-            ></TagEditor>
-          )*/
-          }
+            />
+          )}
         </li>
         <li className="col-span-1 *:block space-y-2">
           <TextButton onClick={() => toggleDevMode()}>debug data</TextButton>
