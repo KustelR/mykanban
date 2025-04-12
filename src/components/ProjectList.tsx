@@ -31,6 +31,20 @@ export default function ProjectList() {
             );
           })}
       </ul>
+      <TextButton
+        onClick={async () => {
+          const res = await requestToApi(
+            "kanban",
+            { name: "new project" },
+            "post",
+          );
+          if (typeof res.data === "string") {
+            redirect(`/project/?id=${res.data}`);
+          }
+        }}
+      >
+        Create new
+      </TextButton>
     </div>
   );
 }
