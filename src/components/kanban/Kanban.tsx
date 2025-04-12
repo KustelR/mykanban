@@ -131,17 +131,6 @@ function renderColumnList(
       <ol
         className={`h-96 flex overflow-x-auto overflow-y-hidden flex-row space-x-1 md:space-x-3 `}
       >
-        <li>
-          <button
-            className=" hover:bg-black/10 dark:hover:bg-white/10 w-fit [writing-mode:vertical-lr]"
-            onClick={(e) => {
-              setAddingDirection("start");
-              setIsAdding(true);
-            }}
-          >
-            NEW COLUMN
-          </button>
-        </li>
         {[...columns]
           .sort((col1, col2) => col1.order - col2.order)
           .map((col) => {
