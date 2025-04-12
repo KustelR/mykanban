@@ -26,8 +26,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  html {
-    background: black;
+  :root {
+    --background: black;
   }
 }
 
