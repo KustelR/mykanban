@@ -16,7 +16,7 @@ export default function Popup(props: {
       }}
       className="fixed left-0 top-0 w-full h-full"
     >
-      <div className="w-full h-full place-items-center place-content-center">
+      <div className="flex w-full h-full place-items-center place-content-center">
         <div
           className="size-fit"
           onMouseDown={(e) => {
