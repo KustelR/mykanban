@@ -48,7 +48,7 @@ export default function Kanban(props: KanbanProps) {
         <div
           className={`${className} h-fit rounded-2xl border-[1px] p-1 md:p-3 border-neutral-300 dark:border-neutral-700`}
         >
-          <h2 className="font-2xl font-bold">KANBAN: {label}</h2>
+          <h2 className="font-2xl font-bold">{label}</h2>
           {(!columns || columns.length <= 0) && (
             <button
               className="items-center justify-items-center"
