@@ -127,9 +127,9 @@ function renderColumnList(
   setIsAdding: (arg: boolean) => void,
 ) {
   return (
-    <div className="flex h-96">
+    <div className="flex h-96 w-full space-x-3">
       <ol
-        className={`h-full flex overflow-x-scroll overflow-y-hidden flex-row space-x-1 md:space-x-3 `}
+        className={`h-full w-full flex overflow-x-scroll overflow-y-hidden flex-row space-x-1 md:space-x-3 `}
       >
         {[...columns]
           .sort((col1, col2) => col1.order - col2.order)
@@ -150,9 +150,9 @@ function renderColumnList(
             );
           })}
       </ol>
-      <div className="w-fit h-full flex items-center">
+      <div className=" min-w-[24px] h-full bg-emerald-600/30 rounded-md">
         <button
-          className="hover:bg-black/10 w-full h-full cursor-pointer dark:hover:bg-white/10 [writing-mode:vertical-lr]"
+          className="hover:bg-black/10 w-full rounded-md h-full cursor-pointer dark:hover:bg-white/10 [writing-mode:vertical-lr]"
           onClick={(e) => {
             setIsAdding(true);
             setAddingDirection("end");
