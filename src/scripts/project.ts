@@ -1,5 +1,6 @@
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
 import { setProjectIdAction } from "@/lib/features/projectId/projectIdSlice";
+import { isKanbanState } from "@/typeCheckers";
 import { EnhancedStore } from "@reduxjs/toolkit";
 import axios from "axios";
 import { redirect } from "next/navigation";
@@ -51,15 +52,26 @@ export async function readProject(id: string, dispatch: any) {
   const r = await requestToApi("kanban", "", "get", [
     { name: "id", value: id },
   ]);
+  const dataCopy = { ...r.data };
+  if (!isKanbanState(dataCopy)) {
+    throw new Error("Invalid project data");
+  }
+  if (dataCopy.columns === null) {
+    dataCopy.columns = [];
+  }
+  if (dataCopy.tags === null) {
+    dataCopy.tags = [];
+  }
   addProjectToStorage(id, r.data.name);
-  dispatch(setKanbanAction(r.data));
+  console.log(r.data);
+  dispatch(setKanbanAction(dataCopy));
   dispatch(setProjectIdAction(id));
 }
 
 export function addProjectToStorage(projectId: string, name?: string) {
   const projectsStorageJson = localStorage.getItem("projects");
   if (!projectsStorageJson) {
-    localStorage.setItem("projects", JSON.stringify([projectId]));
+    localStorage.setItem("projects", "[]");
     return;
   }
   const projectStorage: Array<ProjectStamp> = JSON.parse(projectsStorageJson);
