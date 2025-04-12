@@ -5,11 +5,11 @@ import ProjectControl from "@/components/ProjectControl";
 
 export default function Project() {
   return (
-    <div>
+    <div className="p-3">
       <Suspense>
         <ProjectControl />
       </Suspense>
-      <Kanban className="w-full md:max-w-fit"></Kanban>
+      <Kanban className="w-full"></Kanban>
     </div>
   );
 }
