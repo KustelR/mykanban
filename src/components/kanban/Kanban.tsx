@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Column from "./Column";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import PlusIcon from "@public/plus.svg";
@@ -12,6 +12,7 @@ import { ProjectEditorPortal } from "./editors/ProjectEditor";
 import ColumnControls from "./ColumnControls";
 import { requestToApi } from "@/scripts/project";
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
+import formatDate from "@/shared/formatDate";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -22,24 +23,26 @@ type KanbanProps = {
 
 export default function Kanban(props: KanbanProps) {
   const { defaultColumns, className, defaultLabel } = props;
+  /*
   const [columns, setColumns] = useState<Array<ColData> | null | undefined>(
     defaultColumns,
   );
   const [label, setLabel] = useState(defaultLabel);
+  */
   const store = useAppStore();
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [addingDirection, setAddingDirection] = useState<"start" | "end">(
     "start",
   );
+  const [kanban, setKanban] = useState<KanbanState | null>(null);
   const dispatch = useAppDispatch();
   const [debug, setDebug] = useState(false);
   useEffect(() => {
     store.subscribe(() => {
       const storeStamp = store.getState();
       const data = storeStamp.kanban;
-      setLabel(data.name);
-      setColumns(data.columns);
+      setKanban(data);
     });
   }, []);
   return (
@@ -48,8 +51,26 @@ export default function Kanban(props: KanbanProps) {
         <div
           className={`${className} h-fit rounded-2xl border-[1px] p-1 md:p-3 border-neutral-300 dark:border-neutral-700`}
         >
-          <h2 className="font-2xl font-bold">{label}</h2>
-          {(!columns || columns.length <= 0) && (
+          <div className="mb-4 md:mb-0">
+            <h2 className="text-2xl font-bold">{kanban?.name}</h2>
+            <div className="text-sm text-neutral-500 dark:text-neutral-400 space-x-2">
+              <div>
+                created at{" "}
+                {kanban?.createdAt
+                  ? formatDate(kanban.createdAt)
+                  : "loading..."}{" "}
+                by {kanban?.createdBy ? kanban.createdBy : "loading..."}
+              </div>
+              <div>
+                updated at{" "}
+                {kanban?.createdAt
+                  ? formatDate(kanban.updatedAt)
+                  : "loading..."}{" "}
+                by {kanban?.updatedBy ? kanban.updatedBy : "loading..."}
+              </div>
+            </div>
+          </div>
+          {(!kanban?.columns || kanban.columns.length <= 0) && (
             <button
               className="items-center justify-items-center"
               onClick={(e) => {
@@ -64,11 +85,10 @@ export default function Kanban(props: KanbanProps) {
               ></PlusIcon>
             </button>
           )}
-          {columns &&
-            columns.length > 0 &&
+          {kanban?.columns &&
+            kanban.columns.length > 0 &&
             renderColumnList(
-              columns,
-              setColumns,
+              kanban.columns,
               debug,
               setAddingDirection,
               setIsAdding,
@@ -89,21 +109,35 @@ export default function Kanban(props: KanbanProps) {
           setIsRedacting={setIsAdding}
           addColumn={async (name, id, cards) => {
             const projectId = store.getState().projectId;
-            const addData = await addColumn(columns ? columns : [], projectId, {
-              name: name,
-              id: id,
-              cards: [],
-              order: columns ? columns.length : 1,
-            });
+            const addData = await addColumn(
+              kanban?.columns ? kanban.columns : [],
+              projectId,
+              {
+                name: name,
+                id: id,
+                cards: [],
+                order: kanban?.columns ? kanban.columns.length : 1,
+                createdAt: 0,
+                updatedAt: 0,
+                createdBy: "",
+                updatedBy: "",
+              },
+            );
             const currentState = store.getState().kanban;
             dispatch(
               setKanbanAction({
                 columns: addData.columns,
                 tags: currentState.tags ? currentState.tags : [],
                 name: name,
+                createdAt: 0,
+                updatedAt: 0,
+                createdBy: "",
+                updatedBy: "",
               }),
             );
-            setColumns(addData.columns);
+            dispatch(
+              setKanbanAction({ ...currentState, columns: addData.columns }),
+            );
           }}
         />
       )}
@@ -121,7 +155,6 @@ export default function Kanban(props: KanbanProps) {
 
 function renderColumnList(
   columns: Array<ColData>,
-  setColumns: (arg: Array<ColData>) => void,
   debug: boolean | undefined,
   setAddingDirection: (arg: "start" | "end") => void,
   setIsAdding: (arg: boolean) => void,
@@ -139,11 +172,7 @@ function renderColumnList(
                 className=" overflow-y-auto min-w-80 basis-0 grow"
                 key={col.id}
               >
-                <ColumnControls
-                  columns={columns}
-                  setColumns={setColumns}
-                  colData={col}
-                >
+                <ColumnControls columns={columns} colData={col}>
                   <Column debug={debug} colData={col} />
                 </ColumnControls>
               </li>

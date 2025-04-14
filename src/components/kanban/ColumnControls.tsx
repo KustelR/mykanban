@@ -28,13 +28,12 @@ import { getCard } from "@/lib/features/kanban/utils";
 
 type ColumnControlProps = {
   columns: ColData[];
-  setColumns: (arg: ColData[]) => void;
   children: ReactNode;
   colData: ColData;
 };
 
 export default function ColumnControls(props: ColumnControlProps) {
-  const { children, colData, columns, setColumns } = props;
+  const { children, colData, columns } = props;
   const [isAdding, setIsAdding] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -125,7 +124,7 @@ export default function ColumnControls(props: ColumnControlProps) {
           }}
         >
           {isActive &&
-            renderActionMenu(columns, store, setColumns, setIsEditing, colData)}
+            renderActionMenu(columns, store, dispatch, setIsEditing, colData)}
         </div>
       </div>
       {isAdding && (
@@ -139,6 +138,10 @@ export default function ColumnControls(props: ColumnControlProps) {
             order: 999,
             id: "smth",
             columnId: colData.id,
+            createdAt: 0,
+            updatedAt: 0,
+            createdBy: "",
+            updatedBy: "",
           }}
           setCardData={async (data) => {
             const newCard = (await requestToApi("cards/create", data, "post"))
@@ -169,18 +172,6 @@ export default function ColumnControls(props: ColumnControlProps) {
               "put",
               [{ name: "id", value: projectId }],
             );
-            setColumns(
-              replaceColumn(
-                colData.id,
-                {
-                  name: name,
-                  id: colData.id,
-                  cards: colData.cards,
-                  order: colData.order,
-                },
-                columns,
-              ),
-            );
           }}
         />
       )}
@@ -191,7 +182,7 @@ export default function ColumnControls(props: ColumnControlProps) {
 function renderActionMenu(
   columns: Array<ColData>,
   store: AppStore,
-  setColumns: (arg: Array<ColData>) => void,
+  dispatch: AppDispatch,
   setIsEditing: (arg: boolean) => void,
   colData: ColData,
 ) {
@@ -202,12 +193,17 @@ function renderActionMenu(
       callback: () => {
         const projectId = store.getState().projectId;
         const moveData = moveColumn(columns, colData.id, -1);
-        setColumns(moveData.columns);
         moveData.changed.forEach((item) => {
           requestToApi("columns/update", item, "put", [
             { name: "id", value: projectId },
           ]);
         });
+        dispatch(
+          setKanbanAction({
+            ...store.getState().kanban,
+            columns: moveData.columns,
+          }),
+        );
       },
     },
     {
@@ -216,12 +212,17 @@ function renderActionMenu(
       callback: () => {
         const projectId = store.getState().projectId;
         const moveData = moveColumn(columns, colData.id, 1);
-        setColumns(moveData.columns);
         moveData.changed.forEach((item) => {
           requestToApi("columns/update", item, "put", [
             { name: "id", value: projectId },
           ]);
         });
+        dispatch(
+          setKanbanAction({
+            ...store.getState().kanban,
+            columns: moveData.columns,
+          }),
+        );
       },
     },
     {
@@ -234,12 +235,17 @@ function renderActionMenu(
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
-      callback: () => {
+      callback: async () => {
         const projectId = store.getState().projectId;
-        requestToApi("columns/delete", { id: colData.id }, "delete", [
+        await requestToApi("columns/delete", { id: colData.id }, "delete", [
           { name: "id", value: projectId },
         ]);
-        setColumns(removeColumn(colData.id, columns));
+        dispatch(
+          setKanbanAction({
+            ...store.getState().kanban,
+            columns: columns.filter((c) => c.id != colData.id),
+          }),
+        );
       },
     },
   ];
