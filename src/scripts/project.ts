@@ -52,19 +52,22 @@ export async function readProject(id: string, dispatch: any) {
   const r = await requestToApi("kanban", "", "get", [
     { name: "id", value: id },
   ]);
-  const dataCopy = { ...r.data };
-  if (!isKanbanState(dataCopy)) {
-    throw new Error("Invalid project data");
-  }
-  if (dataCopy.columns === null) {
-    dataCopy.columns = [];
-  }
-  if (dataCopy.tags === null) {
-    dataCopy.tags = [];
-  }
+  const dataCopy = { ...r.data } as Metadata & {
+    name?: string;
+    columns?: Array<ColData>;
+    tags?: Array<TagData>;
+  };
+  let projectState: KanbanState = {
+    name: dataCopy.name ? dataCopy.name : "",
+    columns: dataCopy.columns ? dataCopy.columns : [],
+    tags: dataCopy.tags ? dataCopy.tags : [],
+    createdAt: dataCopy.createdAt,
+    updatedAt: dataCopy.updatedAt,
+    createdBy: dataCopy.createdBy,
+    updatedBy: dataCopy.updatedBy,
+  };
   addProjectToStorage(id, r.data.name);
-  console.log(r.data);
-  dispatch(setKanbanAction(dataCopy));
+  dispatch(setKanbanAction(projectState));
   dispatch(setProjectIdAction(id));
 }
 

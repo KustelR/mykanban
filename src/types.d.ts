@@ -7,7 +7,13 @@ import {
 
 declare global {
   type validator = (input: string) => [boolean, string];
-  interface CardData {
+  interface Metadata {
+    createdAt: number;
+    updatedAt: number;
+    createdBy: string;
+    updatedBy: string;
+  }
+  interface CardData extends Metadata {
     name: string;
     description: string;
     tagIds: string[];
@@ -15,7 +21,7 @@ declare global {
     order: number;
     columnId: string;
   }
-  interface ColData {
+  interface ColData extends Metadata {
     name: string;
     id: string;
     order: number;
@@ -24,13 +30,13 @@ declare global {
   interface Identified {
     id: string;
   }
-  type KanbanState = {
+  type KanbanState = Metadata & {
     columns: Array<ColData & Identified>;
     name: string;
     tags: Array<TagData> | null;
     lastAction?: string;
   };
-  type TagData = {
+  type TagData = Metadata & {
     name: string;
     color: string;
     id: string;

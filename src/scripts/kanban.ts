@@ -268,5 +268,9 @@ export function newTag(
     id: nanoid(),
     name: name ? name : "",
     color: color ? color : "#ff0000",
+    createdAt: 0,
+    updatedAt: 0,
+    createdBy: "",
+    updatedBy: "",
   };
 }
