@@ -5,6 +5,7 @@ import TextButton from "@/shared/TextButton";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import formatDate from "@/shared/formatDate";
 
 export default function ProjectList() {
   const [projectStorage, setProjectStorage] = useState<ProjectStamp[]>([]);
@@ -49,16 +50,4 @@ export default function ProjectList() {
       </TextButton>
     </div>
   );
-}
-
-export function formatDate(timestamp: number): string {
-  const date = new Date(timestamp);
-  const locale = navigator.language;
-  return date.toLocaleString(locale, {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-  });
 }
