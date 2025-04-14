@@ -4,8 +4,12 @@ import { getCard, getColumn } from "./utils";
 
 const initialState: KanbanState = {
   columns: [],
-  name: "default_12543",
+  name: "",
   tags: [],
+  createdAt: 0,
+  updatedAt: 0,
+  createdBy: "",
+  updatedBy: "",
 };
 
 const setKanbanAction = createAction<KanbanState>("kanban/setKanban");
@@ -28,11 +32,8 @@ export const kanbanSlice = createSlice({
   reducers: {
     setKanban: (state, action) => {
       const payload = action.payload as KanbanState;
-      state.columns = payload.columns;
-      state.name = payload.name;
-      state.tags = payload.tags;
 
-      state.lastAction = "set_project";
+      return payload;
     },
     setTags: (state, action) => {
       const payload = action.payload as TagData[];
