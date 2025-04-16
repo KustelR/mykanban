@@ -259,10 +259,13 @@ export function deleteTag(
   ]);
 }
 
+/**
+* Generates TagData with placeholder values
+* @returns TagData
+*/
 export function newTag(
   name?: string,
   color?: string,
-  cardId?: string,
 ): TagData {
   return {
     id: nanoid(),
