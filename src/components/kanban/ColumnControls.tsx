@@ -1,17 +1,9 @@
 import { ItemTypes } from "@/Constants";
-import {
-  moveColumn,
-  pushNewCard,
-  removeCard,
-  removeColumn,
-  replaceColumn,
-} from "@/scripts/kanban";
+import { moveColumn, pushNewCard, removeCard } from "@/scripts/kanban";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useDrop } from "react-dnd";
-import { ColumnEditorPortal } from "./editors/ColumnEditor";
+import ColumnEditor, { ColumnEditorPortal } from "./editors/ColumnEditor";
 import PlusIcon from "@public/plus.svg";
-import { CardEditorPortal } from "./editors/CardEditor";
-import { nanoid } from "@reduxjs/toolkit";
 
 import ArrowLeftIcon from "@public/arrow-left.svg";
 import ArrowRightIcon from "@public/arrow-right.svg";
@@ -24,7 +16,9 @@ import {
   setKanbanAction,
 } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
-import { getCard } from "@/lib/features/kanban/utils";
+import { getCard, getColumn } from "@/lib/features/kanban/utils";
+import { PopupPortal } from "@/shared/Popup";
+import CardEditor from "./editors/CardEditor";
 
 type ColumnControlProps = {
   columns: ColData[];
@@ -128,52 +122,55 @@ export default function ColumnControls(props: ColumnControlProps) {
         </div>
       </div>
       {isAdding && (
-        <CardEditorPortal
-          isRedacting={isAdding}
-          setIsRedacting={setIsAdding}
-          cardData={{
-            name: "",
-            description: "",
-            tagIds: [],
-            order: 999,
-            id: "smth",
-            columnId: colData.id,
-            createdAt: 0,
-            updatedAt: 0,
-            createdBy: "",
-            updatedBy: "",
-          }}
-          setCardData={async (data) => {
-            const newCard = (await requestToApi("cards/create", data, "post"))
-              .data[0];
-            dispatch(
-              pushCardAction({
-                columnId: colData.id,
-                card: newCard,
-              }),
-            );
-          }}
-        />
+        <PopupPortal setIsEditing={setIsAdding}>
+          <CardEditor
+            setCardData={async (data) => {
+              const newCard = (
+                await requestToApi(
+                  "cards/create",
+                  { ...data, columnId: colData.id },
+                  "post",
+                )
+              ).data[0];
+              dispatch(
+                pushCardAction({
+                  columnId: colData.id,
+                  card: newCard,
+                }),
+              );
+            }}
+          />
+        </PopupPortal>
       )}
       {isEditing && (
-        <ColumnEditorPortal
-          setIsRedacting={setIsEditing}
-          colData={colData}
-          addColumn={(name, id, cards) => {
-            const projectId = store.getState().projectId;
-            requestToApi(
-              "columns/update",
-              {
-                name: name,
-                id: colData.id,
-                cards: colData.cards,
-                order: colData.order,
-              },
-              "put",
-              [{ name: "id", value: projectId }],
-            );
-          }}
-        />
+        <PopupPortal setIsEditing={setIsEditing}>
+          <ColumnEditor
+            defaultCol={colData}
+            addColumn={async (name, id, cards) => {
+              const projectId = store.getState().projectId;
+              const newCol = (
+                await requestToApi(
+                  "columns/update",
+                  {
+                    name: name,
+                    id: colData.id,
+                    cards: colData.cards,
+                    order: colData.order,
+                  },
+                  "put",
+                  [{ name: "id", value: projectId }],
+                )
+              ).data;
+              console.log(newCol);
+              newCol.cards = colData.cards;
+              const state = store.getState().kanban;
+              const { idx } = getColumn(state, colData.id);
+              const newColumns: ColData[] = [...state.columns];
+              newColumns[idx] = newCol;
+              dispatch(setKanbanAction({ ...state, columns: newColumns }));
+            }}
+          />
+        </PopupPortal>
       )}
     </>
   );

@@ -5,7 +5,7 @@ import ArrowDownIcon from "@public/arrow-down.svg";
 import DeleteIcon from "@public/delete.svg";
 import { moveCard, removeCard } from "@/scripts/kanban";
 import ActionMenu from "../ui/ActionMenu";
-import { CardEditorPortal } from "./editors/CardEditor";
+import CardEditor from "./editors/CardEditor";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
 import { getColumn } from "@/lib/features/kanban/utils";
@@ -13,6 +13,7 @@ import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { setColumnCardsAction } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
 import { CardViewPortal } from "./CardView";
+import { PopupPortal } from "@/shared/Popup";
 
 type CardActionsProps = {
   children?: ReactNode;
@@ -62,14 +63,7 @@ export default function CardActions(props: CardActionsProps) {
       {isViewing && (
         <CardViewPortal card={cardData} setIsVisible={setIsViewing} />
       )}
-      {isEditing && (
-        <Editor
-          blocked={blocked}
-          cardData={cardData}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
-        />
-      )}
+      {isEditing && <Editor cardData={cardData} setIsEditing={setIsEditing} />}
     </>
   );
 }
@@ -158,37 +152,34 @@ function renderActionMenu(
 
 function Editor(props: {
   cardData: CardData;
-  blocked: boolean | undefined;
-  isEditing: boolean;
   setIsEditing: (arg: boolean) => void;
 }) {
-  const { cardData, blocked, isEditing, setIsEditing } = props;
+  const { cardData, setIsEditing } = props;
   const dispatch = useAppDispatch();
   const store = useAppStore();
   return (
-    <CardEditorPortal
-      cardData={cardData}
-      setCardData={(card) => {
-        const state = store.getState().kanban;
-        const { column } = getColumn(state, cardData.columnId);
+    <PopupPortal setIsEditing={setIsEditing}>
+      <CardEditor
+        defaultCard={cardData}
+        setCardData={(card) => {
+          const state = store.getState().kanban;
+          const { column } = getColumn(state, cardData.columnId);
 
-        const cards = column.cards;
-        if (!cards) throw new Error("Column doesn't have any cards");
-        const cardIdx = cards.findIndex((c) => c.id === card.id);
-        if (cardIdx === -1) throw new Error("Card not found");
-        const newCards = [...cards];
-        newCards.splice(cardIdx, 1, card);
-        requestToApi("cards/update", card, "put");
-        dispatch(
-          setColumnCardsAction({
-            id: cardData.columnId,
-            cards: newCards,
-          }),
-        );
-      }}
-      blocked={blocked}
-      isRedacting={isEditing}
-      setIsRedacting={setIsEditing}
-    />
+          const cards = column.cards;
+          if (!cards) throw new Error("Column doesn't have any cards");
+          const cardIdx = cards.findIndex((c) => c.id === card.id);
+          if (cardIdx === -1) throw new Error("Card not found");
+          const newCards = [...cards];
+          newCards.splice(cardIdx, 1, card);
+          requestToApi("cards/update", card, "put");
+          dispatch(
+            setColumnCardsAction({
+              id: cardData.columnId,
+              cards: newCards,
+            }),
+          );
+        }}
+      />
+    </PopupPortal>
   );
 }

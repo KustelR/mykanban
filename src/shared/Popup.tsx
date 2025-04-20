@@ -1,4 +1,5 @@
 import React, { ReactNode, useState } from "react";
+import { createPortal } from "react-dom";
 
 export default function Popup(props: {
   children: ReactNode;
@@ -28,5 +29,16 @@ export default function Popup(props: {
         </div>
       </div>
     </div>
+  );
+}
+
+export function PopupPortal(props: {
+  children: ReactNode;
+  setIsEditing: (arg: boolean) => void;
+}) {
+  const { setIsEditing, children } = props;
+  return createPortal(
+    <Popup setIsActive={setIsEditing}>{children}</Popup>,
+    document.body,
   );
 }

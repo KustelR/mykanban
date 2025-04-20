@@ -260,13 +260,10 @@ export function deleteTag(
 }
 
 /**
-* Generates TagData with placeholder values
-* @returns TagData
-*/
-export function newTag(
-  name?: string,
-  color?: string,
-): TagData {
+ * Generates TagData with placeholder values
+ * @returns TagData
+ */
+export function newTag(name?: string, color?: string): TagData {
   return {
     id: nanoid(),
     name: name ? name : "",
