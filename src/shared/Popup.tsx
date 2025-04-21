@@ -22,9 +22,9 @@ export default function Popup(props: {
       }}
       className="fixed left-0 top-0 w-full h-full"
     >
-      <div className="flex flex-col space-y-5 w-full h-full md:place-items-center md: place-content-center overflow-auto">
+      <div className="flex flex-col space-y-5 w-full h-full md:place-items-center md: place-content-center">
         <div
-          className="w-full h-full md:w-fit overflow-auto"
+          className="size-full md:size-fit overflow-auto md:overflow-clip"
           onMouseDown={(e) => {
             e.stopPropagation();
             setIsMouseDownOnItem(true);
