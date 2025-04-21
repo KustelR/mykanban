@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextInput from "@/shared/TextInput";
 import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
@@ -11,40 +11,80 @@ import TagEditor from "./TagEditor";
 import { createTag, newTag } from "@/scripts/kanban";
 import DeleteIcon from "@public/delete.svg";
 import PlusIcon from "@public/plus.svg";
+import { Alert } from "@/shared/Alert";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
-  setCardData: (arg: CardData) => void;
+  setCardData: ((arg: CardData) => void) | ((arg: CardData) => Promise<void>);
 }) {
   let { defaultCard, setCardData } = props;
 
   const [card, setCard] = useState(defaultCard ? defaultCard : newCard());
   const [newTagIds, setNewTagIds] = useState<string[]>([]);
   const [removingTagIds, setRemovingTagIds] = useState<string[]>([]);
+  const [alert, setAlert] = useState<null | string>("test");
+  const [alertType, setAlertType] = useState<
+    "success" | "fail" | "warning" | null
+  >(null);
+
+  useEffect(() => {
+    if (
+      card.description !== defaultCard?.description ||
+      card.name != defaultCard.name ||
+      card.tagIds.length != defaultCard?.tagIds.length
+    ) {
+      setAlertType("warning");
+      setAlert("You have unsaved changes");
+    } else {
+      setAlertType(null);
+    }
+  }, [card]);
+
   return (
     <div
-      className="w-fit bg-slate-100 dark:bg-neutral-900 border-[1px] border-neutral-400 dark:border-neutral-700 p-2 rounded-xl"
+      className="w-fit bg-slate-100 dark:bg-neutral-900 border-[1px] border-neutral-400 dark:border-neutral-700 p-2 rounded-xl pt-5"
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
       <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-        {cardDataEditor(
-          card,
-          setCard,
-          (id) => {
-            setNewTagIds(newTagIds.concat(id));
-          },
-          (id) => {
-            setRemovingTagIds(removingTagIds.concat(id));
-          },
-        )}
+        <div className="flex flex-col items-stretch place-content-between">
+          {cardDataEditor(
+            card,
+            setCard,
+            (id) => {
+              setNewTagIds(newTagIds.concat(id));
+            },
+            (id) => {
+              setRemovingTagIds(removingTagIds.concat(id));
+            },
+          )}
+          {alert && alertType && <Alert type={alertType}>{alert}</Alert>}
+        </div>
         {preview(card)}
       </div>
       <TextButton
         className="w-full mt-2"
-        onClick={(e) => {
-          if (setCardData) setCardData(card);
+        onClick={async (e) => {
+          let error: any;
+          try {
+            await setCardData(card);
+          } catch (err) {
+            error = err;
+          } finally {
+            setTimeout(() => {
+              setAlertType(null);
+            }, 5000);
+            if (!error) {
+              setAlertType("success");
+              setAlert("Card updated successfully");
+            } else {
+              setAlertType("fail");
+              setAlert("Update failed, check console");
+              console.error(error);
+              return;
+            }
+          }
           newTagIds.forEach((tagId) => {
             requestToApi("tags/link", { cardId: card.id, tagId: tagId }, "put");
           });

@@ -161,7 +161,7 @@ function Editor(props: {
     <PopupPortal setIsEditing={setIsEditing}>
       <CardEditor
         defaultCard={cardData}
-        setCardData={(card) => {
+        setCardData={async (card) => {
           const state = store.getState().kanban;
           const { column } = getColumn(state, cardData.columnId);
 
@@ -171,7 +171,7 @@ function Editor(props: {
           if (cardIdx === -1) throw new Error("Card not found");
           const newCards = [...cards];
           newCards.splice(cardIdx, 1, card);
-          requestToApi("cards/update", card, "put");
+          await requestToApi("cards/update", card, "put");
           dispatch(
             setColumnCardsAction({
               id: cardData.columnId,
