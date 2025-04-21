@@ -5,7 +5,7 @@ export interface AlertProps {
   children: React.ReactNode;
 }
 
-const GenericAlertClassNames = "border-2 p-2 m-2";
+const GenericAlertClassNames = "absolute border-2 p-2 m-2";
 
 export function Alert(props: AlertProps) {
   const { type, children } = props;
@@ -17,7 +17,7 @@ export function Alert(props: AlertProps) {
       specificClassNames = ["border-green-800 bg-green-500"].join(" ");
       break;
     case "fail":
-      specificClassNames = ["border-green-800 bg-green-500"].join(" ");
+      specificClassNames = ["border-red-800 bg-red-500"].join(" ");
       break;
   }
 
