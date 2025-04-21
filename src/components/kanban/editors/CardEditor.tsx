@@ -12,12 +12,14 @@ import { createTag, newTag } from "@/scripts/kanban";
 import DeleteIcon from "@public/delete.svg";
 import PlusIcon from "@public/plus.svg";
 import { Alert } from "@/shared/Alert";
+import useIsMobile from "@/hooks/useisMobile";
 
 export default function CardEditor(props: {
   defaultCard?: CardData;
   setCardData: ((arg: CardData) => void) | ((arg: CardData) => Promise<void>);
+  setIsEditing: (arg: boolean) => void;
 }) {
-  let { defaultCard, setCardData } = props;
+  let { defaultCard, setCardData, setIsEditing } = props;
 
   const [card, setCard] = useState(defaultCard ? defaultCard : newCard());
   const [newTagIds, setNewTagIds] = useState<string[]>([]);
@@ -26,6 +28,8 @@ export default function CardEditor(props: {
   const [alertType, setAlertType] = useState<
     "success" | "fail" | "warning" | null
   >(null);
+
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (
@@ -42,7 +46,7 @@ export default function CardEditor(props: {
 
   return (
     <div
-      className="w-fit bg-slate-100 dark:bg-neutral-900 border-[1px] border-neutral-400 dark:border-neutral-700 p-2 rounded-xl pt-5"
+      className="w-full overflow-y-auto md:w-fit bg-slate-100 dark:bg-neutral-900 border-[1px] border-neutral-400 dark:border-neutral-700 p-2 rounded-xl"
       onClick={(e) => {
         e.stopPropagation();
       }}

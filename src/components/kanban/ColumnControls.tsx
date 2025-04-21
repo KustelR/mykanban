@@ -124,6 +124,7 @@ export default function ColumnControls(props: ColumnControlProps) {
       {isAdding && (
         <PopupPortal setIsEditing={setIsAdding}>
           <CardEditor
+            setIsEditing={setIsAdding}
             setCardData={async (data) => {
               const newCard = (
                 await requestToApi(

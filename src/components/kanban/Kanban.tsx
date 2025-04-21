@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Column from "./Column";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import PlusIcon from "@public/plus.svg";
@@ -10,7 +10,6 @@ import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import TextButton from "@/shared/TextButton";
 import { ProjectEditorPortal } from "./editors/ProjectEditor";
 import ColumnControls from "./ColumnControls";
-import { requestToApi } from "@/scripts/project";
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
 import formatDate from "@/shared/formatDate";
 

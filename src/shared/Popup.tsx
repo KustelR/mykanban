@@ -1,5 +1,7 @@
+import useIsMobile from "@/hooks/useisMobile";
 import React, { ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
+import TextButton from "./TextButton";
 
 export default function Popup(props: {
   children: ReactNode;
@@ -7,6 +9,9 @@ export default function Popup(props: {
 }) {
   const [isMouseDownOnItem, setIsMouseDownOnItem] = useState(true);
   const { children, setIsActive } = props;
+
+  const isMobile = useIsMobile();
+
   return (
     <div
       onMouseDown={() => {
@@ -17,9 +22,9 @@ export default function Popup(props: {
       }}
       className="fixed left-0 top-0 w-full h-full"
     >
-      <div className="flex w-full h-full place-items-center place-content-center">
+      <div className="flex flex-col space-y-5 w-full h-full md:place-items-center md: place-content-center overflow-auto">
         <div
-          className="size-fit"
+          className="w-full h-full md:w-fit overflow-scroll"
           onMouseDown={(e) => {
             e.stopPropagation();
             setIsMouseDownOnItem(true);
@@ -27,6 +32,16 @@ export default function Popup(props: {
         >
           {children}
         </div>
+        {isMobile && (
+          <TextButton
+            className="w-full bg-red-500/50 text-white"
+            onClick={() => {
+              setIsActive(false);
+            }}
+          >
+            close popup
+          </TextButton>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import Popup from "@/shared/Popup";
-import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import formatDate from "@/shared/formatDate";
+import ActionMenu from "../ui/ActionMenu";
 
 export default function CardView(props: { card: CardData }) {
   const { card } = props;

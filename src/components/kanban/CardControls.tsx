@@ -14,6 +14,8 @@ import { setColumnCardsAction } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
 import { CardViewPortal } from "./CardView";
 import { PopupPortal } from "@/shared/Popup";
+import useIsMobile from "@/hooks/useisMobile";
+import useLongTouch from "@/hooks/useLongTouch";
 
 type CardActionsProps = {
   children?: ReactNode;
@@ -28,14 +30,20 @@ export default function CardActions(props: CardActionsProps) {
   const [isActive, setIsActive] = useState(false);
   const [isViewing, setIsViewing] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+
   const dispatch = useAppDispatch();
   const store = useAppStore();
+  const isMobile = useIsMobile();
+  const longTouchHandlers = useLongTouch(() => {
+    setIsActive(true);
+  });
+  const onLongTouch = isMobile ? { ...longTouchHandlers } : {};
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.CARD,
     item: cardData,
     collect: (monitor) => ({
-      isDragging: !!monitor.isDragging(),
+      isDragging: monitor.isDragging(),
     }),
   }));
 
@@ -53,6 +61,7 @@ export default function CardActions(props: CardActionsProps) {
           onMouseLeave={(e) => {
             setIsActive(false);
           }}
+          {...onLongTouch}
         >
           {children}
           {!blocked &&
@@ -161,6 +170,7 @@ function Editor(props: {
     <PopupPortal setIsEditing={setIsEditing}>
       <CardEditor
         defaultCard={cardData}
+        setIsEditing={setIsEditing}
         setCardData={async (card) => {
           const state = store.getState().kanban;
           const { column } = getColumn(state, cardData.columnId);

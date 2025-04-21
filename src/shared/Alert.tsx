@@ -21,7 +21,7 @@ export function Alert(props: AlertProps) {
       specificClassNames = ["border-red-500 bg-red-800"].join(" ");
       break;
     case "warning":
-      specificClassNames = ["border-yellow-500 bg-yellow-800"].join(" ");
+      specificClassNames = ["border-yellow-500 bg-yellow-400"].join(" ");
       break;
   }
 

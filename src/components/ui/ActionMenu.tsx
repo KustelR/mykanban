@@ -1,3 +1,6 @@
+"use client";
+
+import useIsMobile from "@/hooks/useisMobile";
 import React, { ReactElement, ReactNode } from "react";
 
 type ActionMenuProps = {
@@ -14,6 +17,8 @@ type ActionMenuProps = {
 
 export default function ActionMenu(props: ActionMenuProps) {
   const { options } = props;
+  const isMobile = useIsMobile();
+  console.log(isMobile);
   return (
     <ul
       className={`overflow-visible flex absolute top-0 right-0 flex-row"`}
@@ -25,15 +30,15 @@ export default function ActionMenu(props: ActionMenuProps) {
         return (
           <li key={idx}>
             <button
-              className={`h-5 w-5 flex flex-wrap content-center justify-center ${option.className}`}
+              className={`h-10 w-10 md:h-5 md:w-5 mr-2 md:mr-0 flex flex-wrap content-center justify-center ${option.className}`}
               onClick={() => {
                 option.callback();
               }}
             >
               {
                 <option.icon
-                  width={16}
-                  height={16}
+                  width={isMobile ? 16 : 64}
+                  height={isMobile ? 16 : 64}
                   className="*:stroke-white *:fill-transparent"
                 />
               }
