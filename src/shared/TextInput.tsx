@@ -38,10 +38,10 @@ export default function TextInput(props: TextInputProps) {
   const [data, setData] = useState("");
 
   return (
-    <div className={className}>
+    <div className={"max-w-full " + className}>
       <label htmlFor={id}>{label}</label>
 
-      <div className="relative">
+      <div className="relative max-w-full">
         <span
           className={`${data.length > 0 ? "hidden" : ""} ${isFocused ? "text-xs" : ""} pointer-events-none absolute transition-all duration-200 left-2 text-neutral-400`}
         >
@@ -49,7 +49,7 @@ export default function TextInput(props: TextInputProps) {
         </span>
         {!area && (
           <input
-            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 focus:bg-neutral-200 w-full px-2 rounded-md border-[1px] focus:outline-hidden dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
+            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 focus:bg-neutral-200 px-2 rounded-md border-[1px] w-full focus:outline-hidden dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
             type={type ? type : "text"}
             id={id}
             autoComplete="off"
@@ -87,7 +87,7 @@ export default function TextInput(props: TextInputProps) {
         )}
         {area && (
           <textarea
-            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full h-fit px-2 rounded-md border-[1px] focus:outline-hidden focus:bg-neutral-200 dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
+            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full min-h-40 h-fit px-2 rounded-md border-[1px] focus:outline-hidden focus:bg-neutral-200 dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
             id={id}
             value={defaultValue}
             placeholder={

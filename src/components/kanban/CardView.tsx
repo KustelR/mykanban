@@ -1,20 +1,20 @@
 import Popup from "@/shared/Popup";
 import { createPortal } from "react-dom";
 import formatDate from "@/shared/formatDate";
-import ActionMenu from "../ui/ActionMenu";
+import TagList from "./TagList";
 
 export default function CardView(props: { card: CardData }) {
   const { card } = props;
   return (
     <section
-      className="min-h-52 bg-neutral-100 dark:bg-neutral-900 border-[1px] m-1 md:m-0 md:w-fit md:max-w-[800px] border-neutral-600 p-2 rounded-md space-y-2"
+      className="md:w-3xl overflow-y-scroll md:min-h-[500px] md:max-h-[800px] bg-neutral-100 dark:bg-neutral-900 border-[1px] md:m-0 md:max-w-[800px] border-neutral-600 p-2 rounded-md space-y-2"
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
       <div>
-        <div className="text-white bg-cyan-900/50 px-1 rounded-md space-x-3 p-1">
-          <h1 className="font-semibold inline">
+        <div className="rounded-md space-x-3 p-1">
+          <h1 className=" text-xl font-semibold inline dark:text-neutral-200">
             <strong>{card.name}</strong>
           </h1>
           <span className="text-sm space-x-2">
@@ -32,7 +32,10 @@ export default function CardView(props: { card: CardData }) {
           <span className="">(updated by {card.updatedBy})</span>
         </span>
       </div>
-      <p>{card.description}</p>
+      <p className=" text-lg font-serif dark:text-neutral-300">
+        {card.description}
+      </p>
+      <TagList tagIds={card.tagIds} />
     </section>
   );
 }

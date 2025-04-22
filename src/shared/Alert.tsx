@@ -6,7 +6,7 @@ export interface AlertProps {
 }
 
 const genericAlertClassNames =
-  "border-4 rounded-lg p-2 m-2 z-10 w-full flex items-center";
+  "border-4 rounded-lg p-2 z-10 w-full flex items-center";
 
 export function Alert(props: AlertProps) {
   const { type, children } = props;
@@ -15,13 +15,17 @@ export function Alert(props: AlertProps) {
   let specificClassNames = "";
   switch (type) {
     case "success":
-      specificClassNames = ["border-green-500 bg-green-800"].join(" ");
+      specificClassNames = ["border-green-500 bg-green-800 text-white"].join(
+        " ",
+      );
       break;
     case "fail":
-      specificClassNames = ["border-red-500 bg-red-800"].join(" ");
+      specificClassNames = ["border-red-500 bg-red-800 text-white"].join(" ");
       break;
     case "warning":
-      specificClassNames = ["border-yellow-500 bg-yellow-400"].join(" ");
+      specificClassNames = ["border-yellow-500 bg-yellow-400 text-black"].join(
+        " ",
+      );
       break;
   }
 

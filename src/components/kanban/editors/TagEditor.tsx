@@ -3,6 +3,7 @@ import { useAppStore } from "@/lib/hooks";
 import TextButton from "@/shared/TextButton";
 import TextInput from "@/shared/TextInput";
 import React, { ReactNode, useEffect, useState } from "react";
+import Tag from "../Tag";
 
 interface Frequent {
   frequency: number;
@@ -74,7 +75,7 @@ function Suggestions(props: {
   const filteredTags = tags.filter((t) => t.name.startsWith(filterString));
   if (filterString === "") return;
   return (
-    <div className="bg-transparent pt-2 absolute min-w-64">
+    <div className="bg-transparent pt-2 absolute min-w-64 z-20">
       <ol className="bg-neutral-200 border-neutral-400 dark:bg-neutral-800 space-y-0.5 py-1 rounded-md dark:border-neutral-700 border-[1px]">
         {filteredTags.length === 0 && (
           <li className=" px-3">
@@ -143,12 +144,7 @@ function TagSuggestion(props: { tag: TagData & Frequent; options: Option[] }) {
       onMouseLeave={() => setIsHovered(false)}
     >
       {isHovered && renderActionMenu(options, tag)}
-      <span
-        className=" text-white h-full px-2 rounded-sm"
-        style={{ backgroundColor: tag.color }}
-      >
-        {tag.name}
-      </span>
+      <Tag data={tag} />
       <span>marked {tag.frequency} cards</span>
     </li>
   );

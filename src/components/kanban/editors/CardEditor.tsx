@@ -29,8 +29,6 @@ export default function CardEditor(props: {
     "success" | "fail" | "warning" | null
   >(null);
 
-  const isMobile = useIsMobile();
-
   useEffect(() => {
     if (
       card.description !== defaultCard?.description ||
@@ -46,13 +44,13 @@ export default function CardEditor(props: {
 
   return (
     <div
-      className="w-full overflow-y-auto md:w-fit bg-slate-100 dark:bg-neutral-900 border-[1px] border-neutral-400 dark:border-neutral-700 p-2 rounded-xl"
+      className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3"
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
-      <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-        <div className="flex flex-col items-stretch place-content-between">
+      <div className="flex flex-col md:w-96">
+        <div className="h-fit w-full bg-slate-100 dark:bg-neutral-900 p-2 space-y-2 rounded-xl flex flex-col">
           {cardDataEditor(
             card,
             setCard,
@@ -63,58 +61,73 @@ export default function CardEditor(props: {
               setRemovingTagIds(removingTagIds.concat(id));
             },
           )}
-          {alert && alertType && <Alert type={alertType}>{alert}</Alert>}
+          <TextButton
+            className="w-full mt-2"
+            onClick={async (e) => {
+              let error: any;
+              try {
+                await setCardData(card);
+              } catch (err) {
+                error = err;
+              } finally {
+                setTimeout(() => {
+                  setAlertType(null);
+                }, 5000);
+                if (!error) {
+                  setAlertType("success");
+                  setAlert("Card updated successfully");
+                } else {
+                  setAlertType("fail");
+                  setAlert("Update failed, check console");
+                  console.error(error);
+                  return;
+                }
+              }
+              newTagIds.forEach((tagId) => {
+                requestToApi(
+                  "tags/link",
+                  { cardId: card.id, tagId: tagId },
+                  "put",
+                );
+              });
+              removingTagIds.forEach((tagId) => {
+                requestToApi(
+                  "tags/unlink",
+                  { cardId: card.id, tagId: tagId },
+                  "delete",
+                );
+              });
+              if (!defaultCard)
+                setTimeout(() => {
+                  setIsEditing(false);
+                }, 100);
+            }}
+          >
+            ADD
+          </TextButton>
         </div>
-        {preview(card)}
+        {alert && alertType && <Alert type={alertType}>{alert}</Alert>}
+        <CardPreview card={card} />
       </div>
-      <TextButton
-        className="w-full mt-2"
-        onClick={async (e) => {
-          let error: any;
-          try {
-            await setCardData(card);
-          } catch (err) {
-            error = err;
-          } finally {
-            setTimeout(() => {
-              setAlertType(null);
-            }, 5000);
-            if (!error) {
-              setAlertType("success");
-              setAlert("Card updated successfully");
-            } else {
-              setAlertType("fail");
-              setAlert("Update failed, check console");
-              console.error(error);
-              return;
-            }
-          }
-          newTagIds.forEach((tagId) => {
-            requestToApi("tags/link", { cardId: card.id, tagId: tagId }, "put");
-          });
-          removingTagIds.forEach((tagId) => {
-            requestToApi(
-              "tags/unlink",
-              { cardId: card.id, tagId: tagId },
-              "delete",
-            );
-          });
-        }}
-      >
-        ADD
-      </TextButton>
+      {preview(card)}
     </div>
   );
 }
 
+function CardPreview(props: { card: CardData }) {
+  const { card } = props;
+  return (
+    <div className="w-full">
+      <Card cardData={{ ...card }}></Card>
+    </div>
+  );
+}
 function preview(card: CardData) {
   return (
-    <div className="max-w-96 space-y-2">
-      <header className="font-bold">Preview</header>
-      <h2>Card:</h2>
-      <Card cardData={{ ...card }}></Card>
-      <h2>Full:</h2>
-      <CardView card={card} />
+    <div className="flex w-screen md:w-fit flex-col md:flex-row md:space-x-2 space-y-2">
+      <div className="max-h-screen md:w-fit">
+        <CardView card={card} />
+      </div>
     </div>
   );
 }
@@ -154,7 +167,7 @@ function cardDataEditor(
   ];
 
   return (
-    <div className="md:border-r-[1px] px-2 md:border-neutral-400 md:dark:border-neutral-700">
+    <div className="max-w-full">
       <header className="font-bold">Editor</header>
       <form action="" onSubmit={(e) => e.preventDefault()}>
         <TextInput
