@@ -10,8 +10,6 @@ export default function Popup(props: {
   const [isMouseDownOnItem, setIsMouseDownOnItem] = useState(true);
   const { children, setIsActive } = props;
 
-  const isMobile = useIsMobile();
-
   return (
     <div
       onMouseDown={() => {
@@ -24,7 +22,7 @@ export default function Popup(props: {
     >
       <div className="flex flex-col space-y-5 w-full h-full md:place-items-center md: place-content-center">
         <div
-          className="size-full md:size-fit overflow-auto md:overflow-clip"
+          className="size-full md:size-fit overflow-y-scroll md:overflow-clip"
           onMouseDown={(e) => {
             e.stopPropagation();
             setIsMouseDownOnItem(true);
@@ -32,16 +30,14 @@ export default function Popup(props: {
         >
           {children}
         </div>
-        {isMobile && (
-          <TextButton
-            className="w-full bg-red-500/50 text-white"
-            onClick={() => {
-              setIsActive(false);
-            }}
-          >
-            close popup
-          </TextButton>
-        )}
+        <TextButton
+          className="w-full bg-red-500/50 text-white"
+          onClick={() => {
+            setIsActive(false);
+          }}
+        >
+          close popup
+        </TextButton>
       </div>
     </div>
   );

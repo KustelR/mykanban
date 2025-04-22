@@ -18,7 +18,6 @@ type ActionMenuProps = {
 export default function ActionMenu(props: ActionMenuProps) {
   const { options } = props;
   const isMobile = useIsMobile();
-  console.log(isMobile);
   return (
     <ul
       className={`overflow-visible flex absolute top-0 right-0 flex-row"`}
