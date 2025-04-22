@@ -10,10 +10,8 @@ import formatDate from "@/shared/formatDate";
 export default function ProjectList() {
   const [projectStorage, setProjectStorage] = useState<ProjectStamp[]>([]);
   useEffect(() => {
-    const projectsStorageJson = localStorage.getItem("projects");
-    setProjectStorage(
-      projectsStorageJson ? JSON.parse(projectsStorageJson) : [],
-    );
+    const f = async () => setProjectStorage(await loadProjects());
+    f();
   }, []);
 
   return (
@@ -50,4 +48,29 @@ export default function ProjectList() {
       </TextButton>
     </div>
   );
+}
+
+async function loadProjects() {
+  const projectsStorageJson = localStorage.getItem("projects");
+  let projects: ProjectStamp[] = projectsStorageJson
+    ? JSON.parse(projectsStorageJson)
+    : [];
+  const promises = projects.map(async (p, idx) => {
+    let err: unknown | null = null;
+    try {
+      await requestToApi("kanban", {}, "get", [{ name: "id", value: p.id }]);
+    } catch (e) {
+      console.warn(
+        `Can't read project, removing it from projectList. Error: ${e}`,
+      );
+      err = e;
+      return false;
+    } finally {
+      if (!err) return projects[idx];
+    }
+  });
+  const data = (await Promise.all(promises)).filter((p) => !!p);
+  localStorage.setItem("projects", JSON.stringify(data));
+
+  return data;
 }
