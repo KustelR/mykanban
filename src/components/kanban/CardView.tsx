@@ -6,8 +6,8 @@ import TagList from "./TagList";
 export default function CardView(props: { card: CardData }) {
   const { card } = props;
   return (
-    <section
-      className="md:w-3xl overflow-y-scroll md:min-h-[500px] md:max-h-[800px] bg-neutral-100 dark:bg-neutral-900 border-[1px] md:m-0 md:max-w-[800px] border-neutral-600 p-2 rounded-md space-y-2"
+    <article
+      className="md:w-3xl font-serif overflow-y-scroll md:min-h-[500px] md:max-h-[800px] bg-neutral-100 dark:bg-neutral-900 border-[1px] md:m-0 md:max-w-[800px] border-neutral-600 p-2 rounded-md space-y-2"
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -32,11 +32,11 @@ export default function CardView(props: { card: CardData }) {
           <span className="">(updated by {card.updatedBy})</span>
         </span>
       </div>
-      <p className=" text-lg font-serif dark:text-neutral-300">
+      <p className=" text-lg dark:text-neutral-300">
         {card.description}
       </p>
       <TagList tagIds={card.tagIds} />
-    </section>
+    </article>
   );
 }
 
