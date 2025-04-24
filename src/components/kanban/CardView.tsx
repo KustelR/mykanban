@@ -32,9 +32,7 @@ export default function CardView(props: { card: CardData }) {
           <span className="">(updated by {card.updatedBy})</span>
         </span>
       </div>
-      <p className=" text-lg dark:text-neutral-300">
-        {card.description}
-      </p>
+      <p className=" text-lg dark:text-neutral-300">{card.description}</p>
       <TagList tagIds={card.tagIds} />
     </article>
   );

@@ -52,36 +52,40 @@ export default function ColumnControls(props: ColumnControlProps) {
 
   useEffect(() => {
     const f = async () => {
-
-    if (!isDropped) return;
-    if (!droppedElement) return;
-    const { id } = droppedElement as { id: string };
-    const dropped = getCard(store.getState().kanban, id).card;
-    if (dropped.columnId) {
-      const newCols = [...columns];
-      const colIdx = newCols.findIndex((c) => c.id === dropped.columnId);
-      const oldCol = columns[colIdx];
-      if (!oldCol.cards) return;
-      const updated: CardData = (await requestToApi(
-        "cards/update",
-        {
-          ...dropped,
-          columnId: colData.id,
-        },
-        "put",
-      )).data[0];
-      newCols.splice(colIdx, 1, {
-        ...oldCol,
-        cards: removeCard(oldCol.cards, dropped.id),
-      });
-      dispatch(
-        setKanbanAction({
-          ...store.getState().kanban,
-          columns: pushNewCard(updated, colData.id, newCols),
-        }),
-      );
-    }
-    }
+      if (!isDropped) return;
+      if (!droppedElement) return;
+      const { id } = droppedElement as { id: string };
+      const dropped = getCard(store.getState().kanban, id).card;
+      if (dropped.columnId) {
+        const newCols = [...columns];
+        const colIdx = newCols.findIndex((c) => c.id === dropped.columnId);
+        const oldCol = columns[colIdx];
+        if (!oldCol.cards) return;
+        if (dropped.columnId === colData.id) {
+          return;
+        }
+        const updated: CardData = (
+          await requestToApi(
+            "cards/update",
+            {
+              ...dropped,
+              columnId: colData.id,
+            },
+            "put",
+          )
+        ).data;
+        newCols.splice(colIdx, 1, {
+          ...oldCol,
+          cards: removeCard(oldCol.cards, dropped.id),
+        });
+        dispatch(
+          setKanbanAction({
+            ...store.getState().kanban,
+            columns: pushNewCard(updated, colData.id, newCols),
+          }),
+        );
+      }
+    };
     f();
     setIsDropped(false);
   }, [isDropped]);
