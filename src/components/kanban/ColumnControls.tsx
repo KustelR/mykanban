@@ -51,6 +51,8 @@ export default function ColumnControls(props: ColumnControlProps) {
   );
 
   useEffect(() => {
+    const f = async () => {
+
     if (!isDropped) return;
     if (!droppedElement) return;
     const { id } = droppedElement as { id: string };
@@ -60,15 +62,14 @@ export default function ColumnControls(props: ColumnControlProps) {
       const colIdx = newCols.findIndex((c) => c.id === dropped.columnId);
       const oldCol = columns[colIdx];
       if (!oldCol.cards) return;
-      requestToApi(
+      const updated: CardData = (await requestToApi(
         "cards/update",
         {
           ...dropped,
           columnId: colData.id,
-          order: colData.cards ? colData.cards.length + 1 : 1,
         },
         "put",
-      );
+      )).data[0];
       newCols.splice(colIdx, 1, {
         ...oldCol,
         cards: removeCard(oldCol.cards, dropped.id),
@@ -76,10 +77,12 @@ export default function ColumnControls(props: ColumnControlProps) {
       dispatch(
         setKanbanAction({
           ...store.getState().kanban,
-          columns: pushNewCard(dropped, colData.id, newCols),
+          columns: pushNewCard(updated, colData.id, newCols),
         }),
       );
     }
+    }
+    f();
     setIsDropped(false);
   }, [isDropped]);
 
