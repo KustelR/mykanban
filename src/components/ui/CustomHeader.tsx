@@ -4,7 +4,7 @@ import ThemeChanger from "./ThemeChanger";
 
 export default function CustomHeader() {
   return (
-    <header className="w-0 h-0 invisible sm:w-full sm:h-full sm:visible bg-blue-300 dark:bg-blue-900 p-2">
+    <header className="w-0 h-0 invisible sm:w-full sm:h-fit sm:visible bg-blue-300 dark:bg-blue-900 p-2">
       <ul className="flex space-x-5 w-full items-end">
         <li>
           <h1 className="text-2xl font-bold">

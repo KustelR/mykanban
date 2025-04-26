@@ -2,7 +2,6 @@
 import React, { ReactNode, useState } from "react";
 
 import { hexToRgb } from "@/shared/colors";
-import { useAppStore } from "@/lib/hooks";
 
 export default function Tag(props: { data: TagData }) {
   const { data } = props;

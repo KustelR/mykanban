@@ -33,7 +33,7 @@ export default function Popup(props: {
       </div>
 
       <TextButton
-        className="absolute bottom-0 w-full text-white"
+        className="absolute bottom-5 w-full"
         onClick={() => {
           setIsActive(false);
         }}

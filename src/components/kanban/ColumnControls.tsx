@@ -19,15 +19,16 @@ import { requestToApi } from "@/scripts/project";
 import { getCard, getColumn } from "@/lib/features/kanban/utils";
 import { PopupPortal } from "@/shared/Popup";
 import CardEditor from "./editors/CardEditor";
+import CardColumn from "./Column";
 
 type ColumnControlProps = {
   columns: ColData[];
-  children: ReactNode;
   colData: ColData;
+  isDebug?: boolean;
 };
 
 export default function ColumnControls(props: ColumnControlProps) {
-  const { children, colData, columns } = props;
+  const { isDebug, colData, columns } = props;
   const [isAdding, setIsAdding] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -98,7 +99,7 @@ export default function ColumnControls(props: ColumnControlProps) {
     <>
       {drop(
         <div
-          className="relative w-full h-fit"
+          className="relative w-full max-h-full overflow-scroll"
           onMouseEnter={() => {
             setIsActive(true);
           }}
@@ -106,8 +107,9 @@ export default function ColumnControls(props: ColumnControlProps) {
             setIsActive(false);
           }}
         >
-          {children}
-          <AddCardButton setIsAdding={setIsAdding} />
+          <CardColumn debug={isDebug} colData={colData}>
+            <AddCardButton setIsAdding={setIsAdding} />
+          </CardColumn>
           {isActive &&
             renderActionMenu(columns, store, dispatch, setIsEditing, colData)}
         </div>,
@@ -249,7 +251,7 @@ function AddCardButton(props: { setIsAdding: (arg: boolean) => void }) {
       onClick={(e) => {
         setIsAdding(true);
       }}
-      className="cursor-pointer absolute bottom-0 flex flex-row space-x-2 w-full p-5"
+      className="cursor-pointer flex flex-row space-x-2 w-full"
     >
       <PlusIcon
         className="*:fill-neutral-600 dark:*:fill-neutral-400"

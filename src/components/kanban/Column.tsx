@@ -2,20 +2,25 @@ import DebugData from "@/shared/DebugData";
 import { Card } from "./Card";
 
 import CardActions from "./CardControls";
+import { ReactNode } from "react";
 
 export default function CardColumn(props: {
   colData: ColData;
   debug?: boolean;
+  children?: ReactNode;
 }) {
-  const { colData, debug } = props;
+  const { colData, debug, children } = props;
   return (
     <div
-      className={`bg-neutral-300 dark:bg-neutral-800 pt-1 px-5 pb-15 rounded-2xl space-y-2 shadow-lg`}
+      className={`bg-neutral-300 h-full dark:bg-neutral-800 p-5 pt-1 rounded-2xl space-y-2 shadow-lg`}
     >
       <div className="h-fit">
         <h3 className="text-2xl">{colData.name}</h3>
       </div>
-      {colData.cards && <CardList cards={colData.cards} isDebug={debug} />}
+      <div className="overflow-y-scroll space-y-2">
+        {colData.cards && <CardList cards={colData.cards} isDebug={debug} />}
+        {children}
+      </div>
       {debug && (
         <DebugData
           header="column debug data"
