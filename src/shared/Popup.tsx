@@ -18,7 +18,7 @@ export default function Popup(props: {
       onMouseUp={(e) => {
         if (!isMouseDownOnItem) setIsActive(false);
       }}
-      className="fixed left-0 top-0 w-full h-full"
+      className="fixed left-0 top-0 size-full"
     >
       <div className="flex flex-col space-y-5 w-full h-full md:place-items-center md: place-content-center">
         <div
@@ -30,15 +30,16 @@ export default function Popup(props: {
         >
           {children}
         </div>
-        <TextButton
-          className="w-full bg-red-500/50 text-white"
-          onClick={() => {
-            setIsActive(false);
-          }}
-        >
-          close popup
-        </TextButton>
       </div>
+
+      <TextButton
+        className="absolute bottom-5 w-full"
+        onClick={() => {
+          setIsActive(false);
+        }}
+      >
+        close popup
+      </TextButton>
     </div>
   );
 }

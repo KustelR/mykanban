@@ -2,35 +2,25 @@ import DebugData from "@/shared/DebugData";
 import { Card } from "./Card";
 
 import CardActions from "./CardControls";
+import { ReactNode } from "react";
 
 export default function CardColumn(props: {
   colData: ColData;
   debug?: boolean;
+  children?: ReactNode;
 }) {
-  const { colData, debug } = props;
+  const { colData, debug, children } = props;
   return (
-    <div className={`px-1 space-y-2`}>
-      <div className="relative h-fit">
-        <h3 className="text-xl font-semibold bg-cyan-700/30 rounded-md px-2">
-          {colData.name}
-        </h3>
+    <div
+      className={`bg-neutral-300 h-full dark:bg-neutral-800 p-5 pt-1 rounded-2xl space-y-2 shadow-lg`}
+    >
+      <div className="h-fit">
+        <h3 className="text-2xl">{colData.name}</h3>
       </div>
-      <ol className="w-full space-y-2">
-        {colData.cards &&
-          [...colData.cards]
-            .sort((card1, card2) => {
-              return card1.order - card2.order;
-            })
-            .map((card) => {
-              return (
-                <li key={card.id}>
-                  <CardActions cardData={card}>
-                    <Card debug={debug} cardData={card} />
-                  </CardActions>
-                </li>
-              );
-            })}
-      </ol>
+      <div className="overflow-y-scroll space-y-2">
+        {colData.cards && <CardList cards={colData.cards} isDebug={debug} />}
+        {children}
+      </div>
       {debug && (
         <DebugData
           header="column debug data"
@@ -40,5 +30,26 @@ export default function CardColumn(props: {
         />
       )}
     </div>
+  );
+}
+
+function CardList(props: { cards: CardData[]; isDebug?: boolean }) {
+  const { cards, isDebug } = props;
+  return (
+    <ol className="w-full space-y-2">
+      {[...cards]
+        .sort((card1, card2) => {
+          return card1.order - card2.order;
+        })
+        .map((card) => {
+          return (
+            <li key={card.id}>
+              <CardActions cardData={card}>
+                <Card debug={isDebug} cardData={card} />
+              </CardActions>
+            </li>
+          );
+        })}
+    </ol>
   );
 }

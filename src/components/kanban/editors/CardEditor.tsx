@@ -109,7 +109,7 @@ export default function CardEditor(props: {
         {alert && alertType && <Alert type={alertType}>{alert}</Alert>}
         <CardPreview card={card} />
       </div>
-      {preview(card)}
+      <div className="invisible md:visible">{preview(card)}</div>
     </div>
   );
 }

@@ -14,9 +14,11 @@ export default function RootLayout({
     <StoreProvider>
       <html lang="en">
         <body>
-          <ThemeController></ThemeController>
-          <CustomHeader></CustomHeader>
-          {children}
+          <div className="font-arimo h-screen w-screen overflow-auto">
+            <ThemeController></ThemeController>
+            <CustomHeader></CustomHeader>
+            {children}
+          </div>
         </body>
       </html>
     </StoreProvider>
