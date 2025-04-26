@@ -96,27 +96,9 @@ export default function ColumnControls(props: ColumnControlProps) {
 
   return (
     <>
-      <div className="relative w-full h-full">
-        {drop(
-          <div className="h-full">
-            {children}
-            <button
-              onClick={(e) => {
-                setIsAdding(true);
-              }}
-              className="mt-2 place-content-center flex-wrap flex hover:bg-neutral-100 dark:hover:bg-neutral-800 w-full rounded-md h-14"
-            >
-              <PlusIcon
-                className="*:fill-neutral-600 dark:*:fill-neutral-400"
-                width={42}
-                height={42}
-              />
-            </button>
-          </div>,
-        )}
+      {drop(
         <div
-          style={{ height: "20px" }}
-          className="absolute w-full top-0 right-1 overflow-visible"
+          className="relative w-full h-fit"
           onMouseEnter={() => {
             setIsActive(true);
           }}
@@ -124,10 +106,12 @@ export default function ColumnControls(props: ColumnControlProps) {
             setIsActive(false);
           }}
         >
+          {children}
+          <AddCardButton setIsAdding={setIsAdding} />
           {isActive &&
             renderActionMenu(columns, store, dispatch, setIsEditing, colData)}
-        </div>
-      </div>
+        </div>,
+      )}
       {isAdding && (
         <PopupPortal setIsEditing={setIsAdding}>
           <CardEditor
@@ -256,4 +240,23 @@ function renderActionMenu(
   ];
 
   return <ActionMenu options={options} />;
+}
+
+function AddCardButton(props: { setIsAdding: (arg: boolean) => void }) {
+  const { setIsAdding } = props;
+  return (
+    <button
+      onClick={(e) => {
+        setIsAdding(true);
+      }}
+      className="cursor-pointer absolute bottom-0 flex flex-row space-x-2 w-full p-5"
+    >
+      <PlusIcon
+        className="*:fill-neutral-600 dark:*:fill-neutral-400"
+        width={20}
+        height={20}
+      />{" "}
+      <div>Add new card</div>
+    </button>
+  );
 }

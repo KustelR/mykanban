@@ -19,11 +19,8 @@ export default function CustomHeader() {
             </NavItem>
             <li>
               <ul className="space-x-4 items-end flex h-fit">
-                <NavItem className="invisible size-0 md:visible md:size-fit">
+                <NavItem>
                   <Link href="/auth">Sign in / Sign up</Link>
-                </NavItem>
-                <NavItem className="visible size-fit md:invisible md:size-0">
-                  <Link href="/auth">Login</Link>
                 </NavItem>
                 <NavItem>
                   <ThemeChanger />
