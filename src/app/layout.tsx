@@ -14,8 +14,10 @@ export default function RootLayout({
     <StoreProvider>
       <html lang="en">
         <body>
-          <ThemeController></ThemeController>
-          <CustomHeader></CustomHeader>
+          <div className="font-arimo">
+            <ThemeController></ThemeController>
+            <CustomHeader></CustomHeader>
+          </div>
           {children}
         </body>
       </html>
