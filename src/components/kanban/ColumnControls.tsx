@@ -99,7 +99,7 @@ export default function ColumnControls(props: ColumnControlProps) {
     <>
       {drop(
         <div
-          className="relative w-full max-h-full"
+          className="relative w-full h-full"
           onMouseEnter={() => {
             setIsActive(true);
           }}

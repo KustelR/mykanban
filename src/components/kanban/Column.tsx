@@ -12,12 +12,12 @@ export default function CardColumn(props: {
   const { colData, debug, children } = props;
   return (
     <div
-      className={`bg-neutral-300 h-full dark:bg-neutral-800 p-5 pt-1 rounded-2xl space-y-2 shadow-lg`}
+      className={`bg-neutral-300 max-h-full dark:bg-neutral-800 pb-5 flex flex-col *:px-5 pt-1 rounded-2xl space-y-2 shadow-lg`}
     >
-      <div className="h-fit">
+      <div>
         <h3 className="text-2xl">{colData.name}</h3>
       </div>
-      <div className="overflow-y-scroll space-y-2">
+      <div className="space-y-2 overflow-y-auto h-full">
         {colData.cards && <CardList cards={colData.cards} isDebug={debug} />}
         {children}
       </div>
@@ -36,7 +36,7 @@ export default function CardColumn(props: {
 function CardList(props: { cards: CardData[]; isDebug?: boolean }) {
   const { cards, isDebug } = props;
   return (
-    <ol className="w-full space-y-2">
+    <ol className="w-full h-full space-y-2">
       {[...cards]
         .sort((card1, card2) => {
           return card1.order - card2.order;
