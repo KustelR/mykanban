@@ -141,7 +141,7 @@ export default function ColumnControls(props: ColumnControlProps) {
           <ColumnEditor
             defaultCol={colData}
             addColumn={async (name, id, cards) => {
-              const projectId = store.getState().projectId;
+              const projectId = store.getState().kanban.id;
               const newCol = (
                 await requestToApi(
                   "columns/update",
@@ -182,7 +182,7 @@ function renderActionMenu(
       icon: ArrowLeftIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        const projectId = store.getState().projectId;
+        const projectId = store.getState().kanban.id;
         const moveData = moveColumn(columns, colData.id, -1);
         moveData.changed.forEach((item) => {
           requestToApi("columns/update", item, "put", [
@@ -201,7 +201,7 @@ function renderActionMenu(
       icon: ArrowRightIcon,
       className: "bg-blue-800 hover:bg-blue-900",
       callback: () => {
-        const projectId = store.getState().projectId;
+        const projectId = store.getState().kanban.id;
         const moveData = moveColumn(columns, colData.id, 1);
         moveData.changed.forEach((item) => {
           requestToApi("columns/update", item, "put", [
@@ -227,7 +227,7 @@ function renderActionMenu(
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
       callback: async () => {
-        const projectId = store.getState().projectId;
+        const projectId = store.getState().kanban.id;
         await requestToApi("columns/delete", { id: colData.id }, "delete", [
           { name: "id", value: projectId },
         ]);

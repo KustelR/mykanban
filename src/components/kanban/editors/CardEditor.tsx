@@ -191,12 +191,13 @@ function cardDataEditor(
       <TagEditor
         options={options}
         onTagCreation={async (name, color) => {
-          const tags = store.getState().kanban.tags;
+          const kanban = store.getState().kanban;
+          const tags = kanban.tags;
           const t = await createTag(
             tags ? tags : [],
             newTag(name, color),
             dispatch,
-            store.getState().projectId,
+            kanban.id,
           );
           setCard({ ...card, tagIds: card.tagIds.concat(t.id) });
           pushNewTagId(t.id);

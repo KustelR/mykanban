@@ -30,12 +30,13 @@ declare global {
   interface Identified {
     id: string;
   }
-  type KanbanState = Metadata & {
+  interface KanbanState extends Metadata {
+    id: string;
     columns: Array<ColData & Identified>;
     name: string;
     tags: Array<TagData> | null;
     lastAction?: string;
-  };
+  }
   type TagData = Metadata & {
     name: string;
     color: string;
@@ -60,6 +61,4 @@ export {};
 
 type StoredState = {
   kanban: KanbanState;
-  lastChanged: LastChangedState;
-  projectId: string;
 };

@@ -1,6 +1,4 @@
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
-import { setProjectIdAction } from "@/lib/features/projectId/projectIdSlice";
-import { isKanbanState } from "@/typeCheckers";
 import { EnhancedStore } from "@reduxjs/toolkit";
 import axios from "axios";
 import { redirect } from "next/navigation";
@@ -52,23 +50,14 @@ export async function readProject(id: string, dispatch: any) {
   const r = await requestToApi("kanban", "", "get", [
     { name: "id", value: id },
   ]);
-  const dataCopy = { ...r.data } as Metadata & {
-    name?: string;
-    columns?: Array<ColData>;
-    tags?: Array<TagData>;
-  };
   let projectState: KanbanState = {
-    name: dataCopy.name ? dataCopy.name : "",
-    columns: dataCopy.columns ? dataCopy.columns : [],
-    tags: dataCopy.tags ? dataCopy.tags : [],
-    createdAt: dataCopy.createdAt,
-    updatedAt: dataCopy.updatedAt,
-    createdBy: dataCopy.createdBy,
-    updatedBy: dataCopy.updatedBy,
+    ...r.data,
+    tags: r.data.tags ? r.data.tags : [],
+    columns: r.data.columns ? r.data.columns : [],
+    id: id,
   };
   addProjectToStorage(id, r.data.name);
   dispatch(setKanbanAction(projectState));
-  dispatch(setProjectIdAction(id));
 }
 
 export function addProjectToStorage(projectId: string, name?: string) {

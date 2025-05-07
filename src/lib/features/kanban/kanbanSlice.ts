@@ -1,8 +1,8 @@
 import { createAction, createSlice, EnhancedStore } from "@reduxjs/toolkit";
-import { updateLastChanged } from "../lastChanged/lastChangedSlice";
 import { getCard, getColumn } from "./utils";
 
 const initialState: KanbanState = {
+  id: "",
   columns: [],
   name: "",
   tags: [],

@@ -1,14 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import kanbanReducer from "./features/kanban/kanbanSlice";
-import projectIdReducer from "./features/projectId/projectIdSlice";
-import lastChangedReducer from "./features/lastChanged/lastChangedSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       kanban: kanbanReducer,
-      lastChanged: lastChangedReducer,
-      projectId: projectIdReducer,
     },
   });
 };

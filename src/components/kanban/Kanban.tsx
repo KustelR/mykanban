@@ -54,10 +54,10 @@ export default function Kanban(props: KanbanProps) {
         <ColumnEditorPortal
           setIsRedacting={setIsAdding}
           addColumn={async (name, id, cards) => {
-            const projectId = store.getState().projectId;
+            const currentState = store.getState().kanban;
             const addData = await addColumn(
               kanban?.columns ? kanban.columns : [],
-              projectId,
+              currentState.id,
               {
                 name: name,
                 id: id,
@@ -69,9 +69,9 @@ export default function Kanban(props: KanbanProps) {
                 updatedBy: "",
               },
             );
-            const currentState = store.getState().kanban;
             dispatch(
               setKanbanAction({
+                id: currentState.id,
                 columns: addData.columns,
                 tags: currentState.tags ? currentState.tags : [],
                 name: name,

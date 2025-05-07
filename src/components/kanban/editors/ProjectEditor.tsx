@@ -34,8 +34,9 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
         return true;
       },
       callback: (tag: TagData) => {
-        const tags = store.getState().kanban.tags;
-        const projectId = store.getState().projectId;
+        const kanban = store.getState().kanban;
+        const tags = kanban.tags;
+        const projectId = kanban.id;
         if (tags) deleteTag(tags, tag.id, dispatch, projectId);
       },
     },
@@ -55,7 +56,7 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
             onSubmit={(e) => {
               e.preventDefault();
               if (name && state) {
-                const projectId = store.getState().projectId;
+                const projectId = store.getState().kanban.id;
                 requestToApi("data", { name: name }, "patch", [
                   { name: "id", value: projectId },
                 ]);
@@ -80,8 +81,9 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
             <TagEditor
               options={options}
               onTagCreation={(name, color) => {
-                const tags = store.getState().kanban.tags;
-                const projectId = store.getState().projectId;
+                const kanban = store.getState().kanban;
+                const tags = kanban.tags;
+                const projectId = kanban.id;
                 if (tags)
                   createTag(tags, newTag(name, color), dispatch, projectId);
               }}

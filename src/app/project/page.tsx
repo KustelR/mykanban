@@ -8,7 +8,7 @@ export default function Project() {
       <Suspense>
         <ProjectControl />
       </Suspense>
-      <div className="h-screen md:h-[800px]">
+      <div className="h-screen md:h-[800px] lg:h-[1200px]">
         <Kanban />
       </div>
     </div>
