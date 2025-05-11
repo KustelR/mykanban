@@ -29,7 +29,7 @@ export default function ActionMenu(props: ActionMenuProps) {
         return (
           <li key={idx}>
             <button
-              className={`h-10 w-10 md:h-5 md:w-5 mr-2 md:mr-0 flex flex-wrap content-center justify-center ${option.className}`}
+              className={`h-10 w-10 md:h-5 md:w-5 mr-2 md:mr-0 flex flex-wrap content-center cursor-pointer justify-center ${option.className}`}
               onClick={() => {
                 option.callback();
               }}

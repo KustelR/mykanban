@@ -13,7 +13,7 @@ export default function TextButton(props: ButtonProps) {
   return (
     <button
       onClick={onClick}
-      className={`cursor-pointer border-[1px] px-4 py-2 rounded-xl bg-neutral-200 hover:bg-slate-300 dark:bg-neutral-900 dark:border-neutral-700 dark:hover:bg-neutral-800 ${className}`}
+      className={`cursor-pointer px-4 py-2 rounded-xl bg-neutral-200 hover:bg-slate-300 dark:bg-neutral-800  dark:hover:bg-neutral-700 ${className}`}
     >
       {children}
     </button>

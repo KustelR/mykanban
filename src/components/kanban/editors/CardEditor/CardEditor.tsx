@@ -37,12 +37,12 @@ export default function CardEditor(props: {
 
   return (
     <div
-      className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3"
+      className="flex flex-col sm:flex-row space-y-3 sm:space-x-3"
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
-      <div className="flex flex-col md:w-96">
+      <div className="flex flex-col md:w-96 space-y-3">
         <div className="h-fit w-full bg-[#CCCCCC] dark:bg-neutral-900 p-2 space-y-2 rounded-xl flex flex-col">
           <CardDataEditor
             card={card}

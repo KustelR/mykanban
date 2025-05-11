@@ -1,11 +1,12 @@
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
 @custom-variant dark (&:where(.dark, .dark *));
 @theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-arimo: "Arimo", sans-serif;
+  --font-pt-serif: "PT Serif", "ui-serif";
 }
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
