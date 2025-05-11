@@ -29,6 +29,7 @@ export default function ColumnEditor(props: {
           <section className="px-2">
             <header className="font-bold">Column editor</header>
             <form
+              className="space-y-2"
               onSubmit={(e) => {
                 e.preventDefault();
                 addColumn(col.name, nanoid(), []);
@@ -44,6 +45,7 @@ export default function ColumnEditor(props: {
                 id="colCreator_setTitle"
                 label="Title"
               />
+              <TextButton className="w-full">SUBMIT</TextButton>
             </form>
           </section>
         </div>
