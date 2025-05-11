@@ -5,7 +5,7 @@ import ArrowDownIcon from "@public/arrow-down.svg";
 import DeleteIcon from "@public/delete.svg";
 import { moveCard, removeCard } from "@/scripts/kanban";
 import ActionMenu from "../ui/ActionMenu";
-import CardEditor from "./editors/CardEditor";
+import CardEditor from "./editors/CardEditor/CardEditor";
 import { useDrag } from "react-dnd";
 import { ItemTypes } from "@/Constants";
 import { getColumn } from "@/lib/features/kanban/utils";

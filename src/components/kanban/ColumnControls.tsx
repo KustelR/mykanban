@@ -18,7 +18,7 @@ import {
 import { requestToApi } from "@/scripts/project";
 import { getCard, getColumn } from "@/lib/features/kanban/utils";
 import { PopupPortal } from "@/shared/Popup";
-import CardEditor from "./editors/CardEditor";
+import CardEditor from "./editors/CardEditor/CardEditor";
 import CardColumn from "./Column";
 
 type ColumnControlProps = {
