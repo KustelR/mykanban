@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Column from "./Column";
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -9,7 +8,6 @@ import { ColumnEditorPortal } from "./editors/ColumnEditor";
 import { ProjectEditorPortal } from "./editors/ProjectEditor";
 import ColumnControls from "./ColumnControls";
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
-import formatDate from "@/shared/formatDate";
 import DropIcon from "@public/arrow_down-simple.svg";
 
 type KanbanProps = {
@@ -55,35 +53,7 @@ export default function Kanban(props: KanbanProps) {
           setIsRedacting={setIsAdding}
           addColumn={async (name, id, cards) => {
             const currentState = store.getState().kanban;
-            const addData = await addColumn(
-              kanban?.columns ? kanban.columns : [],
-              currentState.id,
-              {
-                name: name,
-                id: id,
-                cards: [],
-                order: kanban?.columns ? kanban.columns.length : 1,
-                createdAt: 0,
-                updatedAt: 0,
-                createdBy: "",
-                updatedBy: "",
-              },
-            );
-            dispatch(
-              setKanbanAction({
-                id: currentState.id,
-                columns: addData.columns,
-                tags: currentState.tags ? currentState.tags : [],
-                name: name,
-                createdAt: 0,
-                updatedAt: 0,
-                createdBy: "",
-                updatedBy: "",
-              }),
-            );
-            dispatch(
-              setKanbanAction({ ...currentState, columns: addData.columns }),
-            );
+            onColumnAddition(currentState, name, id, dispatch);
           }}
         />
       )}
@@ -97,6 +67,41 @@ export default function Kanban(props: KanbanProps) {
       )}
     </>
   );
+}
+
+async function onColumnAddition(
+  kanban: KanbanState,
+  name: string,
+  id: string,
+  dispatch: AppDispatch,
+) {
+  const addData = await addColumn(
+    kanban?.columns ? kanban.columns : [],
+    kanban.id,
+    {
+      name: name,
+      id: id,
+      cards: [],
+      order: kanban?.columns ? kanban.columns.length : 1,
+      createdAt: 0,
+      updatedAt: 0,
+      createdBy: "",
+      updatedBy: "",
+    },
+  );
+  dispatch(
+    setKanbanAction({
+      id: kanban.id,
+      columns: addData.columns,
+      tags: kanban.tags ? kanban.tags : [],
+      name: name,
+      createdAt: 0,
+      updatedAt: 0,
+      createdBy: "",
+      updatedBy: "",
+    }),
+  );
+  dispatch(setKanbanAction({ ...kanban, columns: addData.columns }));
 }
 
 function ColumnList(props: {
