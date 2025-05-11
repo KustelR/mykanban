@@ -3,6 +3,9 @@
 import { ReactNode, useState } from "react";
 import React from "react";
 
+const backgroundColorStyles =
+  "bg-white hover:bg-neutral-200 focus:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700";
+
 type TextInputProps = {
   className?: string;
   id: string;
@@ -49,7 +52,11 @@ export default function TextInput(props: TextInputProps) {
         </span>
         {!area && (
           <input
-            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 focus:bg-neutral-200 px-2 rounded-md border-[1px] w-full focus:outline-hidden dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
+            className={[
+              isValid ? "dark:border-green-700" : "",
+              backgroundColorStyles,
+              "invalid:outline-red-600 invalid:outline-2 p-2 focus:outline-hidden rounded-md w-full ",
+            ].join(" ")}
             type={type ? type : "text"}
             id={id}
             autoComplete="off"
@@ -87,7 +94,11 @@ export default function TextInput(props: TextInputProps) {
         )}
         {area && (
           <textarea
-            className={`${isValid ? "dark:border-green-700" : ""} invalid:border-red-600 w-full min-h-40 h-fit px-2 rounded-md border-[1px] focus:outline-hidden focus:bg-neutral-200 dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `}
+            className={[
+              isValid ? "dark:border-green-700" : "",
+              backgroundColorStyles,
+              `invalid:border-red-600 w-full min-h-40 h-fit px-2 rounded-md focus:outline-hidden focus:bg-neutral-200 dark:border-neutral-700 dark:focus:bg-neutral-700 dark:bg-neutral-800 `,
+            ].join(" ")}
             id={id}
             value={defaultValue}
             placeholder={
