@@ -111,7 +111,7 @@ function ColumnList(props: {
   const { columns, debug } = props;
   return (
     <ol
-      className={`h-full flex overflow-x-scroll overflow-y-clip flex-row space-x-1 md:space-x-3 `}
+      className={`h-full flex overflow-x-auto overflow-y-clip flex-row space-x-1 md:space-x-3 `}
     >
       {[...columns]
         .sort((col1, col2) => col1.order - col2.order)
@@ -122,6 +122,7 @@ function ColumnList(props: {
                 columns={columns}
                 colData={col}
                 isDebug={debug}
+                className="relative h-full"
               ></ColumnControls>
             </li>
           );

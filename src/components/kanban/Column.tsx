@@ -8,11 +8,12 @@ export default function CardColumn(props: {
   colData: ColData;
   debug?: boolean;
   children?: ReactNode;
+  className?: string;
 }) {
-  const { colData, debug, children } = props;
+  const { colData, debug, children, className } = props;
   return (
     <div
-      className={`bg-neutral-300 max-h-full dark:bg-neutral-800 pb-5 flex flex-col *:px-5 pt-1 rounded-2xl space-y-2 shadow-lg`}
+      className={`bg-neutral-300 max-h-full dark:bg-neutral-800 pb-5 flex flex-col *:px-5 pt-1 rounded-2xl space-y-2 shadow-lg ${className}`}
     >
       <div>
         <h3 className="text-2xl">{colData.name}</h3>
@@ -36,7 +37,7 @@ export default function CardColumn(props: {
 function CardList(props: { cards: CardData[]; isDebug?: boolean }) {
   const { cards, isDebug } = props;
   return (
-    <ol className="w-full h-full space-y-2">
+    <ol className=" space-y-2">
       {[...cards]
         .sort((card1, card2) => {
           return card1.order - card2.order;

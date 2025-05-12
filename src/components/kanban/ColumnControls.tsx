@@ -25,10 +25,11 @@ type ColumnControlProps = {
   columns: ColData[];
   colData: ColData;
   isDebug?: boolean;
+  className?: string;
 };
 
 export default function ColumnControls(props: ColumnControlProps) {
-  const { isDebug, colData, columns } = props;
+  const { isDebug, colData, columns, className } = props;
   const [isAdding, setIsAdding] = useState(false);
   const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
@@ -99,7 +100,7 @@ export default function ColumnControls(props: ColumnControlProps) {
     <>
       {drop(
         <div
-          className="relative w-full h-full"
+          className={className}
           onMouseEnter={() => {
             setIsActive(true);
           }}
@@ -107,7 +108,7 @@ export default function ColumnControls(props: ColumnControlProps) {
             setIsActive(false);
           }}
         >
-          <CardColumn debug={isDebug} colData={colData}>
+          <CardColumn debug={isDebug} colData={colData} className={className}>
             <AddCardButton setIsAdding={setIsAdding} />
           </CardColumn>
           {isActive &&
