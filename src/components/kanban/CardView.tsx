@@ -7,19 +7,19 @@ export default function CardView(props: { card: CardData; fill?: boolean }) {
   const { card, fill } = props;
   return (
     <article
-      className={`md:w-3xl lg:w-5xl overflow-y-scroll overflow-x-hidden ${fill ? "h-screen" : ""} bg-neutral-200 dark:bg-neutral-800 md:m-0 p-2 space-y-2`}
+      className={` overflow-y-scroll overflow-x-hidden ${fill ? "h-screen md:w-3xl lg:w-5xl" : ""} bg-neutral-200 dark:bg-neutral-800 md:m-0 p-2 space-y-2`}
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
       <div>
         <div className="rounded-md space-x-3 p-1">
-          <h1 className=" text-6xl font-semibold inline dark:text-neutral-200">
+          <h1 className=" text-2xl md:text-6xl font-semibold inline dark:text-neutral-200">
             <strong>{card.name}</strong>
           </h1>
         </div>
       </div>
-      <p className=" text-4xl font-pt-serif antialiased text-neutral-700 dark:text-neutral-400 whitespace-pre-wrap">
+      <p className=" text-lg md:text-4xl font-pt-serif antialiased text-neutral-700 dark:text-neutral-400 whitespace-pre-wrap">
         {card.description}
       </p>
       <span className="text-sm text-neutral-500">

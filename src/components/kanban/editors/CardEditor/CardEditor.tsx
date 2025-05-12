@@ -37,12 +37,12 @@ export default function CardEditor(props: {
 
   return (
     <div
-      className="flex flex-col sm:flex-row space-y-3 sm:space-x-3"
+      className="flex flex-col justify-center items-center w-screen sm:flex-row space-y-3 sm:space-x-3"
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
-      <div className="flex flex-col md:w-96 space-y-3">
+      <div className="w-full flex flex-col md:w-2/6 space-y-3">
         <div className="h-fit w-full bg-[#CCCCCC] dark:bg-neutral-900 p-2 space-y-2 rounded-xl flex flex-col">
           <CardDataEditor
             card={card}
@@ -75,7 +75,7 @@ export default function CardEditor(props: {
         {alert && alertType && <Alert type={alertType}>{alert}</Alert>}
         <CardPreview card={card} />
       </div>
-      <div className="invisible md:visible">
+      <div className="w-3/6 invisible md:visible">
         <CardViewPreview card={card} />
       </div>
     </div>
