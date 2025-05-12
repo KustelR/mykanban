@@ -23,7 +23,7 @@ type Option = {
 /**
  * Accepts actions as in actionMenu that will appear on tag
  */
-export default function TagEditorNew(props: {
+export default function TagEditor(props: {
   options?: Option[];
   onTagCreation?: (name: string, color: string) => void;
 }) {
@@ -50,16 +50,18 @@ export default function TagEditorNew(props: {
         id="tag_editor_input"
         label="enter tag name..."
       />
-      {isActive && (
-        <Suggestions
-          filterString={input}
-          tags={tags}
-          onTagCreation={(color) => {
-            onTagCreation ? onTagCreation(input, color) : () => {};
-          }}
-          options={options ? options : []}
-        />
-      )}
+      <div className="relative">
+        {isActive && (
+          <Suggestions
+            filterString={input}
+            tags={tags}
+            onTagCreation={(color) => {
+              onTagCreation ? onTagCreation(input, color) : () => {};
+            }}
+            options={options ? options : []}
+          />
+        )}
+      </div>
     </div>
   );
 }
