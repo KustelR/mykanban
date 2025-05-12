@@ -6,7 +6,7 @@
     "dev": "concurrently --kill-others \"next dev \" \" npx prettier -w . && npm run prettier-watch\"",
     "prettier-watch": "npx onchange \"**/*\" -- prettier --write --ignore-unknown {{changed}}",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 80",
     "lint": "next lint"
   },
   "dependencies": {
