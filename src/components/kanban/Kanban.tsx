@@ -4,11 +4,12 @@ import { useAppDispatch, useAppStore } from "@/lib/hooks";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { addColumn } from "@/scripts/kanban";
-import { ColumnEditorPortal } from "./editors/ColumnEditor";
-import { ProjectEditorPortal } from "./editors/ProjectEditor";
+import ColumnEditor from "@/components/kanban/editors/ColumnEditor";
+import ProjectEditor from "@/components/kanban/editors/ProjectEditor";
 import ColumnControls from "./ColumnControls";
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
 import DropIcon from "@public/arrow_down-simple.svg";
+import { PopupPortal } from "@/shared/Popup";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -50,23 +51,21 @@ export default function Kanban(props: KanbanProps) {
           )}
         </div>
       </DndProvider>
-      {isAdding && (
-        <ColumnEditorPortal
-          setIsRedacting={setIsAdding}
-          addColumn={async (name, id, cards) => {
+      <PopupPortal isEditing={isAdding} setIsEditing={setIsAdding}>
+        <ColumnEditor
+          onSubmit={async (name, id, cards) => {
             const currentState = store.getState().kanban;
             onColumnAddition(currentState, name, id, dispatch);
           }}
         />
-      )}
-      {isEditing && (
-        <ProjectEditorPortal
+      </PopupPortal>
+      <PopupPortal isEditing={isEditing} setIsEditing={setIsEditing}>
+        <ProjectEditor
           toggleDevMode={() => {
             setDebug(!debug);
           }}
-          setIsRedacting={setIsEditing}
         />
-      )}
+      </PopupPortal>
     </>
   );
 }
