@@ -20,6 +20,7 @@ export default function ThemeChanger() {
   }, []);
   return (
     <button
+      aria-label="theme-change-icon"
       className="bg-blue-800 dark:bg-orange-400 p-1 rounded-full transition-colors duration-300"
       onClick={() => {
         switch (theme.get()) {

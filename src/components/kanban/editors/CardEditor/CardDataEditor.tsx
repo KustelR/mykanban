@@ -68,6 +68,7 @@ function getTagEditorOptions(
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
+      label: "Delete tag",
       condition: (tag: TagData) => {
         return card.tagIds.includes(tag.id);
       },
@@ -80,6 +81,7 @@ function getTagEditorOptions(
     {
       icon: PlusIcon,
       className: "bg-green-800 hover:bg-green-900",
+      label: "Add tag",
       condition: (tag: TagData) => {
         return !card.tagIds.includes(tag.id);
       },

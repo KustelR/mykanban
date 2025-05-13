@@ -87,6 +87,7 @@ function renderActionMenu(
     {
       icon: ArrowUpIcon,
       className: "bg-blue-800 hover:bg-blue-900",
+      label: "Move up icon",
       callback: () => {
         const { column } = getColumn(
           store.getState().kanban,
@@ -109,6 +110,7 @@ function renderActionMenu(
     {
       icon: ArrowDownIcon,
       className: "bg-blue-800 hover:bg-blue-900",
+      label: "Move down icon",
       callback: () => {
         const { column } = getColumn(
           store.getState().kanban,
@@ -131,6 +133,7 @@ function renderActionMenu(
     {
       icon: ChangeIcon,
       className: "bg-green-800 hover:bg-green-900",
+      label: "Edit card",
       callback: () => {
         setIsEditing(true);
       },
@@ -138,6 +141,7 @@ function renderActionMenu(
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
+      label: "Delete card",
       callback: () => {
         const { column } = getColumn(
           store.getState().kanban,

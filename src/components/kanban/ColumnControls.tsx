@@ -209,6 +209,7 @@ function renderActionMenu(
     {
       icon: ArrowLeftIcon,
       className: "bg-blue-800 hover:bg-blue-900",
+      label: "Move left",
       callback: () => {
         const projectId = store.getState().kanban.id;
         const moveData = moveColumn(columns, colData.id, -1);
@@ -228,6 +229,7 @@ function renderActionMenu(
     {
       icon: ArrowRightIcon,
       className: "bg-blue-800 hover:bg-blue-900",
+      label: "Move right",
       callback: () => {
         const projectId = store.getState().kanban.id;
         const moveData = moveColumn(columns, colData.id, 1);
@@ -247,6 +249,7 @@ function renderActionMenu(
     {
       icon: ChangeIcon,
       className: "bg-green-800 hover:bg-green-900",
+      label: "Edit column",
       callback: () => {
         setIsEditing(true);
       },
@@ -254,6 +257,7 @@ function renderActionMenu(
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
+      label: "Delete column",
       callback: async () => {
         const projectId = store.getState().kanban.id;
         await requestToApi("columns/delete", { id: colData.id }, "delete", [

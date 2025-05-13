@@ -11,6 +11,7 @@ interface Frequent {
 
 type Option = {
   condition: (t: TagData) => boolean;
+  label: string;
   callback: (t: TagData) => void;
   icon: (props: {
     width: number;

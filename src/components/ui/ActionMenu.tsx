@@ -5,6 +5,7 @@ import React, { ReactElement, ReactNode } from "react";
 
 type ActionMenuProps = {
   options: Array<{
+    label: string;
     icon: (props: {
       width: number;
       height: number;
@@ -29,6 +30,7 @@ export default function ActionMenu(props: ActionMenuProps) {
         return (
           <li key={idx}>
             <button
+              aria-label={option.label}
               className={`h-10 w-10 md:h-5 md:w-5 mr-2 md:mr-0 flex flex-wrap content-center cursor-pointer justify-center ${option.className}`}
               onClick={() => {
                 option.callback();

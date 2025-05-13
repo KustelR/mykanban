@@ -28,6 +28,7 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
     {
       icon: DeleteIcon,
       className: "bg-red-800 hover:bg-red-900",
+      label: "Delete tag",
       condition: () => {
         return true;
       },

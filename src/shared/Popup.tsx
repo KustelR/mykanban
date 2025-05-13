@@ -33,6 +33,7 @@ export default function Popup(props: {
       </div>
 
       <button
+        aria-label="Close popup"
         className="absolute bottom-5 right-5 w-10 h-10 bg-red-600 hover:bg-red-700 cursor-pointer rounded-full"
         onClick={() => {
           setIsActive(false);
