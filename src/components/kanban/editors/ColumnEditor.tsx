@@ -3,8 +3,6 @@
 import { useState } from "react";
 import TextInput from "@/shared/TextInput";
 import TextButton from "@/shared/TextButton";
-import { createPortal } from "react-dom";
-import Popup from "@/shared/Popup";
 
 export default function ColumnEditor(props: {
   defaultCol?: ColData;
@@ -49,18 +47,5 @@ export default function ColumnEditor(props: {
         </div>
       </div>
     </>
-  );
-}
-export function ColumnEditorPortal(props: {
-  colData?: ColData;
-  addColumn: (name: string, id: string, cards: Array<CardData>) => void;
-  setIsRedacting: (arg: boolean) => void;
-}) {
-  const { colData, addColumn, setIsRedacting } = props;
-  return createPortal(
-    <Popup setIsActive={setIsRedacting}>
-      <ColumnEditor defaultCol={colData} onSubmit={addColumn}></ColumnEditor>
-    </Popup>,
-    document.body,
   );
 }

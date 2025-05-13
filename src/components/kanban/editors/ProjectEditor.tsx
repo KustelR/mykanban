@@ -1,10 +1,8 @@
 "use client";
 
 import { useAppDispatch, useAppStore } from "@/lib/hooks";
-import Popup from "@/shared/Popup";
 import TextInput from "@/shared/TextInput";
 import React, { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import { setProjectDataAction } from "@/lib/features/kanban/kanbanSlice";
 import { requestToApi } from "@/scripts/project";
 import TextButton from "@/shared/TextButton";
@@ -96,20 +94,5 @@ export default function ProjectEditor(props: { toggleDevMode: () => void }) {
         </li>
       </ul>
     </section>
-  );
-}
-export function ProjectEditorPortal(props: {
-  projectData?: KanbanState;
-  toggleDevMode?: () => void;
-  setIsRedacting: (arg: boolean) => void;
-}) {
-  const { projectData, toggleDevMode, setIsRedacting } = props;
-  return createPortal(
-    <Popup setIsActive={setIsRedacting}>
-      <ProjectEditor
-        toggleDevMode={toggleDevMode ? toggleDevMode : () => {}}
-      ></ProjectEditor>
-    </Popup>,
-    document.body,
   );
 }
