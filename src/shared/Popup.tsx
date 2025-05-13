@@ -46,11 +46,17 @@ export default function Popup(props: {
 
 export function PopupPortal(props: {
   children: ReactNode;
+  isEditing?: boolean;
   setIsEditing: (arg: boolean) => void;
 }) {
-  const { setIsEditing, children } = props;
-  return createPortal(
-    <Popup setIsActive={setIsEditing}>{children}</Popup>,
-    document.body,
+  const { setIsEditing, isEditing, children } = props;
+  return (
+    <>
+      {(isEditing == undefined || isEditing) &&
+        createPortal(
+          <Popup setIsActive={setIsEditing}>{children}</Popup>,
+          document.body,
+        )}
+    </>
   );
 }
