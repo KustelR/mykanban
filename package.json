@@ -1,9 +1,10 @@
 {
   "name": "mykanban",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently --kill-others \"next dev \" \" npx prettier -w . && npm run prettier-watch\"",
+    "dev-prettier": "concurrently --kill-others \"next dev \" \" npx prettier -w . && npm run prettier-watch\"",
+    "dev": "next dev",
     "prettier-watch": "npx onchange \"**/*\" -- prettier --write --ignore-unknown {{changed}}",
     "build": "next build",
     "start": "next start -p 80",
