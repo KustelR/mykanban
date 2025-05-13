@@ -1,8 +1,8 @@
 import { ItemTypes } from "@/Constants";
 import { moveColumn, pushNewCard, removeCard } from "@/scripts/kanban";
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDrop } from "react-dnd";
-import ColumnEditor, { ColumnEditorPortal } from "./editors/ColumnEditor";
+import ColumnEditor from "./editors/ColumnEditor";
 import PlusIcon from "@public/plus.svg";
 
 import ArrowLeftIcon from "@public/arrow-left.svg";
@@ -39,62 +39,35 @@ export default function ColumnControls(props: ColumnControlProps) {
   const [droppedElement, setDroppedElement] = useState<{ id: string } | null>(
     null,
   );
-  const [{ el }, drop] = useDrop(
+  const [{}, drop] = useDrop(
     () => ({
       accept: ItemTypes.CARD,
       drop: () => {
         setIsDropped(true);
       },
-      collect: (monitor) => ({
-        el: monitor.getItem(),
-      }),
+      collect: (monitor) => {
+        const dropped = monitor.getItem();
+        if (dropped && "id" in (dropped as any))
+          setDroppedElement(dropped as { id: string });
+
+        return {};
+      },
     }),
     [],
   );
 
   useEffect(() => {
-    const f = async () => {
-      if (!isDropped) return;
-      if (!droppedElement) return;
-      const { id } = droppedElement as { id: string };
-      const dropped = getCard(store.getState().kanban, id).card;
-      if (dropped.columnId) {
-        const newCols = [...columns];
-        const colIdx = newCols.findIndex((c) => c.id === dropped.columnId);
-        const oldCol = columns[colIdx];
-        if (!oldCol.cards) return;
-        if (dropped.columnId === colData.id) {
-          return;
-        }
-        const updated: CardData = (
-          await requestToApi(
-            "cards/update",
-            {
-              ...dropped,
-              columnId: colData.id,
-            },
-            "put",
-          )
-        ).data;
-        newCols.splice(colIdx, 1, {
-          ...oldCol,
-          cards: removeCard(oldCol.cards, dropped.id),
-        });
-        dispatch(
-          setKanbanAction({
-            ...store.getState().kanban,
-            columns: pushNewCard(updated, colData.id, newCols),
-          }),
-        );
-      }
-    };
-    f();
+    if (!isDropped) return;
+    if (!droppedElement) return;
+
+    const kanban = store.getState().kanban;
+
+    const { id } = droppedElement as { id: string };
+    const dropped = getCard(kanban, id).card;
+    onCardDrop(dropped, colData, columns, kanban, dispatch);
+
     setIsDropped(false);
   }, [isDropped]);
-
-  useEffect(() => {
-    if (el && "id" in (el as any)) setDroppedElement(el as { id: string });
-  }, [el]);
 
   return (
     <>
@@ -115,60 +88,116 @@ export default function ColumnControls(props: ColumnControlProps) {
             renderActionMenu(columns, store, dispatch, setIsEditing, colData)}
         </div>,
       )}
-      {isAdding && (
-        <PopupPortal setIsEditing={setIsAdding}>
-          <CardEditor
-            setIsEditing={setIsAdding}
-            setCardData={async (data) => {
-              const newCard = (
-                await requestToApi(
-                  "cards/create",
-                  { ...data, columnId: colData.id },
-                  "post",
-                )
-              ).data[0];
-              dispatch(
-                pushCardAction({
-                  columnId: colData.id,
-                  card: newCard,
-                }),
-              );
-            }}
-          />
-        </PopupPortal>
-      )}
-      {isEditing && (
-        <PopupPortal setIsEditing={setIsEditing}>
-          <ColumnEditor
-            defaultCol={colData}
-            addColumn={async (name, id, cards) => {
-              const projectId = store.getState().kanban.id;
-              const newCol = (
-                await requestToApi(
-                  "columns/update",
-                  {
-                    name: name,
-                    id: colData.id,
-                    cards: colData.cards,
-                    order: colData.order,
-                  },
-                  "put",
-                  [{ name: "id", value: projectId }],
-                )
-              ).data;
-              console.log(newCol);
-              newCol.cards = colData.cards;
-              const state = store.getState().kanban;
-              const { idx } = getColumn(state, colData.id);
-              const newColumns: ColData[] = [...state.columns];
-              newColumns[idx] = newCol;
-              dispatch(setKanbanAction({ ...state, columns: newColumns }));
-            }}
-          />
-        </PopupPortal>
-      )}
+      <PopupPortal isEditing={isAdding} setIsEditing={setIsAdding}>
+        <CardAdder
+          setIsAdding={setIsAdding}
+          colData={colData}
+          dispatch={dispatch}
+        />
+      </PopupPortal>
+      <PopupPortal isEditing={isEditing} setIsEditing={setIsEditing}>
+        <ColumnEditor
+          defaultCol={colData}
+          addColumn={async (name, id, cards) => {
+            const project = store.getState().kanban;
+            addColumn(project, colData, dispatch);
+          }}
+        />
+      </PopupPortal>
     </>
   );
+}
+
+async function onCardDrop(
+  dropped: CardData,
+  colData: ColData,
+  columns: ColData[],
+  kanban: KanbanState,
+  dispatch: AppDispatch,
+) {
+  const newCols = [...columns];
+  const colIdx = newCols.findIndex((c) => c.id === dropped.columnId);
+  const oldCol = columns[colIdx];
+  if (!oldCol.cards) return;
+  if (dropped.columnId === colData.id) {
+    return;
+  }
+
+  const updated: CardData = (
+    await requestToApi(
+      "cards/update",
+      {
+        ...dropped,
+        columnId: colData.id,
+      },
+      "put",
+    )
+  ).data;
+  newCols.splice(colIdx, 1, {
+    ...oldCol,
+    cards: removeCard(oldCol.cards, dropped.id),
+  });
+
+  dispatch(
+    setKanbanAction({
+      ...kanban,
+      columns: pushNewCard(updated, colData.id, newCols),
+    }),
+  );
+}
+
+function CardAdder(props: {
+  setIsAdding: (arg: boolean) => void;
+  colData: ColData;
+  dispatch: AppDispatch;
+}) {
+  const { setIsAdding, colData, dispatch } = props;
+  return (
+    <CardEditor
+      setIsEditing={setIsAdding}
+      setCardData={async (data) => {
+        const newCard = (
+          await requestToApi(
+            "cards/create",
+            { ...data, columnId: colData.id },
+            "post",
+          )
+        ).data[0];
+        dispatch(
+          pushCardAction({
+            columnId: colData.id,
+            card: newCard,
+          }),
+        );
+      }}
+    />
+  );
+}
+
+async function addColumn(
+  project: KanbanState,
+  colData: ColData,
+  dispatch: AppDispatch,
+) {
+  const projectId = project.id;
+  const newCol = (
+    await requestToApi(
+      "columns/update",
+      {
+        name: name,
+        id: colData.id,
+        cards: colData.cards,
+        order: colData.order,
+      },
+      "put",
+      [{ name: "id", value: projectId }],
+    )
+  ).data;
+  newCol.cards = colData.cards;
+  const { idx } = getColumn(project, colData.id);
+  const newColumns: ColData[] = [...project.columns];
+  newColumns[idx] = newCol;
+  dispatch(setKanbanAction({ ...project, columns: newColumns }));
 }
 
 function renderActionMenu(
