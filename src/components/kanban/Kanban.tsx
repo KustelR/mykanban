@@ -35,7 +35,9 @@ export default function Kanban(props: KanbanProps) {
   return (
     <>
       <DndProvider backend={HTML5Backend}>
-        <div className={`${className} p-3 space-y-3 h-full w-full`}>
+        <div
+          className={`${className} flex flex-col p-3 space-y-3 h-full w-full`}
+        >
           {kanban && (
             <KanbanHeader
               kanban={kanban}
@@ -111,13 +113,13 @@ function ColumnList(props: {
   const { columns, debug } = props;
   return (
     <ol
-      className={`h-full flex overflow-x-auto overflow-y-clip flex-row space-x-1 md:space-x-3 `}
+      className={`flex-1 flex overflow-x-auto overflow-y-clip flex-row space-x-1 md:space-x-3 `}
     >
       {[...columns]
         .sort((col1, col2) => col1.order - col2.order)
         .map((col) => {
           return (
-            <li className="h-full min-w-80 basis-0" key={col.id}>
+            <li className=" min-w-80 basis-0" key={col.id}>
               <ColumnControls
                 columns={columns}
                 colData={col}
