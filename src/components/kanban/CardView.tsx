@@ -7,7 +7,7 @@ export default function CardView(props: { card: CardData; fill?: boolean }) {
   const { card, fill } = props;
   return (
     <article
-      className={` overflow-y-scroll overflow-x-hidden ${fill ? "h-screen md:w-3xl lg:w-5xl" : "max-h-5/6"} bg-neutral-200 dark:bg-neutral-800 md:m-0 p-2 space-y-2`}
+      className={` overflow-y-scroll overflow-x-hidden ${fill ? "h-screen md:w-3xl lg:w-5xl" : "max-h-5/6 w-full"} bg-neutral-200 dark:bg-neutral-800 md:m-0 p-2 space-y-2`}
       onClick={(e) => {
         e.stopPropagation();
       }}

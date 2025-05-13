@@ -20,7 +20,7 @@ export default function Popup(props: {
       }}
       className="fixed left-0 top-0 size-full backdrop-blur-md"
     >
-      <div className="flex flex-col space-y-5 w-full h-full md:place-items-center md: place-content-center">
+      <div className="flex flex-col space-y-5 w-full h-full md:place-items-center md:place-content-center">
         <div
           className="size-full md:size-fit overflow-y-scroll md:overflow-clip"
           onMouseDown={(e) => {
