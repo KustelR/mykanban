@@ -10,6 +10,8 @@ import ColumnControls from "./ColumnControls";
 import { setKanbanAction } from "@/lib/features/kanban/kanbanSlice";
 import DropIcon from "@public/arrow_down-simple.svg";
 import { PopupPortal } from "@/shared/Popup";
+import TextInput from "@/shared/TextInput";
+import { setFilterRegex } from "@/lib/features/kanban/settingsSlice";
 
 type KanbanProps = {
   defaultColumns?: Array<ColData>;
@@ -49,6 +51,13 @@ export default function Kanban(props: KanbanProps) {
           {kanban?.columns && kanban.columns.length > 0 && (
             <ColumnList columns={kanban.columns} debug={debug} />
           )}
+          <TextInput
+            id="filterRegExp"
+            label="Filter by text"
+            onChange={(e) => {
+              dispatch(setFilterRegex(e.target.value));
+            }}
+          />
         </div>
       </DndProvider>
       <PopupPortal isEditing={isAdding} setIsEditing={setIsAdding}>

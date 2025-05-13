@@ -56,9 +56,13 @@ declare global {
   type AppDispatch = ThunkDispatch<StoredState, undefined, UnknownAction> &
     Dispatch<UnknownAction>;
   type AppStore = EnhancedStore<StoredState>;
+  interface SettingsState {
+    filterRegex: string;
+  }
 }
 export {};
 
 type StoredState = {
   kanban: KanbanState;
+  settings: SettingsState;
 };

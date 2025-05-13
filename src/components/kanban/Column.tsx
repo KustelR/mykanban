@@ -2,7 +2,8 @@ import DebugData from "@/shared/DebugData";
 import { Card } from "./Card";
 
 import CardActions from "./CardControls";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import { useAppStore } from "@/lib/hooks";
 
 export default function CardColumn(props: {
   colData: ColData;
@@ -36,9 +37,20 @@ export default function CardColumn(props: {
 
 function CardList(props: { cards: CardData[]; isDebug?: boolean }) {
   const { cards, isDebug } = props;
+
+  const store = useAppStore();
+  store.subscribe(() => {
+    setFilter(new RegExp(store.getState().settings.filterRegex));
+  });
+  const [filter, setFilter] = useState<RegExp | undefined>();
+
   return (
     <ol className=" space-y-2">
       {[...cards]
+        .filter((card) => {
+          const filterText = [card.name, card.description].join(" ");
+          return filter ? filter.test(filterText) : true;
+        })
         .sort((card1, card2) => {
           return card1.order - card2.order;
         })

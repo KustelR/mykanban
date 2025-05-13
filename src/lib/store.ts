@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import kanbanReducer from "./features/kanban/kanbanSlice";
+import settingsReducers from "./features/kanban/settingsSlice";
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       kanban: kanbanReducer,
+      settings: settingsReducers,
     },
   });
 };
