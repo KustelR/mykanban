@@ -31,7 +31,6 @@ type ColumnControlProps = {
 export default function ColumnControls(props: ColumnControlProps) {
   const { isDebug, colData, columns, className } = props;
   const [isAdding, setIsAdding] = useState(false);
-  const [isDropped, setIsDropped] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const store = useAppStore();
@@ -42,14 +41,11 @@ export default function ColumnControls(props: ColumnControlProps) {
   const [{}, drop] = useDrop(
     () => ({
       accept: ItemTypes.CARD,
-      drop: () => {
-        setIsDropped(true);
-      },
-      collect: (monitor) => {
-        const dropped = monitor.getItem();
+      drop: (dropped) => {
         if (dropped && "id" in (dropped as any))
           setDroppedElement(dropped as { id: string });
-
+      },
+      collect: () => {
         return {};
       },
     }),
@@ -57,17 +53,13 @@ export default function ColumnControls(props: ColumnControlProps) {
   );
 
   useEffect(() => {
-    if (!isDropped) return;
     if (!droppedElement) return;
-
     const kanban = store.getState().kanban;
 
-    const { id } = droppedElement as { id: string };
+    const { id } = droppedElement;
     const dropped = getCard(kanban, id).card;
     onCardDrop(dropped, colData, columns, kanban, dispatch);
-
-    setIsDropped(false);
-  }, [isDropped]);
+  }, [droppedElement]);
 
   return (
     <>
