@@ -2,17 +2,15 @@
 
 import { useState } from "react";
 import TextInput from "@/shared/TextInput";
-import { Card } from "../Card";
 import TextButton from "@/shared/TextButton";
 import { createPortal } from "react-dom";
-import { nanoid } from "@reduxjs/toolkit";
 import Popup from "@/shared/Popup";
 
 export default function ColumnEditor(props: {
   defaultCol?: ColData;
-  addColumn: (name: string, id: string, cards: Array<CardData>) => void;
+  onSubmit: (name: string, id: string, cards: Array<CardData>) => void;
 }) {
-  let { defaultCol, addColumn } = props;
+  let { defaultCol, onSubmit } = props;
 
   const [col, setCol] = useState(
     defaultCol ? defaultCol : { name: "", id: "fake", cards: [] },
@@ -32,7 +30,7 @@ export default function ColumnEditor(props: {
               className="space-y-2"
               onSubmit={(e) => {
                 e.preventDefault();
-                addColumn(col.name, nanoid(), []);
+                onSubmit(col.name, col.id, col.cards ? col.cards : []);
                 if (e.nativeEvent.target) {
                   (e.nativeEvent.target as HTMLFormElement).reset();
                 }
@@ -61,7 +59,7 @@ export function ColumnEditorPortal(props: {
   const { colData, addColumn, setIsRedacting } = props;
   return createPortal(
     <Popup setIsActive={setIsRedacting}>
-      <ColumnEditor defaultCol={colData} addColumn={addColumn}></ColumnEditor>
+      <ColumnEditor defaultCol={colData} onSubmit={addColumn}></ColumnEditor>
     </Popup>,
     document.body,
   );

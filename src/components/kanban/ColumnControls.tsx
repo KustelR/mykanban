@@ -90,9 +90,14 @@ export default function ColumnControls(props: ColumnControlProps) {
       <PopupPortal isEditing={isEditing} setIsEditing={setIsEditing}>
         <ColumnEditor
           defaultCol={colData}
-          addColumn={async (name, id, cards) => {
+          onSubmit={async (name, id, cards) => {
             const project = store.getState().kanban;
-            addColumn(project, colData, dispatch);
+            await updateColumn(
+              colData.id,
+              project,
+              { ...colData, name: name },
+              dispatch,
+            );
           }}
         />
       </PopupPortal>
@@ -166,7 +171,8 @@ function CardAdder(props: {
   );
 }
 
-async function addColumn(
+async function updateColumn(
+  id: string,
   project: KanbanState,
   colData: ColData,
   dispatch: AppDispatch,
@@ -176,8 +182,8 @@ async function addColumn(
     await requestToApi(
       "columns/update",
       {
-        name: name,
-        id: colData.id,
+        name: colData.name,
+        id: id,
         cards: colData.cards,
         order: colData.order,
       },
@@ -186,7 +192,7 @@ async function addColumn(
     )
   ).data;
   newCol.cards = colData.cards;
-  const { idx } = getColumn(project, colData.id);
+  const { idx } = getColumn(project, id);
   const newColumns: ColData[] = [...project.columns];
   newColumns[idx] = newCol;
   dispatch(setKanbanAction({ ...project, columns: newColumns }));
