@@ -40,7 +40,7 @@ export async function requestToApi(
         .join("&")
     : "";
   return axios.request({
-    url: `/${url}${paramString}`,
+    url: `/api/${url}${paramString}`,
     method: method,
     data: payload,
   });
