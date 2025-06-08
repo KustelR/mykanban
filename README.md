@@ -1,6 +1,6 @@
 # Mykanban Frontned
 
-This repo represents frontend of mykanban
+This is frontend of mykanban, simple kanban application
 
 ## Build
 
